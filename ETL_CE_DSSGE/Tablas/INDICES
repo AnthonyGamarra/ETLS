@@ -1,0 +1,54 @@
+CREATE INDEX idx_ctcam10m_join
+ON dssge.sgss_ctcam10_m (
+    cod_estado_cita,
+    cod_oricentro,
+    cod_centro,
+    cod_area,
+    cod_servicio,
+    cod_actividad,
+    cod_subactividad,
+    cod_tipdoc_medico,
+    cod_doc_medico,
+    fecha_cita,
+    horaini,
+    horafin
+);
+
+
+CREATE INDEX idx_ctppe10_filters
+ON dssge.sgss_ctppe10 (
+    oricenasicod,
+    arehoscod,
+    actcod,
+    estprogcitcod,
+    actespcod,
+    properfec
+);
+
+CREATE INDEX idx_ctppe10_cmprs_join
+ON dssge.sgss_ctppe10 (
+    tipdocidenpercod,
+    perasisdocidennum
+);
+
+CREATE INDEX idx_ctppe10_atenciones_join
+ON dssge.sgss_ctppe10 (
+    oricenasicod,
+    cenasicod,
+    arehoscod,
+    servhoscod,
+    actcod,
+    actespcod,
+    tipdocidenpercod,
+    perasisdocidennum,
+    properfec,
+    properturhorini,
+    properturhorfin
+);
+
+CREATE INDEX idx_cmprs10_join_filter
+ON dssge.sgss_cmprs10 (
+    tipdocidenpercod,
+    perasisdocidennum,
+    grupocupcod
+);

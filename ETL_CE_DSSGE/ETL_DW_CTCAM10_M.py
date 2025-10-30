@@ -1,0 +1,158 @@
+import os
+import oracledb
+import pandas as pd
+from io import StringIO
+import psycopg2
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
+# ==============================
+# 1. Cargar variables desde .env
+# ==============================
+load_dotenv()
+
+# Oracle
+oracle_user = os.getenv("ORACLE_USER")
+oracle_pass = os.getenv("ORACLE_PASS")
+oracle_host = os.getenv("ORACLE_HOST")
+oracle_port = os.getenv("ORACLE_PORT")
+oracle_service = os.getenv("ORACLE_SERVICE")
+
+# PostgreSQL
+pg_user = os.getenv("PG_USER")
+pg_pass = os.getenv("PG_PASS")
+pg_host = os.getenv("PG_HOST")
+pg_port = os.getenv("PG_PORT", "5433")
+pg_db   = os.getenv("PG_DB")
+
+# ==============================
+# 2. Función para obtener rango mensual
+# ==============================
+def month_range(start_date, end_date):
+    current = start_date
+    while current <= end_date:
+        next_month = (current.replace(day=1) + timedelta(days=32)).replace(day=1)
+        yield current, min(next_month - timedelta(days=1), end_date)
+        current = next_month
+
+# ==============================
+# 3. Conexión Oracle
+# ==============================
+print(f"Conectando a Oracle en {oracle_host}:{oracle_port}/{oracle_service}...")
+dsn = f"{oracle_host}:{oracle_port}/{oracle_service}"
+conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn)
+print("Conexión a Oracle establecida.")
+
+# ==============================
+# 4. Conexión PostgreSQL
+# ==============================
+print(f"Conectando a PostgreSQL en {pg_host}:{pg_port}, base de datos: {pg_db}...")
+conn_pg = psycopg2.connect(
+    host=pg_host,
+    database=pg_db,
+    user=pg_user,
+    password=pg_pass,
+    port=pg_port
+)
+conn_pg.autocommit = True
+cursor_pg = conn_pg.cursor()
+print("Conexión a PostgreSQL establecida.")
+
+# ==============================
+# Función para generar rangos mensuales
+# ==============================
+def month_range(start_date, end_date):
+    current = start_date
+    while current <= end_date:
+        start_mes = current
+        end_mes = (current + relativedelta(months=1)) - timedelta(days=1)
+        yield start_mes, end_mes
+        current += relativedelta(months=1)
+
+# ==============================
+# 1. Calcular rango: entre hace dos meses y el mes pasado
+# ==============================
+hoy = datetime.today()
+start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
+end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
+
+# ==============================
+# 6. Ciclo para extraer y copiar mes a mes
+# ==============================
+for start_mes, end_mes in month_range(start_date, end_date):
+    anio = start_mes.strftime('%Y')
+    mes = start_mes.strftime('%m')
+    print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
+
+    query = f"""
+    SELECT to_char(citambproconfec, 'yyyy') as anio,
+           to_char(citambproconfec, 'yyyymm') as periodo,
+           citambproconoricenasicod as cod_oricentro,
+           citambproconcenasicod  as cod_centro,  
+           citambarehoscod as cod_area,
+           citambservhoscod as cod_servicio,
+           citambactcod as cod_actividad,
+           citambactespcod as cod_subactividad,
+           citambtipdocidenpercod as cod_tipdoc_medico,
+           citambperasisdocidennum as cod_doc_medico,
+           citambproconfec as fecha_cita,
+           citambproconturhorini as horaini,
+           citambproconturhorfin as horafin,
+           estcitcod as cod_estado_cita
+
+    FROM SGSS.ctcam10
+    WHERE citambproconfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+      AND citambproconfec <= TO_DATE('{end_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+    ORDER BY periodo ASC
+    """
+
+    print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
+    df = pd.read_sql(query, conn_oracle)
+    print(f"Datos extraídos: {len(df)} filas.")
+
+    if df.empty:
+        print("No hay datos para este mes.")
+        continue
+
+    df.columns = df.columns.str.lower()
+
+    # Truncar la tabla particionada destino en PostgreSQL antes de la carga
+    tabla_particion = f"dssge.sgss_ctcam10_m_{anio}_{mes}"
+    try:
+        print(f"Truncando tabla particionada destino: {tabla_particion}...")
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_particion};")
+        conn_pg.commit()
+        print(f"Tabla {tabla_particion} truncada correctamente.")
+    except Exception as e:
+        print(f"Error al truncar la tabla {tabla_particion}: {e}")
+        continue
+
+    # Guardamos el DataFrame en un buffer CSV en memoria
+    csv_buffer = StringIO()
+    df.to_csv(csv_buffer, index=False, header=False)
+    csv_buffer.seek(0)
+
+    # Usamos COPY para cargar datos a PostgreSQL
+    print(f"Cargando datos a PostgreSQL en tabla {tabla_particion}...")
+    try:
+        cursor_pg.copy_expert(
+            sql=f"COPY {tabla_particion} ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            file=csv_buffer
+        )
+        conn_pg.commit()
+        print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")
+    except Exception as e:
+        print(f"Error al cargar mes {start_mes.strftime('%Y-%m')}: {e}")
+        continue
+
+# ==============================
+# 7. Cerramos conexiones
+# ==============================
+print("\nCerrando conexiones a bases de datos...")
+cursor_pg.close()
+conn_pg.close()
+conn_oracle.close()
+print("Conexiones cerradas. Proceso finalizado.")
+
+

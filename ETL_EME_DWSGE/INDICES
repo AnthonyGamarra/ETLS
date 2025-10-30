@@ -1,0 +1,369 @@
+------------------------------------------------------ crear ids dim
+ALTER TABLE dwsge.sgss_cbcod10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cbcod10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cbtid10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cbtid10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cmaho10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cmaho10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cmcpp10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cmcpp10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cmtse10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cmtse10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbacp10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbacp10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbegp10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbegp10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbepe10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbepe10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbmeg10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbmeg10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbpae10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbpae10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbrai10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbrai10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbtac10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbtac10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbtae10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbtae10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbtoe10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbtoe10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mmaem10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mmaem10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mmaet10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mmaet10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mmeme10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mmeme10
+ADD PRIMARY KEY (id);
+
+
+-- ============================================
+-- RESTRICCIONES UNIQUE EN TABLAS DIMENSIONES
+-- ============================================
+
+ALTER TABLE dwsge.sgss_cmras10
+ADD CONSTRAINT uq_cmcas10_redasiscod
+UNIQUE (redasiscod);
+
+ALTER TABLE dwsge.sgss_cmcas10
+ADD CONSTRAINT uq_cmcas10_oricenasicod_cenasicod
+UNIQUE (oricenasicod, cenasicod);
+
+ALTER TABLE dwsge.sgss_cmace10
+ADD CONSTRAINT uq_cmace10_actcod_actespcod 
+UNIQUE (actcod, actespcod);
+
+
+-- Servicio Hospitalario
+ALTER TABLE dwsge.sgss_cmsho10
+ADD CONSTRAINT uq_cmsho10_servhoscod UNIQUE (servhoscod);
+
+-- Actividad
+ALTER TABLE dwsge.sgss_cmact10
+ADD CONSTRAINT uq_cmact10_actcod UNIQUE (actcod);
+
+-- Tipo de Paciente
+ALTER TABLE dwsge.sgss_cbtpc10
+ADD CONSTRAINT uq_cbtpc10_tipopacicod UNIQUE (tipopacicod);
+
+ALTER TABLE dwsge.sgss_cmtse10
+ADD CONSTRAINT uq_cmtse10_tipsegcod UNIQUE (tipsegcod);
+
+ALTER TABLE dwsge.sgss_cbtpa10
+ADD CONSTRAINT uq_cbtpa10_tipoparecod UNIQUE (tipoparecod);
+
+ALTER TABLE dwsge.sgss_cmtco10
+ADD CONSTRAINT uq_cmtco10_tipconcod UNIQUE (tipconcod);
+
+ALTER TABLE dwsge.sgss_cmdia10
+ADD CONSTRAINT uq_cmdia10_diagcod UNIQUE (diagcod);
+
+ALTER TABLE dwsge.sgss_cbraa10
+ADD CONSTRAINT uq_cbraa10_resatenambucod UNIQUE (resatenambucod);
+
+ALTER TABLE dwsge.sgss_cbtdi10
+ADD CONSTRAINT uq_cbtdi10_tipdocidenpercod UNIQUE (tipdocidenpercod);
+
+ALTER TABLE dwsge.sgss_cbeci10
+ADD CONSTRAINT uq_cbeci10_estcitcod UNIQUE (estcitcod);
+
+ALTER TABLE dwsge.sgss_cbepc10
+ADD CONSTRAINT uq_cbepc10_estprogcitcod UNIQUE (estprogcitcod);
+
+ALTER TABLE dwsge.sgss_cbmsp10
+ADD CONSTRAINT uq_cbmsp10_motsusprog UNIQUE (motsusprogcod);
+
+ALTER TABLE dwsge.dim_especialidad
+ADD CONSTRAINT uq_esp_espec UNIQUE (cod_especialidad);
+
+ALTER TABLE dwsge.dwe_cl10
+ADD CONSTRAINT uq_cl UNIQUE (id_cl);
+
+ALTER TABLE dwsge.sgss_cmcas10
+ADD CONSTRAINT fk_dwe_citados_centro
+FOREIGN KEY (redasiscod)
+REFERENCES dwsge.sgss_cmras10 (redasiscod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+
+-- =========================================
+--  LLAVES FORÁNEAS PARA LA TABLA DE HECHOS citados
+-- =========================================
+
+ALTER TABLE dwsge.dwe_consulta_externa_citados
+ADD CONSTRAINT fk_dwe_citados_centro
+FOREIGN KEY (cod_oricentro, cod_centro)
+REFERENCES dwsge.sgss_cmcas10 (oricenasicod, cenasicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_citados
+ADD CONSTRAINT fk_dwe_citados_servicio
+FOREIGN KEY (cod_servicio)
+REFERENCES dwsge.sgss_cmsho10 (servhoscod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_citados
+ADD CONSTRAINT fk_dwe_citados_actividad
+FOREIGN KEY (cod_actividad)
+REFERENCES dwsge.sgss_cmact10 (actcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_citados
+ADD CONSTRAINT fk_dwe_citados_subactividad
+FOREIGN KEY (cod_actividad, cod_subactividad)
+REFERENCES dwsge.sgss_cmace10 (actcod,actespcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_citados
+ADD CONSTRAINT fk_dwe_citados_paciente
+FOREIGN KEY (cod_paciente)
+REFERENCES dwsge.sgss_cbtpc10 (tipopacicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_citados
+ADD CONSTRAINT fk_dwe_citados_estado_cita
+FOREIGN KEY (cod_estado)
+REFERENCES dwsge.sgss_cbeci10 (estcitcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- =========================================
+--  LLAVES FORÁNEAS PARA LA TABLA DE HECHOS horas_efectivas
+-- =========================================
+
+ALTER TABLE dwsge.dwe_consulta_externa_horas_efectivas
+ADD CONSTRAINT fk_dwe_horas_efectivas_servicio
+FOREIGN KEY (cod_servicio)
+REFERENCES dwsge.sgss_cmsho10 (servhoscod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_horas_efectivas
+ADD CONSTRAINT fk_dwe_horas_efectivas_actividad
+FOREIGN KEY (cod_actividad)
+REFERENCES dwsge.sgss_cmact10 (actcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- Crear la foreign key compuesta en la tabla de hechos
+ALTER TABLE dwsge.dwe_consulta_externa_horas_efectivas
+ADD CONSTRAINT fk_dwe_consulta_externa_horas_efectivas_cmcas10
+FOREIGN KEY (cod_oricentro, cod_centro)
+REFERENCES dwsge.sgss_cmcas10 (oricenasicod, cenasicod);
+
+-- Crear la foreign key compuesta en la tabla de hechos
+ALTER TABLE dwsge.dwe_consulta_externa_horas_efectivas
+ADD CONSTRAINT fk_dwe_consulta_externa_horas_efectivas_estadoprog
+FOREIGN KEY (estado_progcita)
+REFERENCES dwsge.sgss_cbepc10 (estprogcitcod);
+
+ALTER TABLE dwsge.dwe_consulta_externa_horas_efectivas
+ADD CONSTRAINT fk_dwe_consulta_externa_horas_efectivas_subactividad
+FOREIGN KEY (cod_actividad, cod_subactividad)
+REFERENCES dwsge.sgss_cmace10 (actcod,actespcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- =========================================
+--  LLAVES FORÁNEAS PARA LA TABLA DE HECHOS programacion
+-- =========================================
+
+ALTER TABLE dwsge.dwe_consulta_externa_programacion
+ADD CONSTRAINT fk_dwe_programacion_servicio
+FOREIGN KEY (cod_servicio)
+REFERENCES dwsge.sgss_cmsho10 (servhoscod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_programacion
+ADD CONSTRAINT fk_dwe_programacion_actividad
+FOREIGN KEY (cod_actividad)
+REFERENCES dwsge.sgss_cmact10 (actcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- Crear la foreign key compuesta en la tabla de hechos
+ALTER TABLE dwsge.dwe_consulta_externa_programacion
+ADD CONSTRAINT fk_dwe_consulta_externa_programacion_cmcas10
+FOREIGN KEY (cod_oricentro, cod_centro)
+REFERENCES dwsge.sgss_cmcas10 (oricenasicod, cenasicod);
+
+ALTER TABLE dwsge.dwe_consulta_externa_programacion
+ADD CONSTRAINT fk_dwe_consulta_externa_programacion_subactividad
+FOREIGN KEY (cod_actividad, cod_subactividad)
+REFERENCES dwsge.sgss_cmace10 (actcod,actespcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- Crear la foreign key compuesta en la tabla de hechos
+ALTER TABLE dwsge.dwe_consulta_externa_programacion
+ADD CONSTRAINT fk_dwe_consulta_externa_programacion_estadoprog
+FOREIGN KEY (cod_estado_programacion)
+REFERENCES dwsge.sgss_cbepc10 (estprogcitcod);
+
+-- Crear la foreign key compuesta en la tabla de hechos
+ALTER TABLE dwsge.dwe_consulta_externa_programacion
+ADD CONSTRAINT fk_dwe_consulta_externa_programacion_motsus
+FOREIGN KEY (cod_motivo_suspension)
+REFERENCES dwsge.sgss_cbmsp10 (motsusprogcod);
+
+-- =========================================
+--  LLAVES FORÁNEAS PARA LA TABLA DE HECHOS homologacion
+-- =========================================
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_servicio
+FOREIGN KEY (cod_servicio)
+REFERENCES dwsge.sgss_cmsho10 (servhoscod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_actividad
+FOREIGN KEY (cod_actividad)
+REFERENCES dwsge.sgss_cmact10 (actcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_tiposeguro
+FOREIGN KEY (cod_tip_seguro)
+REFERENCES dwsge.sgss_cmtse10 (tipsegcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_tipoparentesco
+FOREIGN KEY (cod_tipo_parentesco)
+REFERENCES dwsge.sgss_cbtpa10 (tipoparecod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_tipoconsulta
+FOREIGN KEY (cod_tipo_consulta)
+REFERENCES dwsge.sgss_cmtco10 (tipconcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_diagnostico
+FOREIGN KEY (cod_diag)
+REFERENCES dwsge.sgss_cmdia10 (diagcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_tippaciente
+FOREIGN KEY (cod_tipo_paciente)
+REFERENCES dwsge.sgss_cbtpc10 (tipopacicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_codvariable
+FOREIGN KEY (cod_variable)
+REFERENCES dwsge.dim_variable (cod_variable)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- Crear la foreign key compuesta en la tabla de hechos
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_consulta_externa_homologacion_cmcas10
+FOREIGN KEY (cod_oricentro, cod_centro)
+REFERENCES dwsge.sgss_cmcas10 (oricenasicod, cenasicod);
+
+
+-- Crear la foreign key compuesta en la tabla de hechos
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_consulta_externa_homologacion_especialidad
+FOREIGN KEY (cod_especialidad)
+REFERENCES dwsge.dim_especialidad (cod_especialidad);
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_subactividad
+FOREIGN KEY (cod_actividad, cod_subactividad)
+REFERENCES dwsge.sgss_cmace10 (actcod,actespcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_consulta_externa_homologacion
+ADD CONSTRAINT fk_dwe_homologacion_cl
+FOREIGN KEY (clasificacion)
+REFERENCES dwsge.dim_cl10 (id_cl)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;

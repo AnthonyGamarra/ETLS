@@ -1,0 +1,450 @@
+CREATE TABLE dssge.sgss_mtade10 (
+                ADMEMEORICENASICOD VARCHAR(20),
+                ADMEMECENASICOD VARCHAR(20),
+                ADMEMEACTMEDNUM NUMERIC,
+                ADMEMEAREHOSCOD VARCHAR(20),
+                ADMEMEEMECOD VARCHAR(20),
+                anio CHAR(4),
+                periodo CHAR(6),
+                ADMEMEADMFEC VARCHAR(20),
+                ADMEMEADMHOR    VARCHAR(20),
+                TIPACCCOD VARCHAR(20),
+                ACOPACCOD VARCHAR(20),
+                ADMEMEEGRFLG VARCHAR(20),
+                ADMEMEALTMEDFEC VARCHAR(20),
+                ADMEMEALTMEDHOR VARCHAR(20),
+                ADMEMEESTREGCOD VARCHAR(20),
+                ADMEMETOPEMECOD VARCHAR(20),
+                ADMEMEALTADMFEC VARCHAR(20),
+                ADMEMEALTADMHOR VARCHAR(20),
+                ADMEMEATETRIORICENASICOD VARCHAR(20),
+                ADMEMEATETRICENASICOD VARCHAR(20),
+                ADMEMEATETRIAREHOSCOD VARCHAR(20),
+                ADMEMEATETRIEMECOD VARCHAR(20),
+                ADMEMEATETRIANO VARCHAR(20),
+                ADMEMEATETRINUM VARCHAR(20),
+                ADMEMEMOTEGRCOD VARCHAR(20),
+                ADMEMEULTPRIATECOD VARCHAR(20),
+                ADMEMEPACSECNUM NUMERIC,
+                ADMEMESOSCOVID VARCHAR(20),
+                TIPCONCOD VARCHAR(20),
+                ACTMEDFAC VARCHAR(20),
+                ACTMEDFECATEN VARCHAR(20),
+                ACTMEDTIPOPARDIACOD VARCHAR(20),
+                ACTMEDTIPOPARPROCOD VARCHAR(20),
+                ACTMEDATE VARCHAR(20),
+                ACTMEDHOS VARCHAR(20),
+                ACTMEDCITT VARCHAR(20),
+                ACTMEDOPE VARCHAR(20),
+                ACTMEDESTREGCOD VARCHAR(20),
+                ACTMEDTIPATECOD VARCHAR(20),
+                ACTMEDAFESCTRFLG VARCHAR(20),
+                ORICENASICOD VARCHAR(20),
+                CENASICOD VARCHAR(20),
+                ACTMEDNUM NUMERIC,
+                ACTMEDPACSECNUM NUMERIC,
+                ACTMEDAREHOSCOD VARCHAR(20),
+                ACTMEDSERVHOSCOD VARCHAR(20),
+                ACTMEDTIPSEGCOD VARCHAR(20),
+                ACTMEDPLANTIPSEGCOD VARCHAR(20), 
+                ACTMEDTIPOPACICOD VARCHAR(20),
+                TIPOPARECOD VARCHAR(20)
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtade10_2025 PARTITION OF dssge.sgss_mtade10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_mtade10_2025_01 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_mtade10_2025_02 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_mtade10_2025_03 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_mtade10_2025_04 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_mtade10_2025_05 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_mtade10_2025_06 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_mtade10_2025_07 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_mtade10_2025_08 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_mtade10_2025_09 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_mtade10_2025_10 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_mtade10_2025_11 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_mtade10_2025_12 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202512');
+
+-----------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.sgss_mtadd10 (
+ADMEMEORICENASICOD  VARCHAR(20),
+ADMEMECENASICOD VARCHAR(20),
+ADMEMEACTMEDNUM NUMERIC,
+ADMEMDSECNUM VARCHAR(20),
+ADMEMDAREHOSCOD VARCHAR(20),
+ADMEMDEMECOD VARCHAR(20),
+anio CHAR(4),
+periodo CHAR(6),
+ADMEMDTOPEMECOD VARCHAR(20),
+ADMEMDINGFEC VARCHAR(20),
+ADMEMDINGHOR VARCHAR(20),
+ESTPEECOD VARCHAR(20),
+ADMEMDAREHOSDESCOD VARCHAR(20),
+ADMEMDEMEDESCOD VARCHAR(20),
+ADMEMDTOPEMEDESCOD VARCHAR(20),
+ADMEMDEGRFEC VARCHAR(20),
+ADMEMDEGRHOR VARCHAR(20),
+ADMEMDUSUCRECOD VARCHAR(20),
+ADMEMDCREFEC VARCHAR(20),
+ADMEMDUSUMODCOD VARCHAR(20),
+ADMEMDMODFEC VARCHAR(20),
+ADMEMDATEFLG VARCHAR(20)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtadd10_2025 PARTITION OF dssge.sgss_mtadd10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_mtadd10_2025_01 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_mtadd10_2025_02 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_mtadd10_2025_03 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_mtadd10_2025_04 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_mtadd10_2025_05 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_mtadd10_2025_06 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_mtadd10_2025_07 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_mtadd10_2025_08 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_mtadd10_2025_09 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_mtadd10_2025_10 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_mtadd10_2025_11 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_mtadd10_2025_12 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202512');
+
+-----------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.sgss_mtaem10 (
+ATEEMEORICENASICOD VARCHAR(20),
+ATEEMECENASICOD VARCHAR(20),
+ATEEMEACTMEDNUM     NUMERIC,
+anio char(4),
+periodo char(6),  
+ATEEMESECNUM    VARCHAR(20),
+ATEEMEPERORICENASICOD VARCHAR(20),
+ATEEMEPERCENASICOD   VARCHAR(20),
+ATEEMEAREHOSCOD  VARCHAR(20),
+ATEEMESERVHOSCOD  VARCHAR(20),
+ATEEMEACTCOD  VARCHAR(20),
+ATEEMETIPDOCIDENPERCOD  VARCHAR(20),
+ATEEMEPERASISDOCIDENNUM  VARCHAR(20),
+ATEEMEPERPROFLG  VARCHAR(20),
+ATEEMEPRIATECOD  VARCHAR(20),
+CPSCOD  VARCHAR(20),
+RESATENINTECOD VARCHAR(20),
+ATEEMEMOVSECNUM VARCHAR(20),
+TIPOATEEMECOD VARCHAR(20),
+ATEEMESIGVITSECNUM VARCHAR(20),
+MOTEGRCOD  VARCHAR(20),
+ATEEMEUSUCRECOD  VARCHAR(20),
+ATEEMEFEC  VARCHAR(20),
+ATEEMEHOR  VARCHAR(20)
+
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtaem10_2025 PARTITION OF dssge.sgss_mtaem10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_mtaem10_2025_01 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_mtaem10_2025_02 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_mtaem10_2025_03 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_mtaem10_2025_04 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_mtaem10_2025_05 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_mtaem10_2025_06 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_mtaem10_2025_07 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_mtaem10_2025_08 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_mtaem10_2025_09 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_mtaem10_2025_10 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_mtaem10_2025_11 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_mtaem10_2025_12 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202512');
+
+-----------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.sgss_mtdae10 (
+
+ATEEMEORICENASICOD VARCHAR(20),
+ATEEMECENASICOD VARCHAR(20),
+ATEEMEACTMEDNUM NUMERIC,
+ATEEMESECNUM VARCHAR(20),
+CONDDIAGCOD VARCHAR(20),
+DIAGCOD VARCHAR(20),
+ATEEMEDIAGORD VARCHAR(20),
+ATEEMETIPODIAGCOD VARCHAR(20)
+PERIODO CHAR(6),
+ANIO CHAR(4)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtdae10_2025 PARTITION OF dssge.sgss_mtdae10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_mtdae10_2025_01 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_mtdae10_2025_02 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_mtdae10_2025_03 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_mtdae10_2025_04 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_mtdae10_2025_05 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_mtdae10_2025_06 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_mtdae10_2025_07 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_mtdae10_2025_08 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_mtdae10_2025_09 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_mtdae10_2025_10 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_mtdae10_2025_11 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_mtdae10_2025_12 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202512');
+
+-----------------------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.sgss_cmame10 (
+
+TIPCONCOD VARCHAR(20),
+ACTMEDFAC VARCHAR(20),
+ACTMEDFECATEN VARCHAR(20),
+ACTMEDTIPOPARDIACOD VARCHAR(20),
+ACTMEDTIPOPARPROCOD VARCHAR(20),
+ACTMEDATE VARCHAR(20),
+ACTMEDHOS VARCHAR(20),
+ACTMEDOPE VARCHAR(20),
+ACTMEDCITT VARCHAR(20),
+ACTMEDESTREGCOD VARCHAR(20),
+ACTMEDTIPATECOD VARCHAR(20),
+ACTMEDAFESCTRFLG    VARCHAR(20),   
+ORICENASICOD VARCHAR(20),
+CENASICOD VARCHAR(20),
+ACTMEDNUM NUMERIC,
+ACTMEDPACSECNUM NUMERIC,
+ACTMEDAREHOSCOD VARCHAR(20),
+ACTMEDSERVHOSCOD VARCHAR(20),
+ACTMEDTIPSEGCOD VARCHAR(20),
+ACTMEDPLANTIPSEGCOD     VARCHAR(20),          
+ACTMEDTIPOPACICOD VARCHAR(20),
+TIPOPARECOD VARCHAR(20),
+PERIODO CHAR(6),
+ANIO CHAR(4)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_cmame10_2025 PARTITION OF dssge.sgss_cmame10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_cmame10_2025_01 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_cmame10_2025_02 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_cmame10_2025_03 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_cmame10_2025_04 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_cmame10_2025_05 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_cmame10_2025_06 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_cmame10_2025_07 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_cmame10_2025_08 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_cmame10_2025_09 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_cmame10_2025_10 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_cmame10_2025_11 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_cmame10_2025_12 PARTITION OF dssge.sgss_cmame10_2025 FOR VALUES IN ('202512');
+----------------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.dim_estandar (
+
+id_estandar varchar(20) PRIMARY KEY,
+des_estandar VARCHAR(50)
+)
+
+INSERT INTO dssge.dim_estandar (id_estandar,des_estandar) VALUES
+(01,'Sala de observación'),
+(02,'Sala de observación aislados'),
+(03,'Sala de observación UCE'),
+(04,'Shock trauma'),
+(05,'Tópico de cardiología'),
+(06,'Tópico de cirugía'),
+(07,'Tópico de ginecología'),
+(08,'Tópico de gineco-obstetricia'),
+(09,'Tópico de medicina'),
+(10,'Tópico de neurocirugía'),
+(11,'Tópico de obstetricia'),
+(12,'Tópico de pediatría'),
+(13,'Tópico de psiquiatría'),
+(14,'Tópico de traumatología'),
+(15,'Triaje'),
+(16, 'Unidad de vigilancia intensiva (UVI)')
+
+
+------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion (
+
+cod_centro varchar(20),
+anio char(4),
+periodo char(6),
+cod_estandar varchar(20),
+cod_cl_asegurado varchar(20),
+acto_med NUMERIC,
+cod_area varchar(20),
+cod_servicio varchar(20),
+cod_tipo_parentesco varchar(20),
+fecha_admision varchar(20),
+fecha_alta varchar(20),
+hora_admision varchar(20),
+hora_alta_adm varchar(20),
+estancia_horas varchar(20),
+rango_estancia varchar(20),
+cod_diag_emer varchar(20)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025 PARTITION OF dssge.dwe_emergencia_estancia_homologacion
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_01 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_02 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_03 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_04 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_05 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_06 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_07 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_08 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_09 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_10 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_11 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dwe_emergencia_estancia_homologacion_2025_12 PARTITION OF dssge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202512');
+
+-----------------------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.cl_asegurado (
+cod_tipo_asegurado varchar(20) PRIMARY KEY,
+des_tipo_asegurado VARCHAR(50)
+)
+
+INSERT INTO dssge.cl_asegurado (cod_tipo_asegurado, des_tipo_asegurado) VALUES
+(0,'No asegurado'),
+(1,'Asegurado')
+
+-----------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.dim_estancia (
+id_estancia SERIAL PRIMARY KEY,
+des_estancia VARCHAR(20)
+)
+
+INSERT INTO dssge.dim_estancia (des_estancia) VALUES
+('Mayor 24h'),
+('Menor 24h');
+
+------------------------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion (
+
+COD_CENTRO varchar(20),
+ANIO CHAR(4),
+PERIODO CHAR(6),
+COD_TOPICO varchar(20),
+ACTO_MED NUMERIC,
+FECHA_ATEN VARCHAR(20),
+HORA_ATEN VARCHAR(20),
+COD_TIPO_PACIENTE varchar(20),
+COD_PRIORIDAD varchar(20),
+COD_DIAGNOSTICO varchar(20),
+COD_EMERGENCIA varchar(20),
+SECUEN_ATEN varchar(20)
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_01 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_02 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_03 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_04 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_05 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_06 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_07 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_08 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_09 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_10 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_11 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion_2025_12 PARTITION OF dssge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202512');
+
+----------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.sgss_ctdef10 (
+
+DEFPACSECNUM NUMERIC,
+PERIODO CHAR(6),
+ANIO CHAR(4),
+DEFREGSECNUM VARCHAR(20),
+DEFPACHISCLINUM VARCHAR(20),
+DEFORICENASICOD VARCHAR(20),
+DEFCENASICOD VARCHAR(20),
+DEFACTMEDNUM NUMERIC,
+DEFAREHOSCOD VARCHAR(20),
+DEFHORFEC VARCHAR(20),
+DEFANOEDAD VARCHAR(20),
+DEFMESEDAD VARCHAR(20),
+DEFDIASEDAD VARCHAR(20),
+DEFTIPDOCIDENPERCOD VARCHAR(20),
+DEFPERASISDOCIDENNUM NUMERIC,
+DEFCERTNUM VARCHAR(20),
+DEFCONFREGFLG VARCHAR(20),
+DEFCONFREGFEC VARCHAR(20),
+DEFESTREGCOD VARCHAR(20),
+DEFUSUCRECOD VARCHAR(20),
+DEFCREFEC VARCHAR(20),
+DEFUSUMODCOD VARCHAR(20),
+DEFMODFEC VARCHAR(20),
+DEFATENNUMSEC VARCHAR(20),
+TIPO_PACIENTE VARCHAR(20)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdef10_2025 PARTITION OF dssge.sgss_ctdef10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_ctdef10_2025_01 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_ctdef10_2025_02 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_ctdef10_2025_03 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_ctdef10_2025_04 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_ctdef10_2025_05 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_ctdef10_2025_06 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_ctdef10_2025_07 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_ctdef10_2025_08 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_ctdef10_2025_09 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_ctdef10_2025_10 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_ctdef10_2025_11 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_ctdef10_2025_12 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202512');
+
+-----------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion (
+cod_centro VARCHAR(20),
+periodo CHAR(6) ,
+anio CHAR(4),
+cod_tip_doc VARCHAR(20),
+tipo_paciente VARCHAR(20),
+acto_med NUMERIC,
+anio_def VARCHAR(4)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_01 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_02 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_03 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_04 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_05 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_06 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_07 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_08 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_09 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_10 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_11 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_12 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202512');

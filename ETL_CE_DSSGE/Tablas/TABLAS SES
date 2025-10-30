@@ -1,0 +1,488 @@
+CREATE TABLE dwe_consulta_externa_homologacion (
+    cod_oricentro VARCHAR(20),
+    cod_centro VARCHAR(20),
+    periodo CHAR(6) NOT NULL,
+    cod_servicio VARCHAR(20),
+    cod_actividad VARCHAR(20),
+    cod_subactividad VARCHAR(20),
+    dni_medico VARCHAR(20),
+    doc_paciente VARCHAR(20),
+    anio CHAR(4) NOT NULL,
+    meses VARCHAR(10),
+    sexo VARCHAR(10),
+    h_c VARCHAR(20),
+    cod_tip_seguro VARCHAR(20),
+    cod_tipo_parentesco VARCHAR(20),
+    cod_tipo_paciente VARCHAR(20),
+    fecha_solic VARCHAR(20),
+    fecha_cita VARCHAR(20),
+    fecha_atencion VARCHAR(20),
+    acto_med NUMERIC
+    cod_tipo_consulta VARCHAR(20),
+    cod_diag VARCHAR(20),
+    total_horas VARCHAR(20),
+    cod_especialidad VARCHAR(20),
+    cod_subespecialidad VARCHAR(20),
+    cod_agrupador VARCHAR(20),
+    cod_variable VARCHAR(20),
+    total_en_particion INTEGER,
+    clasificacion INTEGER,
+    row_num INTEGER
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025 PARTITION OF dssge.dw_consulta_externa_homologacion 
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_01 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_02 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_03 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_04 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_05 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_06 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_07 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_08 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_09 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_10 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_11 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dw_consulta_externa_homologacion_2025_12 PARTITION OF dssge.dw_consulta_externa_homologacion_2025 FOR VALUES IN ('202512');
+
+------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.dw_consulta_externa (
+    cod_oricentro                 VARCHAR(500),
+    cod_centro                    VARCHAR(500),
+    periodo                       CHAR(6) NOT NULL,
+    anio                          CHAR(4) NOT NULL,	
+    hora_aten                     VARCHAR(500),	
+    cod_area                      VARCHAR(500),	
+    cod_servicio                  VARCHAR(500),
+	cod_actividad                 VARCHAR(500),
+    cod_subactividad              VARCHAR(500),
+    cod_cartera                   VARCHAR(500),	
+    cod_cpms                      VARCHAR(500),	
+    cod_tipdoc_medico             VARCHAR(500),
+    dni_medico                    VARCHAR(500),	
+    fecha_atencion                VARCHAR(500),	
+    autogenerado                  VARCHAR(500),
+    cmame_pacsecnum               VARCHAR(500),	
+    cod_tipdoc_paciente           VARCHAR(500),
+    doc_paciente                  VARCHAR(500),	
+    anio_edad                     VARCHAR(500),	
+    meses                         VARCHAR(500),	
+    sexo                          VARCHAR(500),	
+    h_c                           VARCHAR(500),	
+    cod_tip_seguro                VARCHAR(500),
+    cod_tipo_parentesco           VARCHAR(500),
+    cod_tipo_paciente             VARCHAR(500),	
+    fecha_solic                   VARCHAR(500),
+    fecha_cita                    VARCHAR(500),
+    fecha_reg                     VARCHAR(500),
+    hora_reg                      VARCHAR(500),
+    fecha_modif                   VARCHAR(500),
+    acto_med                      NUMERIC(10),
+    cod_tipo_consulta             VARCHAR(500),
+    cod_result_atencion           VARCHAR(500),
+    cod_tipo_gravidez             VARCHAR(500),
+    nrc_ser                       VARCHAR(500),
+    nrc_est                       VARCHAR(500),
+    cas_referencia                VARCHAR(500),
+    cas_adscripcion               VARCHAR(500),
+    cod_consultorio               VARCHAR(500),
+    total_horas                   VARCHAR(500),
+    cod_tip_programacion          VARCHAR(500),
+    cod_tiphora                   VARCHAR(500),
+    horaini                       VARCHAR(500),
+    horafin                       VARCHAR(500),
+    turno                         VARCHAR(500),
+    cod_tip_programacion_pers     VARCHAR(500),
+    cod_estado_programacion       VARCHAR(500),
+    cod_motivo_suspension         VARCHAR(500),
+    cmp                           VARCHAR(500)
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dw_consulta_externa_2025 PARTITION OF dssge.dw_consulta_externa
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2024
+CREATE TABLE dssge.dw_consulta_externa_2024 PARTITION OF dssge.dw_consulta_externa 
+FOR VALUES IN ('2024')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2023
+CREATE TABLE dssge.dw_consulta_externa_2023 PARTITION OF dssge.dw_consulta_externa 
+FOR VALUES IN ('2023')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2022
+CREATE TABLE dssge.dw_consulta_externa_2022 PARTITION OF dssge.dw_consulta_externa
+FOR VALUES IN ('2022')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2021
+CREATE TABLE dssge.dw_consulta_externa_2021 PARTITION OF dssge.dw_consulta_externa 
+FOR VALUES IN ('2021')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2020
+CREATE TABLE dssge.dw_consulta_externa_2020 PARTITION OF dssge.dw_consulta_externa 
+FOR VALUES IN ('2020')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2019
+CREATE TABLE dssge.dw_consulta_externa_2019 PARTITION OF dssge.dw_consulta_externa 
+FOR VALUES IN ('2019')
+PARTITION BY LIST (PERIODO);
+
+-- Subparticiones para 2024
+
+CREATE TABLE dssge.dw_consulta_externa_2025_01 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dw_consulta_externa_2025_02 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dw_consulta_externa_2025_03 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dw_consulta_externa_2025_04 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dw_consulta_externa_2025_05 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dw_consulta_externa_2025_06 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dw_consulta_externa_2025_07 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dw_consulta_externa_2025_08 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dw_consulta_externa_2025_09 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dw_consulta_externa_2025_10 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dw_consulta_externa_2025_11 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dw_consulta_externa_2025_12 PARTITION OF dssge.dw_consulta_externa4_2025 FOR VALUES IN ('202512');
+
+CREATE TABLE dssge.dw_consulta_externa_2024_01 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202401');
+CREATE TABLE dssge.dw_consulta_externa_2024_02 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202402');
+CREATE TABLE dssge.dw_consulta_externa_2024_03 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202403');
+CREATE TABLE dssge.dw_consulta_externa_2024_04 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202404');
+CREATE TABLE dssge.dw_consulta_externa_2024_05 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202405');
+CREATE TABLE dssge.dw_consulta_externa_2024_06 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202406');
+CREATE TABLE dssge.dw_consulta_externa_2024_07 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202407');
+CREATE TABLE dssge.dw_consulta_externa_2024_08 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202408');
+CREATE TABLE dssge.dw_consulta_externa_2024_09 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202409');
+CREATE TABLE dssge.dw_consulta_externa_2024_10 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202410');
+CREATE TABLE dssge.dw_consulta_externa_2024_11 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202411');
+CREATE TABLE dssge.dw_consulta_externa_2024_12 PARTITION OF dssge.dw_consulta_externa4_2024 FOR VALUES IN ('202412');
+
+CREATE TABLE dssge.dw_consulta_externa_2023_01 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202301');
+CREATE TABLE dssge.dw_consulta_externa_2023_02 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202302');
+CREATE TABLE dssge.dw_consulta_externa_2023_03 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202303');
+CREATE TABLE dssge.dw_consulta_externa_2023_04 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202304');
+CREATE TABLE dssge.dw_consulta_externa_2023_05 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202305');
+CREATE TABLE dssge.dw_consulta_externa_2023_06 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202306');
+CREATE TABLE dssge.dw_consulta_externa_2023_07 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202307');
+CREATE TABLE dssge.dw_consulta_externa_2023_08 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202308');
+CREATE TABLE dssge.dw_consulta_externa_2023_09 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202309');
+CREATE TABLE dssge.dw_consulta_externa_2023_10 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202310');
+CREATE TABLE dssge.dw_consulta_externa_2023_11 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202311');
+CREATE TABLE dssge.dw_consulta_externa_2023_12 PARTITION OF dssge.dw_consulta_externa4_2023 FOR VALUES IN ('202312');
+-- Año 2022
+CREATE TABLE dssge.dw_consulta_externa_2022_01 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202201');
+CREATE TABLE dssge.dw_consulta_externa_2022_02 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202202');
+CREATE TABLE dssge.dw_consulta_externa_2022_03 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202203');
+CREATE TABLE dssge.dw_consulta_externa_2022_04 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202204');
+CREATE TABLE dssge.dw_consulta_externa_2022_05 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202205');
+CREATE TABLE dssge.dw_consulta_externa_2022_06 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202206');
+CREATE TABLE dssge.dw_consulta_externa_2022_07 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202207');
+CREATE TABLE dssge.dw_consulta_externa_2022_08 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202208');
+CREATE TABLE dssge.dw_consulta_externa_2022_09 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202209');
+CREATE TABLE dssge.dw_consulta_externa_2022_10 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202210');
+CREATE TABLE dssge.dw_consulta_externa_2022_11 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202211');
+CREATE TABLE dssge.dw_consulta_externa_2022_12 PARTITION OF dssge.dw_consulta_externa4_2022 FOR VALUES IN ('202212');
+
+-- Año 2021
+CREATE TABLE dssge.dw_consulta_externa_2021_01 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202101');
+CREATE TABLE dssge.dw_consulta_externa_2021_02 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202102');
+CREATE TABLE dssge.dw_consulta_externa_2021_03 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202103');
+CREATE TABLE dssge.dw_consulta_externa_2021_04 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202104');
+CREATE TABLE dssge.dw_consulta_externa_2021_05 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202105');
+CREATE TABLE dssge.dw_consulta_externa_2021_06 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202106');
+CREATE TABLE dssge.dw_consulta_externa_2021_07 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202107');
+CREATE TABLE dssge.dw_consulta_externa_2021_08 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202108');
+CREATE TABLE dssge.dw_consulta_externa_2021_09 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202109');
+CREATE TABLE dssge.dw_consulta_externa_2021_10 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202110');
+CREATE TABLE dssge.dw_consulta_externa_2021_11 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202111');
+CREATE TABLE dssge.dw_consulta_externa_2021_12 PARTITION OF dssge.dw_consulta_externa4_2021 FOR VALUES IN ('202112');
+
+-- Año 2020
+CREATE TABLE dssge.dw_consulta_externa_2020_01 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202001');
+CREATE TABLE dssge.dw_consulta_externa_2020_02 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202002');
+CREATE TABLE dssge.dw_consulta_externa_2020_03 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202003');
+CREATE TABLE dssge.dw_consulta_externa_2020_04 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202004');
+CREATE TABLE dssge.dw_consulta_externa_2020_05 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202005');
+CREATE TABLE dssge.dw_consulta_externa_2020_06 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202006');
+CREATE TABLE dssge.dw_consulta_externa_2020_07 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202007');
+CREATE TABLE dssge.dw_consulta_externa_2020_08 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202008');
+CREATE TABLE dssge.dw_consulta_externa_2020_09 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202009');
+CREATE TABLE dssge.dw_consulta_externa_2020_10 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202010');
+CREATE TABLE dssge.dw_consulta_externa_2020_11 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202011');
+CREATE TABLE dssge.dw_consulta_externa_2020_12 PARTITION OF dssge.dw_consulta_externa4_2020 FOR VALUES IN ('202012');
+
+-- Año 2019
+CREATE TABLE dssge.dw_consulta_externa_2019_01 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201901');
+CREATE TABLE dssge.dw_consulta_externa_2019_02 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201902');
+CREATE TABLE dssge.dw_consulta_externa_2019_03 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201903');
+CREATE TABLE dssge.dw_consulta_externa_2019_04 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201904');
+CREATE TABLE dssge.dw_consulta_externa_2019_05 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201905');
+CREATE TABLE dssge.dw_consulta_externa_2019_06 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201906');
+CREATE TABLE dssge.dw_consulta_externa_2019_07 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201907');
+CREATE TABLE dssge.dw_consulta_externa_2019_08 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201908');
+CREATE TABLE dssge.dw_consulta_externa_2019_09 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201909');
+CREATE TABLE dssge.dw_consulta_externa_2019_10 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201910');
+CREATE TABLE dssge.dw_consulta_externa_2019_11 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201911');
+CREATE TABLE dssge.dw_consulta_externa_2019_12 PARTITION OF dssge.dw_consulta_externa4_2019 FOR VALUES IN ('201912');
+
+------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.dwe_cl10 
+ (id_cl INT,
+   desc_cl VARCHAR(20))
+
+INSERT INTO dssge.dwe_cl10 
+VALUES 
+	(1,'Deserción'),
+	(2, 'Incluido'),
+	(3, 'Deserción/Repetido'),
+    (4, 'Incluido/Repetido'),
+	(5, 'Repetido')
+
+------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.dwe_consulta_externa_programacion (
+        cod_centro INTEGER, 
+        periodo VARCHAR(6) NOT NULL, 
+        cod_actividad VARCHAR(50), 
+        cod_subactividad VARCHAR(50), 
+        cod_servicio VARCHAR(50), 
+        total_horas VARCHAR(50),
+        cod_estado_programacion VARCHAR(50),
+        cod_motivo_suspension VARCHAR(50)
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025 PARTITION OF dssge.dwe_consulta_externa_programacion 
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_01 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_02 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_03 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_04 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_05 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_06 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_07 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_08 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_09 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_10 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_11 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dwe_consulta_externa_programacion_2025_12 PARTITION OF dssge.dwe_consulta_externa_programacion_2025 FOR VALUES IN ('202512');
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.sgss_ctppe10 (
+  anio VARCHAR(4),
+  periodo VARCHAR(6),
+  oricenasicod VARCHAR(20),
+  cenasicod VARCHAR(20),
+  arehoscod VARCHAR(20),
+  servhoscod VARCHAR(20),
+  actcod VARCHAR(20),
+  actespcod VARCHAR(20),
+  tipdocidenpercod VARCHAR(20),
+  perasisdocidennum VARCHAR(20),
+  properfec DATE,
+  properturhorini DATE,
+  properturhorfin DATE,
+  propertipoprogperscod VARCHAR(20),
+  tipohorprogcod VARCHAR(20),
+  properprohortot VARCHAR(20),
+  properprohormaxnor VARCHAR(20),
+  properprohormaxext VARCHAR(20),
+  estprogcitcod VARCHAR(20),
+  motsusprogcod VARCHAR(20),
+  properestregcod VARCHAR(20),
+  properusucrecod VARCHAR(20),
+  propercrefec DATE,
+  properusumodcod VARCHAR(20),
+  propermodfec DATE,
+  properproexaflg VARCHAR(1),
+  properipcre VARCHAR(20),
+  properipmod VARCHAR(20),
+  properusususcod VARCHAR(20),
+  propersusfec DATE,
+  properipsus VARCHAR(20),
+  properusuanususcod VARCHAR(20),
+  properanususfec DATE,
+  properipanusus VARCHAR(20),
+  properturflg VARCHAR(1),
+  properturapefec DATE,
+  properturciefec DATE,
+  properusuturape VARCHAR(20),
+  properusuturcie VARCHAR(20),
+  propertipohordet VARCHAR(20)
+) PARTITION BY LIST (anio);
+
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctppe10_2025 PARTITION OF dssge.sgss_ctppe10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_ctppe10_2025_01 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_ctppe10_2025_02 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_ctppe10_2025_03 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_ctppe10_2025_04 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_ctppe10_2025_05 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_ctppe10_2025_06 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_ctppe10_2025_07 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_ctppe10_2025_08 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_ctppe10_2025_09 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_ctppe10_2025_10 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_ctppe10_2025_11 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_ctppe10_2025_12 PARTITION OF dssge.sgss_ctppe10_2025 FOR VALUES IN ('202512');
+
+------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.dwe_consulta_externa_citados (
+anio VARCHAR(4),
+periodo VARCHAR(6),
+cod_centro VARCHAR(20),
+acto_med NUMERIC(15),
+cod_area VARCHAR(20),
+cod_servicio VARCHAR(20),
+cod_actividad VARCHAR(20),
+cod_subactividad VARCHAR(20),
+cod_estado VARCHAR(20),
+cod_paciente VARCHAR(20) 
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025 PARTITION OF dssge.dwe_consulta_externa_citados
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_01 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_02 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_03 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_04 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_05 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_06 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_07 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_08 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_09 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_10 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_11 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dwe_consulta_externa_citados_2025_12 PARTITION OF dssge.dwe_consulta_externa_citados_2025 FOR VALUES IN ('202512');
+
+
+-------------------------------------------------------------------------
+----ctcam10 modificado
+CREATE TABLE dssge.sgss_ctcam10_m (
+anio VARCHAR(4),
+periodo VARCHAR(6),
+cod_oricentro VARCHAR(20),
+cod_centro VARCHAR(20),
+cod_area VARCHAR(20),
+cod_servicio VARCHAR(20),
+cod_actividad VARCHAR(20),
+cod_subactividad VARCHAR(20),
+cod_tipdoc_medico VARCHAR(20),
+cod_doc_medico VARCHAR(20),
+fecha_cita VARCHAR(20),
+horaini VARCHAR(20),
+horafin VARCHAR(20),
+cod_estado_cita VARCHAR(20)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctcam10_m_2025 PARTITION OF dssge.sgss_ctcam10_m
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_ctcam10_m_2025_01 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_02 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_03 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_04 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_05 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_06 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_07 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_08 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_09 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_10 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_11 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_ctcam10_m_2025_12 PARTITION OF dssge.sgss_ctcam10_m_2025 FOR VALUES IN ('202512');
+
+----ate
+CREATE TABLE dssge.sgss_ate (
+        anio VARCHAR(4),
+        periodo VARCHAR(6),
+        cod_oricentro VARCHAR(20),
+        cod_centro VARCHAR(20),
+        cod_area VARCHAR(20),
+        cod_servicio VARCHAR(20),
+        cod_actividad VARCHAR(20),
+        cod_subactividad VARCHAR(20),
+        cod_tipdoc_medico VARCHAR(20),
+        cod_doc_medico VARCHAR(20),
+        fecha_cita VARCHAR(20),
+        horaini VARCHAR(20),
+        horafin VARCHAR(20),
+        ate VARCHAR(20)
+
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ate_2025 PARTITION OF dssge.sgss_ate
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_ate_2025_01 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_ate_2025_02 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_ate_2025_03 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_ate_2025_04 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_ate_2025_05 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_ate_2025_06 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_ate_2025_07 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_ate_2025_08 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_ate_2025_09 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_ate_2025_10 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_ate_2025_11 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_ate_2025_12 PARTITION OF dssge.sgss_ate_2025 FOR VALUES IN ('202512');
+
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2 (
+	atenamboricenasicod VARCHAR(20),
+	atenambcenasicod VARCHAR(20),
+	atenambnum NUMERIC,
+	conddiagcod VARCHAR(20),
+	diagcod VARCHAR(20),
+	atenambdiagord NUMERIC,
+	atenambtipodiagcod VARCHAR(20),
+	atenambcasodiagcod VARCHAR(20),
+	diagatenambaltaflag VARCHAR(20),
+	diagatenambpeas NUMERIC,
+	periodo CHAR(6),
+	anio CHAR (4)
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025 PARTITION OF dssge.sgss_ctdaa10_anio_v2
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_01 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_02 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_03 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_04 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_05 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_06 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_07 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_08 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_09 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_10 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_11 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_12 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202512');

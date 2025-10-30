@@ -1,0 +1,5 @@
+CREATE INDEX idx_mt_join ON dssge.sgss_mtade10 (admemeoricenasicod, admemecenasicod, admemeactmednum);
+CREATE INDEX idx_d_join  ON dssge.sgss_mtdae10 (ateemeoricenasicod, ateemecenasicod, ateemeactmednum, diagcod);
+CREATE INDEX idx_c_join  ON dssge.sgss_mtaem10 (ateemeoricenasicod, ateemecenasicod, ateemeactmednum, ateemesecnum);
+CREATE INDEX idx_mtadd10_join ON dssge.sgss_mtadd10 (admemeoricenasicod, admemecenasicod, admemeactmednum, admemdsecnum);
+

@@ -54,14 +54,14 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-table_name = "dssge.dwe_emergencia_defunciones_homologacion"
+table_name = "dwsge.dwe_emergencia_defunciones_homologacion"
 
 
 for mes in range(1,10):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
-        partition_name = f"dssge.dwe_emergencia_defunciones_homologacion_{anio}_{mes_str}"
+        partition_name = f"dwsge.dwe_emergencia_defunciones_homologacion_{anio}_{mes_str}"
         cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
         conn_dst.commit()
         cur_dst.close()
@@ -74,7 +74,7 @@ for mes in range(1,10):
     try:
         query = f"""
                 SELECT 
-                t.deforicenasicod as cod_origen,
+                t.deforicenasicod as cod_oricentro,
                 t.defcenasicod as cod_centro,
                 periodo,
                 anio,

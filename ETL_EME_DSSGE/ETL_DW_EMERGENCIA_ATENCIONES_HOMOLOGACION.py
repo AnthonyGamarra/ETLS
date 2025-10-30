@@ -74,6 +74,7 @@ for mes in range(1,10):
     try:
         query = f"""
                 SELECT
+                a.ateemeoricenasicod           AS COD_ORICENTRO,
                 a.ateemecenasicod                AS COD_CENTRO,
                 a.anio,
                 a.periodo,
@@ -85,7 +86,8 @@ for mes in range(1,10):
                 h.priatecod                                 AS COD_PRIORIDAD,
                 f.diagcod                               AS COD_DIAGNOSTICO,
                 j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
-                a.ateemesecnum                                   AS SECUEN_ATEN
+                a.ateemesecnum                                   AS SECUEN_ATEN,
+                a.ateemearehoscod                AS COD_AREA
                 from dssge.sgss_mtaem10_{anio}_{mes_str} a
                 left outer join dssge.sgss_mtade10_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
                                         and j.admemecenasicod   = a.ateemecenasicod

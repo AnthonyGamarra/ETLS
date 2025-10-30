@@ -96,8 +96,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                     DEFUSUMODCOD,
                     DEFMODFEC,
                     DEFATENNUMSEC,
-                    (SELECT CASE WHEN e1.TIPOPACICOD = '4' THEN '0' ELSE '1' END  FROM SGSS.cbtpc10 e1
-                    WHERE am.actmedtipopacicod = e1.tipopacicod)         AS TIPO_PACIENTE,
+                    e1.TIPOPACICOD AS TIPO_PACIENTE,
                     TO_CHAR(TRUNC(a.DEFHORFEC), 'yyyymm') AS periodo,
                     TO_CHAR(TRUNC(a.DEFHORFEC), 'yyyy') AS anio
                 FROM sgss.ctdef10 a
@@ -105,6 +104,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                                         AND a.DEFORICENASICOD = am.oricenasicod
                                         AND a.defcenasicod    = am.cenasicod
                                         AND a.defactmednum    = am.actmednum
+                LEFT OUTER JOIN SGSS.cbtpc10 e1 on am.actmedtipopacicod = e1.tipopacicod
                 WHERE a.DEFHORFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
                 and a.DEFHORFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 

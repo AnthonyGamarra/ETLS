@@ -280,7 +280,7 @@ cod_centro varchar(20),
 anio char(4),
 periodo char(6),
 cod_estandar varchar(20),
-cod_cl_asegurado varchar(20),
+cod_tipo_paciente varchar(20),
 acto_med NUMERIC,
 cod_area varchar(20),
 cod_servicio varchar(20),
@@ -336,7 +336,7 @@ INSERT INTO dssge.dim_estancia (des_estancia) VALUES
 
 ------------------------------------------------------------------------------------------------------------------
 CREATE TABLE dssge.dwe_emergencia_atenciones_homologacion (
-
+COD_ORICENTRO varchar(20),
 COD_CENTRO varchar(20),
 ANIO CHAR(4),
 PERIODO CHAR(6),
@@ -348,7 +348,8 @@ COD_TIPO_PACIENTE varchar(20),
 COD_PRIORIDAD varchar(20),
 COD_DIAGNOSTICO varchar(20),
 COD_EMERGENCIA varchar(20),
-SECUEN_ATEN varchar(20)
+SECUEN_ATEN varchar(20),
+COD_AREA varchar(20)
 ) PARTITION BY LIST (anio);
 
 -- Crear partición anual para 2025

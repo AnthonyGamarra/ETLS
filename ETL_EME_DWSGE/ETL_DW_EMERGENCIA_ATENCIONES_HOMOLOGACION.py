@@ -54,14 +54,14 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-table_name = "dssge.dwe_emergencia_defunciones_homologacion"
+table_name = "dwsge.dwe_emergencia_atenciones_homologacion"
 
 
 for mes in range(1,10):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
-        partition_name = f"dssge.dwe_emergencia_defunciones_homologacion_{anio}_{mes_str}"
+        partition_name = f"dwsge.dwe_emergencia_atenciones_homologacion_{anio}_{mes_str}"
         cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
         conn_dst.commit()
         cur_dst.close()
@@ -73,19 +73,40 @@ for mes in range(1,10):
 
     try:
         query = f"""
-                SELECT 
-                t.deforicenasicod as cod_origen,
-                t.defcenasicod as cod_centro,
-                periodo,
-                anio,
-                deftipdocidenpercod cod_tip_doc,
-                tipo_paciente as cod_tipo_paciente,
-                defactmednum as acto_med,
-                defanoedad as anio_def
-                FROM dssge.SGSS_CTDEF10 t
-                WHERE
-                t.defarehoscod = '02' AND
-                t.defestregcod = '1'
+                SELECT
+                a.ateemeoricenasicod           AS COD_ORICENTRO,
+                a.ateemecenasicod                AS COD_CENTRO,
+                a.anio,
+                a.periodo,
+                i.topemecod                      AS COD_TOPICO,
+                a.ateemeactmednum                AS ACTO_MED,
+                a.ateemefec      AS FECHA_ATEN,
+                a.ateemehor        AS HORA_ATEN,
+                e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
+                h.priatecod                                 AS COD_PRIORIDAD,
+                f.diagcod                               AS COD_DIAGNOSTICO,
+                j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
+                a.ateemesecnum                                   AS SECUEN_ATEN,
+                a.ateemearehoscod                AS COD_AREA
+                from dssge.sgss_mtaem10_{anio}_{mes_str} a
+                left outer join dssge.sgss_mtade10_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
+                                        and j.admemecenasicod   = a.ateemecenasicod
+                                        and j.admemeactmednum   = a.ateemeactmednum
+                left outer join dssge.sgss_mtdae10 f on a.ateemeoricenasicod = f.ateemeoricenasicod
+                                        and a.ateemecenasicod    = f.ateemecenasicod
+                                        and a.ateemeactmednum    = f.ateemeactmednum
+                                        and a.ateemesecnum       = f.ateemesecnum
+                left outer join dssge.sgss_cmtse10 m on j.actmedtipsegcod    = m.tipsegcod
+                left outer join dssge.sgss_cbtpc10 e on j.actmedtipopacicod  = e.tipopacicod
+                left outer join dssge.sgss_mbpae10 h on a.ateemepriatecod    = h.priatecod
+                left outer join dssge.sgss_mtadd10_{anio}_{mes_str} b on a.ateemeoricenasicod = b.admemeoricenasicod
+                                        and a.ateemecenasicod    = b.admemecenasicod
+                                        and a.ateemeactmednum    = b.admemeactmednum
+                                        and a.ateememovsecnum    = b.admemdsecnum
+                left outer join dssge.sgss_mbtoe10 i on b.admemdtopemecod    = i.topemecod
+                where  j.actmedestregcod = '1'
+                    and a.ateemearehoscod = '02'
+                order by secuen_aten desc
         """
 
         df = pd.read_sql_query(query, conn_src)

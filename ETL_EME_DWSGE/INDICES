@@ -196,14 +196,14 @@ ON DELETE RESTRICT;
 ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
 ADD CONSTRAINT fk_dwe_estancia_eme_tipopare
 FOREIGN KEY (cod_tipo_parentesco)
-REFERENCES dwsge.sgss_cbtpc10 (tipoparecod)
+REFERENCES dwsge.sgss_cbtpa10 (tipoparecod)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;
 
 ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
 ADD CONSTRAINT fk_dwe_estancia_eme_rango
 FOREIGN KEY (rango_estancia)
-REFERENCES dwsge.sgss_cbtpc10 (id_estancia)
+REFERENCES dwsge.dim_estancia (id_estancia)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;
 
@@ -211,5 +211,12 @@ ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
 ADD CONSTRAINT fk_dwe_estancia_eme_diag
 FOREIGN KEY (cod_diag_emer)
 REFERENCES dwsge.sgss_cmdia10 (diagcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
+ADD CONSTRAINT fk_dwe_estancia_eme_estan
+FOREIGN KEY (cod_estandar)
+REFERENCES dwsge.dim_estancia (id_estancia)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;

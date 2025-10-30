@@ -294,11 +294,12 @@ INSERT INTO dwsge.dim_prioridad VALUES
 
 CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion (
 
+cod_oricentro varchar(20),
 cod_centro varchar(20),
 anio char(4),
 periodo char(6),
 cod_estandar varchar(20),
-cod_cl_asegurado varchar(20),
+cod_tipo_paciente varchar(20),
 acto_med NUMERIC,
 cod_area varchar(20),
 cod_servicio varchar(20),
@@ -344,7 +345,7 @@ INSERT INTO dwsge.cl_asegurado (cod_tipo_asegurado, des_tipo_asegurado) VALUES
 -----------------------------------------------------------------------------------------------------------------
 
 CREATE TABLE dwsge.dim_estancia (
-id_estancia SERIAL PRIMARY KEY,
+id_estancia VARCHAR(20) PRIMARY KEY,
 des_estancia VARCHAR(20)
 )
 

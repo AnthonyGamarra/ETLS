@@ -1,9 +1,12 @@
 import os
 import oracledb
+import psycopg2
 import pandas as pd
-from sqlalchemy import create_engine, text, inspect
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
-
+from io import StringIO
+from datetime import datetime
+import polars as pl
 # ==============================
 # 1. Cargar variables desde .env
 # ==============================
@@ -24,116 +27,213 @@ pg_db   = os.getenv("PG_DB")
 
 # Año a procesar
 anio = 2025
+tabla_destino = "procedimientos_2025"
+
 
 # ==============================
-# 2. Conexión a Oracle
+# 2. Conexión Oracle (SQLAlchemy)
 # ==============================
 dsn = f"{oracle_host}:{oracle_port}/{oracle_service}"
-conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn)
+engine_oracle = create_engine(f"oracle+oracledb://{oracle_user}:{oracle_pass}@{dsn}")
 
 # ==============================
-# 3. Conexión a PostgreSQL
+# 3. Conexión PostgreSQL
 # ==============================
-engine_pg = create_engine(f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:5433/{pg_db}")
+pg_conn = psycopg2.connect(
+    dbname=pg_db,
+    user=pg_user,
+    password=pg_pass,
+    host=pg_host,
+    port=5433
+)
+pg_conn.autocommit = True
+cursor_pg = pg_conn.cursor()
 
 # ==============================
 # 4. Proceso mes a mes
 # ==============================
-for mes in range(1, 10):  # 1 al 12
+for mes in range(1, 13):  # 1 al 12
     mes_str = f"{mes:02d}"
-    periodo = f"{anio}{mes_str}"  # ejemplo: 202501
+    periodo = f"{anio}{mes_str}"  # Ejemplo: 202501
 
-    print(f"\nProcesando periodo: {periodo}")
+    print(f"\n🔹 Procesando periodo: {periodo}")
+    start_time = datetime.now()
+    print(start_time)
 
+    # Query con parámetro dinámico
     query = f"""
-        SELECT
-            a.atenproarehoscod						as COD_AREA,
-            a.atenprocenasicod                   AS COD_CENTRO,
-            TO_CHAR(z.atenproproperfec,'YYYYMM') AS PERIODO,
-            b.servhoscod                         AS COD_SERVICIO,
-            b.servhosdes                         AS SERVICIO,
-            a.atenproperasisdocidennum           AS DNI_MEDICO,
-            p.perasisproapepat || ' ' || p.perasisproapemat || ' ' || p.perasisproprinom AS PROFESIONAL,
-            s.perautcod                          AS AUTOGENERADO,
-            s.perdocidennum                      AS DNI,
-            s.perapepatdes || ' ' || s.perapematdes || ' ' || s.perprinomdes AS PACIENTE,
-            (FLOOR(MONTHS_BETWEEN(z.atenproproperfec,s.pernacfec) / 12)) AS ANNOS,
-            (FLOOR(MOD(MONTHS_BETWEEN(z.atenproproperfec, s.pernacfec), 12))) AS MESES,
-            (TO_DATE(z.atenproproperfec, 'DD/MM/YYYY') - ADD_MONTHS(s.pernacfec,
-             FLOOR(MONTHS_BETWEEN(TO_DATE(z.atenproproperfec,'DD/MM/YYYY'),s.pernacfec)))) AS DIAS,
-            DECODE(s.persexocod,'1','M','0','F','') AS SEXO,
-            s.percaldomnom || ' ' || s.pernmkdomnum || ' ' || s.perinldomnum || ' ' || s.perurbdomnom AS DIRECCION,
-            c.pachisclinum AS H_C,
-            m.tipsegdes AS TIPO_SEGURO,
-            (SELECT tp.tipoparenom FROM sgss.cbtpa10 tp
-             WHERE tp.tipoparecod = s.pertipoparecod) AS TIPO_PARENTESCO,
-            n.tipopacinom AS TIPO_PACIENTE,
-            TO_CHAR(t.citambsolfec, 'DD/MM/YYYY') AS FECHA_SOLIC,
-            TO_CHAR(z.atenproproperfec, 'DD/MM/YYYY') AS FECHA_ATEN,
-            DECODE(t.condcitacod,'1','NORMAL','2','ADICIONAL') AS CONDICION_CITA,
-            z.atenproactmednum AS ACTO_MED,
-            a.atenprcpscod AS CODPROCED,
-            REPLACE(REPLACE(TRIM(TO_CHAR(SUBSTR(f.cpsdes ,0,4000))), CHR(10), ''), CHR(13), '') AS PROCEDIMIENTO,
-            a.atenprdcant AS CANTPROCED,
-            z1.cenasioricod AS COD_PRECEDENCIA,
-            s.percenasiadscod AS CAS_ADSCRIPCION,
-            ct.concod AS COD_CONSULTORIO,
-            (SELECT tpr.tipohorprognom
-             FROM sgss.cbthp10 tpr
-             WHERE tpr.tipohorprogcod = pr.tipohorprogcod) AS TIP_PROGRAMACION,
-            t.citambactcod AS COD_ACTIVIDAD,
-            (SELECT d.actdes FROM sgss.cmact10 d WHERE t.citambactcod = d.actcod) AS ACTIVIDAD,
-            t.citambactespcod AS COD_SUBACTIVIDAD,
-            (SELECT e.actespnom FROM sgss.cmace10 e
-             WHERE t.citambactcod = e.actcod AND t.citambactespcod = e.actespcod) AS SUBACTIVIDAD,
-            TO_CHAR(pr.properturhorini, 'HH24:MI') AS HORAINI,
-            TO_CHAR(pr.properturhorfin, 'HH24:MI') AS HORAFIN,
-            TO_CHAR(pr.properturhorini, 'HH24:MI') || '-' || TO_CHAR(pr.properturhorfin, 'HH24:MI') AS TURNO,
-            DECODE(k.actmedestgrav,'0','NO GESTANTE','1','GESTANTE') AS TIPO_GRAVIDEZ,
-            s.perrucempnum AS NUM_RUC,
-            a.atenprdresprcovid AS CODRESUL_COVID,
-            (SELECT rc.resprcoviddes FROM sgss.cbrpr10 rc
-             WHERE rc.resprcovidcod = a.atenprdresprcovid) AS RESULT_COVID,
-            c.pactelfij AS TELEF_FIJO,
-            c.pactelcel AS TELEF_MOVIL,
-            DECODE(a.atenprdtipenf,'0','PACIENTE NO COVID','1','PACIENTE COVID') AS ESTADO_PACIENTE,
-            a.atenprdusucrecod AS USU_REG,
-            TO_CHAR(a.atenprdcrefec,'DD/MM/YYYY') AS FECH_REG,
-            TO_CHAR(a.atenprdcrefec,'HH24:MI') AS HORA_REG,
-            a.atenprdusumodcod AS USU_MODIF,
-            TO_CHAR(a.atenprdmodfec,'DD/MM/YYYY') AS FECH_MODIF,
-            TO_CHAR(a.atenprdmodfec,'HH24:MI') AS HORA_MODIF,
-            DECODE(a.atenprdtipteledot,'1','TELEDOT','2','DOT') AS TIPTELEDOT,
-            (SELECT ctr.condtrabnom FROM sgss.cbcot10 ctr WHERE ctr.condtrabcod = p.condtrabcod) AS CONDICTRABAJADOR,
-            REPLACE(REPLACE(TRIM(TO_CHAR(SUBSTR(A.ATENPRDOBS,0,4000))), CHR(10), ''), CHR(13), '') AS OBSERVAC_RESULTADO
-        FROM sgss.ctapd10 a
-            LEFT JOIN sgss.ctapr10 z ON z.atenprooricenasicod = a.atenprooricenasicod
-                AND z.atenprocenasicod   = a.atenprocenasicod
-                AND z.atenproactmednum   = a.atenproactmednum
-        ...
-        WHERE z.atenproestregcod = '1'
-        AND TO_CHAR(z.atenproproperfec,'YYYYMM') = '{periodo}'
+            SELECT
+                TO_CHAR(a.atenproarehoscod)                        AS COD_AREA,
+                TO_CHAR(a.atenprocenasicod)                        AS COD_CENTRO,
+                TO_CHAR(z.atenproproperfec,'yyyymm')               AS PERIODO,
+                TO_CHAR(b.servhoscod)                              AS COD_SERVICIO,
+                b.servhosdes                                       AS SERVICIO,
+                TO_CHAR(a.atenproperasisdocidennum)                AS DNI_MEDICO,
+                p.perasisproapepat || ' ' || p.perasisproapemat || ' ' || p.perasisproprinom AS PROFESIONAL,
+                TO_CHAR(s.perautcod)                               AS AUTOGENERADO,
+                TO_CHAR(s.perdocidennum)                           AS DNI,
+                s.perapepatdes || ' ' || s.perapematdes || ' ' || s.perprinomdes AS PACIENTE,
+                TO_CHAR(FLOOR(MONTHS_BETWEEN(z.atenproproperfec,s.pernacfec) / 12)) AS ANNOS,
+                TO_CHAR(FLOOR(MOD(MONTHS_BETWEEN(z.atenproproperfec, s.pernacfec), 12))) AS MESES,
+                TO_CHAR(TO_DATE(z.atenproproperfec, 'DD/MM/YYYY') - ADD_MONTHS(s.pernacfec,
+                    FLOOR(MONTHS_BETWEEN(TO_DATE(z.atenproproperfec,'DD/MM/YYYY'),s.pernacfec)))) AS DIAS,
+                decode(s.persexocod,'1','M','0','F','')            AS SEXO,
+                s.percaldomnom || ' ' || s.pernmkdomnum || ' ' || s.perinldomnum || ' ' || s.perurbdomnom AS DIRECCION,
+                TO_CHAR(c.pachisclinum)                            AS H_C,
+                m.tipsegdes                                        AS TIPO_SEGURO,
+                (SELECT tp.tipoparenom FROM sgss.cbtpa10 tp WHERE tp.tipoparecod = s.pertipoparecod) AS TIPO_PARENTESCO,
+                n.tipopacinom                                      AS TIPO_PACIENTE,
+                TO_CHAR(t.citambsolfec, 'dd/mm/yyyy')              AS FECHA_SOLIC,
+                TO_CHAR(z.atenproproperfec, 'dd/mm/yyyy')          AS FECHA_ATEN,
+                decode(t.condcitacod,'1','NORMAL','2','ADICIONAL') AS CONDICION_CITA,
+                TO_CHAR(z.atenproactmednum)                        AS ACTO_MED,
+                TO_CHAR(a.atenprcpscod)                            AS CODPROCED,
+                REPLACE(REPLACE(TRIM(TO_CHAR(SUBSTR(f.cpsdes ,0,4000))), CHR(10), ''), CHR(13), '') AS PROCEDIMIENTO,
+                TO_CHAR(a.atenprdcant)                             AS CANTPROCED,
+                TO_CHAR(z1.cenasioricod)                           AS COD_PRECEDENCIA,
+                TO_CHAR(s.percenasiadscod)                         AS CAS_ADSCRIPCION,
+                TO_CHAR(ct.concod)                                 AS COD_CONSULTORIO,
+                (SELECT tpr.tipohorprognom FROM sgss.cbthp10 tpr WHERE tpr.tipohorprogcod = pr.tipohorprogcod) AS TIP_PROGRAMACION,
+                TO_CHAR(t.citambactcod)                            AS COD_ACTIVIDAD,
+                (SELECT d.actdes FROM sgss.cmact10 d WHERE t.citambactcod = d.actcod) AS ACTIVIDAD,
+                TO_CHAR(t.citambactespcod)                         AS COD_SUBACTIVIDAD,
+                (SELECT e.actespnom FROM sgss.cmace10 e
+                WHERE t.citambactcod = e.actcod AND t.citambactespcod = e.actespcod) AS SUBACTIVIDAD,
+                TO_CHAR(pr.properturhorini, 'hh24:mi')             AS HORAINI,
+                TO_CHAR(pr.properturhorfin, 'hh24:mi')             AS HORAFIN,
+                TO_CHAR(pr.properturhorini, 'hh24:mi') || '-' || TO_CHAR(pr.properturhorfin, 'hh24:mi') AS TURNO,
+                decode(k.actmedestgrav,'0','NO GESTANTE','1','GESTANTE') AS TIPO_GRAVIDEZ,
+                TO_CHAR(s.perrucempnum)                            AS NUM_RUC,
+                TO_CHAR(a.atenprdresprcovid)                       AS CODRESUL_COVID,
+                (SELECT rc.resprcoviddes FROM sgss.cbrpr10 rc WHERE rc.resprcovidcod = a.atenprdresprcovid) AS RESULT_COVID,
+                TO_CHAR(c.pactelfij)                               AS TELEF_FIJO,
+                TO_CHAR(c.pactelcel)                               AS TELEF_MOVIL,
+                decode(a.atenprdtipenf,'0','PACIENTE NO COVID','1','PACIENTE COVID') AS ESTADO_PACIENTE,
+                TO_CHAR(a.atenprdusucrecod)                        AS USU_REG,
+                TO_CHAR(a.atenprdcrefec,'dd/mm/yyyy')              AS FECH_REG,
+                TO_CHAR(a.atenprdcrefec,'hh24:mi')                 AS HORA_REG,
+                TO_CHAR(a.atenprdusumodcod)                        AS USU_MODIF,
+                TO_CHAR(a.atenprdmodfec,'dd/mm/yyyy')              AS FECH_MODIF,
+                TO_CHAR(a.atenprdmodfec,'hh24:mi')                 AS HORA_MODIF,
+                decode(a.atenprdtipteledot,'1','TELEDOT','2','DOT') AS TIPTELEDOT,
+                (SELECT ctr.condtrabnom FROM sgss.cbcot10 ctr WHERE ctr.condtrabcod = p.condtrabcod) AS CONDICTRABAJADOR,
+                REPLACE(REPLACE(TRIM(TO_CHAR(SUBSTR(a.atenprdobs,0,4000))), CHR(10), ''), CHR(13), '') AS OBSERVAC_RESULTADO
+            FROM sgss.ctapd10 a
+            LEFT JOIN sgss.ctapr10 z
+                ON z.atenprooricenasicod = a.atenprooricenasicod
+            AND z.atenprocenasicod   = a.atenprocenasicod
+            AND z.atenproarehoscod   = a.atenproarehoscod
+            AND z.atenproservhoscod  = a.atenproservhoscod
+            AND z.atenproactcod      = a.atenproactcod
+            AND z.atenproactespcod   = a.atenproactespcod
+            AND z.atenprotipdocidenpercod   = a.atenprotipdocidenpercod
+            AND z.atenproperasisdocidennum  = a.atenproperasisdocidennum
+            AND z.atenproproperfec          = a.atenproproperfec
+            AND z.atenproturinihor          = a.atenproturinihor
+            AND z.atenproturfinhor          = a.atenproturfinhor
+            AND z.atenproactmednum          = a.atenproactmednum
+            LEFT JOIN sgss.cmame10 k
+                ON z.atenprooricenasicod = k.oricenasicod
+            AND z.atenprocenasicod   = k.cenasicod
+            AND z.atenproactmednum   = k.actmednum
+            LEFT JOIN sgss.cmtse10 m
+                ON k.actmedtipsegcod     = m.tipsegcod
+            LEFT JOIN sgss.cmper10 s
+                ON k.actmedpacsecnum     = s.persecnum
+            LEFT JOIN sgss.ctcam10 t
+                ON z.atenprooricenasicod = t.citamboricenasicod
+            AND z.atenprocenasicod   = t.citambcenasicod
+            AND z.atenproactmednum   = t.citambnum
+            LEFT JOIN sgss.cmcpp10 f
+                ON a.atenprcpscod              = f.cpscod
+            LEFT JOIN sgss.cmsho10 b
+                ON a.atenproservhoscod         = b.servhoscod
+            LEFT JOIN sgss.cbtpc10 n
+                ON k.actmedtipopacicod         = n.tipopacicod
+            LEFT JOIN sgss.cmprs10 p
+                ON a.atenprotipdocidenpercod   = p.tipdocidenpercod
+            AND a.atenproperasisdocidennum  = p.perasisdocidennum
+            LEFT JOIN sgss.cmpac10 c
+                ON c.oricenasicod              = k.oricenasicod
+            AND c.cenasicod                = k.cenasicod
+            AND c.pacsecnum                = k.actmedpacsecnum
+            LEFT JOIN sgss.ctref10 z1
+                ON k.actmedorirefnum           = z1.refnum
+            LEFT JOIN sgss.ctpco10 ct
+                ON ct.proconoricenasicod = t.citambproconoricenasicod
+            AND ct.proconcenasicod   = t.citambcenasicod
+            AND ct.proconarehoscod   = t.citambarehoscod
+            AND ct.proconservhoscod  = t.citambservhoscod
+            AND ct.proconactcod      = t.citambactcod
+            AND ct.proconactespcod   = t.citambactespcod
+            AND ct.procontipdocidenpercod = t.citambtipdocidenpercod
+            AND ct.proconperasisdocidennum = t.citambperasisdocidennum
+            AND ct.proconfec               = t.citambproconfec
+            AND ct.proconturhorini         = t.citambproconturhorini
+            AND ct.proconturhorfin         = t.citambproconturhorfin
+            LEFT JOIN sgss.ctppe10 pr
+                ON pr.oricenasicod       = ct.proconoricenasicod
+            AND pr.cenasicod          = ct.proconcenasicod
+            AND pr.arehoscod          = ct.proconarehoscod
+            AND pr.servhoscod         = ct.proconservhoscod
+            AND pr.actcod             = ct.proconactcod
+            AND pr.actespcod          = ct.proconactespcod
+            AND pr.tipdocidenpercod   = ct.procontipdocidenpercod
+            AND pr.perasisdocidennum  = ct.proconperasisdocidennum
+            AND pr.properfec          = ct.proconfec
+            AND pr.properturhorini    = ct.proconturhorini
+            AND pr.properturhorfin    = ct.proconturhorfin
+            WHERE z.atenproestregcod = '1'
+            AND TO_CHAR(z.atenproproperfec,'YYYY') = '2025'
+            AND TO_CHAR(z.atenproproperfec,'yyyymm') = '{periodo}'
+
     """
 
-    # Ejecutar consulta Oracle
-    df = pd.read_sql(query, conn_oracle)
+     # Leer desde Oracle con Polars
+    try:
+        # Leer desde Oracle usando pandas
+        df = pd.read_sql(query, engine_oracle.connect())
 
-    if df.empty:
+        # Convertir todos los valores a texto (para evitar problemas de tipo Decimal128)
+        df = df.astype(str)
+    except Exception as e:
+        print(f"❌ Error al leer datos de Oracle: {e}")
+        continue
+
+    if df.is_empty():
         print(f"⚠️ No se encontraron datos para el periodo {periodo}")
         continue
 
-    # Normalizar columnas
-    df = df.astype(str)
-    df.columns = df.columns.str.lower()
+    print(f"➡️ {df.height:,} filas leídas desde Oracle.")
 
-    # Guardar en PostgreSQL (agregando)
-    df.to_sql("procedimientos_2025", engine_pg, schema="public", if_exists="append", index=False)
-    print(f"✅ Datos cargados correctamente para el periodo {periodo}")
+    # ==============================
+    # 5. COPY hacia PostgreSQL
+    # ==============================
+    csv_buffer = StringIO()
+    df.write_csv(csv_buffer, include_header=False)
+    csv_buffer.seek(0)
+
+    try:
+        print(f"🚀 Cargando datos a PostgreSQL para periodo {periodo}...")
+        cursor_pg.copy_expert(
+            sql=f"COPY {tabla_destino} ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            file=csv_buffer
+        )
+        print(f"✅ Periodo {periodo} cargado correctamente.")
+    except Exception as e:
+        print(f"❌ Error al cargar periodo {periodo}: {e}")
+        if not pg_conn.closed:
+            pg_conn.rollback()
+
+    end_time = datetime.now()
+    duracion = (end_time - start_time).total_seconds() / 60
+    print(f"⏱️ Tiempo de ejecución: {duracion:.2f} minutos.")
 
 # ==============================
-# 5. Cierre de conexiones
+# 6. Cierre de conexiones
 # ==============================
-conn_oracle.close()
-engine_pg.dispose()
+cursor_pg.close()
+pg_conn.close()
+engine_oracle.dispose()
+
 print("\n✅ Proceso completado correctamente.")
-

@@ -217,6 +217,6 @@ ON DELETE RESTRICT;
 ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
 ADD CONSTRAINT fk_dwe_estancia_eme_estan
 FOREIGN KEY (cod_estandar)
-REFERENCES dwsge.dim_estancia (id_estancia)
+REFERENCES dwsge.dim_estandar(id_estandar)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;

@@ -3,5 +3,16 @@ CREATE INDEX idx_d_join  ON dssge.sgss_mtdae10 (ateemeoricenasicod, ateemecenasi
 CREATE INDEX idx_c_join  ON dssge.sgss_mtaem10 (ateemeoricenasicod, ateemecenasicod, ateemeactmednum, ateemesecnum);
 CREATE INDEX idx_mtadd10_join ON dssge.sgss_mtadd10 (admemeoricenasicod, admemecenasicod, admemeactmednum, admemdsecnum);
 
+CREATE INDEX idx_mt_filt_join
+ON dssge.sgss_mtade10 (ADMemeAreHosCod, ADMemeOriCenAsiCod, ADMemeCenAsiCod, ADMemeActMedNum);
+
+-- Optimiza JOIN y ORDER BY en diag_latest
+CREATE INDEX idx_d_join_order
+ON dssge.sgss_mtdae10 (ateemeOriCenAsiCod, ateemeCenAsiCod, ateemeActMedNum, diagcod);
+
+-- Optimiza el ORDER BY en la tabla c (actos médicos)
+CREATE INDEX idx_c_join_order
+ON dssge.sgss_mtaem10 (ateemeOriCenAsiCod, ateemeCenAsiCod, ateemeActMedNum, ateemeSecNum DESC);
+
 
 

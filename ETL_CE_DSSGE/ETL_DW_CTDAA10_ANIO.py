@@ -52,6 +52,7 @@ try:
             SELECT * FROM {table_name}
             ORDER BY anio
             LIMIT {chunksize} OFFSET {offset}
+
         """
         chunk_df = pd.read_sql_query(query, engine_pg2)
         

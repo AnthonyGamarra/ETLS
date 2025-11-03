@@ -74,51 +74,28 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
     print(f"\nProcesando mes: {start_mes.strftime('%Y-%m')}")
 
     query = f"""
-    SELECT 
-        to_char(properfec, 'yyyy') as anio,
-        to_char(properfec, 'yyyymm') as periodo,
-        ORICENASICOD,
-        CENASICOD,
-        AREHOSCOD,
-        SERVHOSCOD,
-        ACTCOD,
-        ACTESPCOD,
-        TIPDOCIDENPERCOD,
-        PERASISDOCIDENNUM,
-        PROPERFEC,
-        PROPERTURHORINI,
-        PROPERTURHORFIN,
-        PROPERTIPOPROGPERSCOD,
-        TIPOHORPROGCOD,
-        PROPERPROHORTOT,
-        PROPERPROHORMAXNOR,
-        PROPERPROHORMAXEXT,
-        ESTPROGCITCOD,
-        MOTSUSPROGCOD,
-        PROPERESTREGCOD,
-        PROPERUSUCRECOD,
-        PROPERCREFEC,
-        PROPERUSUMODCOD,
-        PROPERMODFEC,
-        PROPERPROEXAFLG,
-        PROPERIPCRE,
-        PROPERIPMOD,
-        PROPERUSUSUSCOD,
-        PROPERSUSFEC,
-        PROPERIPSUS,
-        PROPERUSUANUSUSCOD,
-        PROPERANUSUSFEC,
-        PROPERIPANUSUS,
-        PROPERTURFLG,
-        PROPERTURAPEFEC,
-        PROPERTURCIEFEC,
-        PROPERUSUTURAPE,
-        PROPERUSUTURCIE,
-        PROPERTIPOHORDET
-    FROM SGSS.ctppe10
-    WHERE properfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-      AND properfec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-    ORDER BY properfec
+            SELECT 
+                a.ATENAMBORICENASICOD, 
+                a.ATENAMBCENASICOD, 
+                a.ATENAMBNUM, 
+                a.CONDDIAGCOD, 
+                a.DIAGCOD, 
+                a.ATENAMBDIAGORD, 
+                a.ATENAMBTIPODIAGCOD, 
+                a.ATENAMBCASODIAGCOD, 
+                a.DIAGATENAMBALTAFLAG, 
+                a.DIAGATENAMBPEAS,
+                TO_CHAR(TRUNC(c.atenambatenfec), 'yyyymm') AS periodo,
+                TO_CHAR(TRUNC(c.atenambatenfec), 'yyyy') AS anio
+            FROM sgss.ctdaa10 a
+            LEFT OUTER JOIN sgss.ctaam10 c 
+                ON c.ATENAMBORICENASICOD = a.ATENAMBORICENASICOD
+            AND c.ATENAMBCENASICOD    = a.ATENAMBCENASICOD
+            AND c.ATENAMBNUM          = a.ATENAMBNUM
+            WHERE c.atenambestregcod = '1'
+        AND atenambatenfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        AND atenambatenfec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        ORDER BY atenambatenfec
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -139,7 +116,7 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
     print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
     try:
         cursor_pg.copy_expert(
-            sql=f"COPY dssge.sgss_ctppe10 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            sql=f"COPY dssge.sgss_ctdaa10_anio_v2 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
             file=csv_buffer
         )
         print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")

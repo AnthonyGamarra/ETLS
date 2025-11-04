@@ -54,14 +54,14 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-table_name = "dssge.dwe_emergencia_estancia_homologacion"
+table_name = "dwsge.dwe_emergencia_estancia_homologacion"
 
 
-for anio,mes in months_to_process:
+for mes in range(1,11):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
-        partition_name = f"dssge.dwe_emergencia_estancia_homologacion_{anio}_{mes_str}"
+        partition_name = f"dwsge.dwe_emergencia_estancia_homologacion_{anio}_{mes_str}"
         cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
         conn_dst.commit()
         cur_dst.close()
@@ -74,73 +74,71 @@ for anio,mes in months_to_process:
     try:
         query = f"""
                 WITH mt_base AS (
-                SELECT
-                    mt.*,
-                    -- horas totales como número
-                    (EXTRACT(EPOCH FROM (
-                        (TO_DATE(mt.admemealtadmfec, 'DD-MM-YYYY') + COALESCE(mt.admemealtadmhor, '00:00')::time)
-                    - (TO_DATE(mt.ADMEMEADMFEC,  'DD-MM-YYYY') + COALESCE(mt.ADMEMEADMHOR,  '00:00')::time)
-                    )) / 3600.0) AS horas_totales
-                FROM dssge.sgss_mtade10_{anio}_{mes_str} mt
-                WHERE mt.ADMEMEAREHOSCOD = '02'  -- filtramos pronto para reducir filas
+                    SELECT
+                        mt.*,
+                        -- horas totales como número truncado a 2 decimales
+                        TRUNC(
+                            (EXTRACT(EPOCH FROM (
+                                (TO_DATE(mt.admemealtadmfec, 'DD-MM-YYYY') + COALESCE(mt.admemealtadmhor, '00:00')::time)
+                            - (TO_DATE(mt.ADMEMEADMFEC,  'DD-MM-YYYY') + COALESCE(mt.ADMEMEADMHOR,  '00:00')::time)
+                            )) / 3600.0),
+                            2
+                        ) AS horas_totales
+                    FROM dssge.sgss_mtade10_{anio}_{mes_str} mt
+                    WHERE mt.ADMEMEAREHOSCOD = '02'
                 ),
 
-                -- últimas filas por (origen, centro, acto_med)
-                diag_latest AS (
-                SELECT
-                    d.ateemeoricenasicod,
-                    d.ateemecenasicod,
-                    d.ateemeactmednum,
-                    d.diagcod,
-                    ROW_NUMBER() OVER (
-                    PARTITION BY d.ateemeoricenasicod, d.ateemecenasicod, d.ateemeactmednum
-                    ORDER BY c.ateemesecnum DESC
-                    ) AS rn
-                FROM dssge.sgss_mtdae10_{anio}_{mes_str} d
-                JOIN dssge.sgss_mtaem10_{anio}_{mes_str} c
-                    ON c.ateemeoricenasicod = d.ateemeoricenasicod
-                AND c.ateemecenasicod   = d.ateemecenasicod
-                AND c.ateemeactmednum   = d.ateemeactmednum
-                AND c.ateemesecnum      = d.ateemesecnum
-                ),
-
+                -- Diagnóstico más reciente por acto médico
                 diag_latest_sel AS (
-                -- quedarnos solo con la fila más reciente por grupo (rn = 1)
-                SELECT ateemeoricenasicod, ateemecenasicod, ateemeactmednum, diagcod
-                FROM diag_latest
-                WHERE rn = 1
+                    SELECT DISTINCT ON (d.ateemeoricenasicod, d.ateemecenasicod, d.ateemeactmednum)
+                        d.ateemeoricenasicod,
+                        d.ateemecenasicod,
+                        d.ateemeactmednum,
+                        d.diagcod
+                    FROM dssge.sgss_mtdae10_{anio}_{mes_str} d
+                    JOIN dssge.sgss_mtaem10_{anio}_{mes_str} c
+                    ON c.ateemeoricenasicod = d.ateemeoricenasicod
+                    AND c.ateemecenasicod   = d.ateemecenasicod
+                    AND c.ateemeactmednum   = d.ateemeactmednum
+                    AND c.ateemesecnum      = d.ateemesecnum
+                    WHERE d.diagcod IS NOT NULL
+                    ORDER BY d.ateemeoricenasicod, d.ateemecenasicod, d.ateemeactmednum, c.ateemesecnum DESC
                 ),
 
-                -- CTE para filtrar sólo mt que tengan algún diagnóstico NO NULO
+                -- Atenciones con algún diagnóstico no nulo
                 diag_any AS (
-                SELECT DISTINCT ateemeoricenasicod, ateemecenasicod, ateemeactmednum
-                FROM dssge.sgss_mtdae10_{anio}_{mes_str} d
-                WHERE d.diagcod IS NOT NULL
+                    SELECT DISTINCT 
+                        d.ateemeoricenasicod,
+                        d.ateemecenasicod,
+                        d.ateemeactmednum
+                    FROM dssge.sgss_mtdae10_{anio}_{mes_str} d
+                    WHERE d.diagcod IS NOT NULL
                 )
 
                 SELECT
-                mt.admemeoricenasicod AS cod_oricentro,
-                mt.admemecenasicod AS cod_centro,
-                mt.anio,
-                mt.periodo,
-                h.cod_estandar,
-                mt.actmedtipopacicod as cod_tipo_paciente,
-                mt.actmednum AS acto_med,
-                mt.actmedarehoscod AS cod_area,
-                mt.actmedservhoscod AS cod_servicio,
-                mt.tipoparecod AS cod_tipo_parentesco,
-                mt.ADMEMEADMFEC AS fecha_admision,
-                mt.admemealtadmfec AS fecha_alta,
-                mt.admemealtadmhor AS hora_alta_adm,
-                mt.ADMEMEADMHOR AS hora_admision,
+                    mt.admemeoricenasicod AS cod_oricentro,
+                    mt.admemecenasicod    AS cod_centro,
+                    mt.anio,
+                    mt.periodo,
+                    h.cod_estandar,
+                    mt.actmedtipopacicod  AS cod_tipo_paciente,
+                    mt.actmednum          AS acto_med,
+                    mt.actmedarehoscod    AS cod_area,
+                    mt.actmedservhoscod   AS cod_servicio,
+                    mt.tipoparecod        AS cod_tipo_parentesco,
+                    mt.ADMEMEADMFEC       AS fecha_admision,
+                    mt.admemealtadmfec    AS fecha_alta,
+                    mt.admemealtadmhor    AS hora_alta_adm,
+                    mt.ADMEMEADMHOR       AS hora_admision,
 
-                -- formateo HH:MM a partir de horas_totales 
+                    -- formateo HH:MM desde horas_totales 
                     LPAD(TRUNC(mt.horas_totales)::text, 6, '0') || ':' ||
                     LPAD(ROUND((mt.horas_totales - TRUNC(mt.horas_totales)) * 60)::int::text, 2, '0') AS estancia_horas,
 
-                CASE WHEN mt.horas_totales <= 24 THEN 2 ELSE 1 END AS rango_estancia,
-
-                COALESCE(dl.diagcod, 'S/COD') AS cod_diag_emer
+                    CASE 
+                        WHEN mt.horas_totales <= 24 THEN 2 
+                        ELSE 1 
+                    END AS rango_estancia
 
                 FROM mt_base mt
 
@@ -150,19 +148,19 @@ for anio,mes in months_to_process:
                 AND da.ateemecenasicod   = mt.ADMEMECENASICOD
                 AND da.ateemeactmednum   = mt.ADMEMEACTMEDNUM
 
-                -- left join para traer el diag más reciente 
+                -- left join para traer el diagnóstico más reciente 
                 LEFT JOIN diag_latest_sel dl
                 ON dl.ateemeoricenasicod = mt.ADMEMEORICENASICOD
                 AND dl.ateemecenasicod   = mt.ADMEMECENASICOD
                 AND dl.ateemeactmednum   = mt.ADMEMEACTMEDNUM
 
+                -- tabla de homologación
                 LEFT JOIN dssge.dw_homologacion_enlaces_emergencia h
-                ON h.cod_centro   = mt.admemecenasicod
-                AND h.cod_topico   = mt.ADMEMETOPEMECOD
+                ON h.cod_centro     = mt.admemecenasicod
+                AND h.cod_topico     = mt.ADMEMETOPEMECOD
                 AND h.cod_emergencia = mt.ADMEMEEMECOD
 
-                WHERE
-                h.cod_estandar IN ('01')
+                WHERE h.cod_estandar IN ('01');
     
         """
 

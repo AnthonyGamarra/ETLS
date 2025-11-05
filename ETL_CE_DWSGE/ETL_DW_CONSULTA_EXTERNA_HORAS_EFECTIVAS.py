@@ -48,7 +48,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(1,11):
+for mes in range(9,10):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -124,9 +124,9 @@ for mes in range(1,11):
                     ON pr.tipdocidenpercod = t.tipdocidenpercod
                     AND pr.perasisdocidennum = t.perasisdocidennum
                 LEFT JOIN dssge.dw_homologacion_enlaces e 
-                ON t.actcod::text = e.cod_actividad::text 
-                AND t.actespcod::text = e.cod_subactividad::text 
-                AND t.servhoscod::text = e.cod_servicio::text
+                    ON t.actcod::text = e.cod_actividad::text 
+                    AND t.actespcod::text = e.cod_subactividad::text 
+                    AND t.servhoscod::text = e.cod_servicio::text
                 LEFT JOIN atenciones a 
                     ON t.propertipoprogperscod = '1'
                     AND a.cod_oricentro     = t.oricenasicod

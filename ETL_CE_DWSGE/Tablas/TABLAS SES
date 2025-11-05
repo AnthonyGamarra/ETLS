@@ -256,7 +256,11 @@ CREATE TABLE dwsge.dwe_consulta_externa_programacion (
         cod_servicio VARCHAR(50), 
         total_horas VARCHAR(50),
         cod_estado_programacion VARCHAR(50),
-        cod_motivo_suspension VARCHAR(50)
+        cod_motivo_suspension VARCHAR(50),
+        cod_especialidad VARCHAR(20),
+        cod_subespecialidad VARCHAR(20),
+        cod_agrupador VARCHAR(20),
+        cod_variable VARCHAR(20)
 ) PARTITION BY LIST (anio);
 
 -- Crear partición anual para 2025
@@ -559,7 +563,11 @@ CREATE TABLE dwsge.dwe_consulta_externa_horas_efectivas
         cod_servicio    VARCHAR(20),
         ate INTEGER,
         hras_prog NUMERIC,
-        estado_progcita VARCHAR(20)
+        estado_progcita VARCHAR(20),
+        cod_especialidad VARCHAR(20),
+        cod_subespecialidad VARCHAR(20),
+        cod_agrupador VARCHAR(20),
+        cod_variable VARCHAR(20)
 
 	) PARTITION BY LIST (anio);
 

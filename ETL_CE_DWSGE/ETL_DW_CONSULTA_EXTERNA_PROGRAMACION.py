@@ -52,7 +52,7 @@ else:
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 table_name = "dwsge.dwe_consulta_externa_programacion"
-for anio, mes in months_to_process:
+for mes in range(1,11):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -89,9 +89,9 @@ for anio, mes in months_to_process:
                         ON m.tipdocidenpercod = a.tipdocidenpercod
                         AND m.perasisdocidennum = a.perasisdocidennum
                     LEFT JOIN dssge.dw_homologacion_enlaces e 
-                        ON a.cod_actividad::text = e.cod_actividad::text 
-                        AND a.cod_subactividad::text = e.cod_subactividad::text 
-                        AND a.cod_servicio::text = e.cod_servicio::text
+                        ON a.actcod::text = e.cod_actividad::text 
+                        AND a.actespcod::text = e.cod_subactividad::text 
+                        AND a.servhoscod::text = e.cod_servicio::text
                     LEFT OUTER JOIN dssge.sgss_cbgoc10 z 
                         ON m.grupocupcod = z.grupocupcod
                     WHERE a.oricenasicod IN ('1','2','3','4','5','6','7')

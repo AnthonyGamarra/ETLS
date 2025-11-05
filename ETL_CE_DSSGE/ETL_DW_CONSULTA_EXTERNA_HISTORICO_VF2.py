@@ -87,7 +87,19 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.dwe_consulta_externa"
+    tabla_destino = f"dssge.dw_consulta_externa_{anio}_{mes}"
+
+    # ==============================
+    # TRUNCAR PARTICIÓN DESTINO
+    # ==============================
+    print(f"Truncando partición destino: {tabla_destino}...")
+    try:
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
+        print(f"Tabla {tabla_destino} truncada correctamente.")
+    except Exception as e:
+        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
+        continue  # Saltar este mes si no existe la partición
+    
     query = f"""
             select 
                 a.ATENAMBORICENASICOD                                                        as COD_ORICENTRO,
@@ -188,8 +200,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
                                     AND t1.pacsecnum             = k.actmedpacsecnum
             WHERE
             a.atenambestregcod = '1'  
-            and t.atenambatenfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and t.atenambatenfec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and a.atenambatenfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and a.atenambatenfec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 
@@ -204,16 +216,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
     df.columns = df.columns.str.lower()
 
 
-    # ==============================
-    # TRUNCAR PARTICIÓN DESTINO
-    # ==============================
-    print(f"Truncando partición destino: {tabla_destino}...")
-    try:
-        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
-        print(f"Tabla {tabla_destino} truncada correctamente.")
-    except Exception as e:
-        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
-        continue  # Saltar este mes si no existe la partición
+
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()

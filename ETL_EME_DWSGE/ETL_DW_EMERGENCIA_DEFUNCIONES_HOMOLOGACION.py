@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_emergencia_defunciones_homologacion"
 
 
-for anio,mes in months_to_process:
+for mes in range(1,11):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -82,7 +82,7 @@ for anio,mes in months_to_process:
                 tipo_paciente as cod_tipo_paciente,
                 defactmednum as acto_med,
                 defanoedad as anio_def
-                FROM dssge.SGSS_CTDEF10 t
+                FROM dssge.sgss_ctdef10_{anio}_{mes_str} t
                 WHERE
                 t.defarehoscod = '02' AND
                 t.defestregcod = '1'

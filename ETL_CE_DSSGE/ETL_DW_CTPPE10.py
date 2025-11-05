@@ -118,7 +118,6 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
     FROM SGSS.ctppe10
     WHERE properfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
       AND properfec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-    ORDER BY properfec
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")

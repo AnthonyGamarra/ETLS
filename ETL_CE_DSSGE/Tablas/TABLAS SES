@@ -576,6 +576,39 @@ CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025 PARTITION OF dssge.sgss_ctdaa10_ani
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
 
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2024 PARTITION OF dssge.sgss_ctdaa10_anio_v2
+FOR VALUES IN ('2024')
+PARTITION BY LIST (PERIODO);
+
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2023 PARTITION OF dssge.sgss_ctdaa10_anio_v2
+FOR VALUES IN ('2023')
+PARTITION BY LIST (PERIODO);
+
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2023 PARTITION OF dssge.sgss_ctdaa10_anio_v2
+FOR VALUES IN ('2023')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2023 PARTITION OF dssge.sgss_ctdaa10_anio_v2
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025 PARTITION OF dssge.sgss_ctdaa10_anio_v2
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025 PARTITION OF dssge.sgss_ctdaa10_anio_v2
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+
 CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_01 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202501');
 CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_02 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202502');
 CREATE TABLE dssge.sgss_ctdaa10_anio_v2_2025_03 PARTITION OF dssge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202503');

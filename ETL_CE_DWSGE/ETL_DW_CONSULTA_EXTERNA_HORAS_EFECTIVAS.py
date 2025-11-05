@@ -48,7 +48,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for anio, mes in months_to_process:
+for mes in range(1,11):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -106,6 +106,10 @@ for anio, mes in months_to_process:
                     t.actcod AS cod_actividad,
                     t.actespcod AS cod_subactividad,
                     t.servhoscod AS cod_servicio,
+                    e.cod_especialidad,
+                    e.cod_subespecialidad,
+                    e.cod_agrupador,
+                    e.cod_variable,
                     a.ate,
                     CASE
                         WHEN CAST(t.properturhorfin AS time) >= CAST(t.properturhorini AS time) THEN
@@ -119,6 +123,10 @@ for anio, mes in months_to_process:
                 LEFT JOIN dssge.sgss_cmprs10 pr 
                     ON pr.tipdocidenpercod = t.tipdocidenpercod
                     AND pr.perasisdocidennum = t.perasisdocidennum
+                LEFT JOIN dssge.dw_homologacion_enlaces e 
+                ON t.actcod::text = e.cod_actividad::text 
+                AND t.actespcod::text = e.cod_subactividad::text 
+                AND t.servhoscod::text = e.cod_servicio::text
                 LEFT JOIN atenciones a 
                     ON t.propertipoprogperscod = '1'
                     AND a.cod_oricentro     = t.oricenasicod

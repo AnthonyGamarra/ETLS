@@ -79,11 +79,19 @@ for anio, mes in months_to_process:
                         a.servhoscod as COD_SERVICIO,
                         a.properprohortot as TOTAL_HORAS,
                         a.estprogcitcod as COD_ESTADO_PROGRAMACION,
+                        e.cod_especialidad,
+                        e.cod_subespecialidad,
+                        e.cod_agrupador,
+                        e.cod_variable,
                         a.motsusprogcod as COD_MOTIVO_SUSPENSION
                     FROM dssge.sgss_ctppe10_{anio}_{mes_str} a 
                     LEFT OUTER JOIN dssge.sgss_cmprs10 m 
                         ON m.tipdocidenpercod = a.tipdocidenpercod
                         AND m.perasisdocidennum = a.perasisdocidennum
+                    LEFT JOIN dssge.dw_homologacion_enlaces e 
+                        ON a.cod_actividad::text = e.cod_actividad::text 
+                        AND a.cod_subactividad::text = e.cod_subactividad::text 
+                        AND a.cod_servicio::text = e.cod_servicio::text
                     LEFT OUTER JOIN dssge.sgss_cbgoc10 z 
                         ON m.grupocupcod = z.grupocupcod
                     WHERE a.oricenasicod IN ('1','2','3','4','5','6','7')

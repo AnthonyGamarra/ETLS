@@ -78,7 +78,7 @@ hoy = datetime.today()
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
 start_date = datetime(2019, 1, 1)
-end_date = datetime(2024, 12, 31)
+end_date = datetime(2025, 12, 31)
 
 
 # ==============================
@@ -93,7 +93,13 @@ for start_mes, end_mes in month_range(start_date, end_date):
     SELECT to_char(citambproconfec, 'yyyy') as anio,
            to_char(citambproconfec, 'yyyymm') as periodo,
            citambproconoricenasicod as cod_oricentro,
-           citambproconcenasicod  as cod_centro,  
+           citambproconcenasicod  as cod_centro,
+           citambnum as acto_med, 
+           citambpacsecnum as pac_sec,
+           tipocitacod as cod_tipo_cita,
+           EstCitOtoCod AS cod_cita_otorgar,
+           motelicitcod as cod_mot_eli,
+           citambsolfec as fecha_solicitud,
            citambarehoscod as cod_area,
            citambservhoscod as cod_servicio,
            citambactcod as cod_actividad,

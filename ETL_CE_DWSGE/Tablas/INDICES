@@ -202,6 +202,9 @@ ADD CONSTRAINT uq_esp_espec UNIQUE (cod_especialidad);
 ALTER TABLE dwsge.dwe_cl10
 ADD CONSTRAINT uq_cl UNIQUE (id_cl);
 
+ALTER TABLE dwsge.dim_variable
+ADD CONSTRAINT uq_var UNIQUE (cod_variable);
+
 ALTER TABLE dwsge.sgss_cmcas10
 ADD CONSTRAINT fk_dwe_citados_centro
 FOREIGN KEY (redasiscod)

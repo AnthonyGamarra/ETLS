@@ -54,14 +54,14 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-table_name = "dwsge.dwe_emergencia_atenciones_homologacion"
+table_name = "dwsge.dwe_consulta_externa_citados_homologacion"
 
 
 for mes in range(1,11):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
-        partition_name = f"dwsge.dwe_emergencia_atenciones_homologacion_{anio}_{mes_str}"
+        partition_name = f"dwsge.dwe_consulta_externa_citados_homologacion_{anio}_{mes_str}"
         cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
         conn_dst.commit()
         cur_dst.close()
@@ -73,46 +73,28 @@ for mes in range(1,11):
 
     try:
         query = f"""
-                SELECT
-                a.ateemeoricenasicod           AS COD_ORICENTRO,
-                a.ateemecenasicod                AS COD_CENTRO,
-                a.anio,
-                a.periodo,
-                i.topemecod                      AS COD_TOPICO,
-                a.ateemeactmednum                AS ACTO_MED,
-                a.ateemefec      AS FECHA_ATEN,
-                a.ateemehor        AS HORA_ATEN,
-                e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
-                h.priatecod                                 AS COD_PRIORIDAD,
-                f.diagcod                               AS COD_DIAGNOSTICO,
-                j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
-                a.ateemesecnum                                   AS SECUEN_ATEN,
-                a.ateemearehoscod                AS COD_AREA,
-                z.cod_estandar
-                from dssge.sgss_mtaem10_{anio}_{mes_str} a
-                left outer join dssge.sgss_mtade10_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
-                                        and j.admemecenasicod   = a.ateemecenasicod
-                                        and j.admemeactmednum   = a.ateemeactmednum
-                left outer join dssge.sgss_mtdae10 f on a.ateemeoricenasicod = f.ateemeoricenasicod
-                                        and a.ateemecenasicod    = f.ateemecenasicod
-                                        and a.ateemeactmednum    = f.ateemeactmednum
-                                        and a.ateemesecnum       = f.ateemesecnum
-                left outer join dssge.sgss_cmtse10 m on j.actmedtipsegcod    = m.tipsegcod
-                left outer join dssge.sgss_cbtpc10 e on j.actmedtipopacicod  = e.tipopacicod
-                left outer join dssge.sgss_mbpae10 h on a.ateemepriatecod    = h.priatecod
-                left outer join dssge.sgss_mtadd10_{anio}_{mes_str} b on a.ateemeoricenasicod = b.admemeoricenasicod
-                                        and a.ateemecenasicod    = b.admemecenasicod
-                                        and a.ateemeactmednum    = b.admemeactmednum
-                                        and a.ateememovsecnum    = b.admemdsecnum
-                left outer join dssge.sgss_mbtoe10 i 
-                                        on b.admemdtopemecod    = i.topemecod
-                LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
-                                        ON z.cod_centro     = a.ateemecenasicod
-                                        AND z.cod_topico     = i.topemecod
-                                        AND z.cod_emergencia = j.ADMEMEEMECOD 
-                where  j.actmedestregcod = '1'
-                and a.ateemearehoscod = '02'
-                order by secuen_aten desc
+        SELECT
+            a.anio,
+            a.cod_oricentro,
+            a.cod_centro,
+            a.acto_med,
+            a.cod_area,
+            a.cod_servicio,
+            a.cod_actividad,
+            a.cod_subactividad,
+            a.periodo,
+            a.cod_estado,
+            a.cod_paciente,
+            e.cod_especialidad,
+            e.cod_subespecialidad,
+            e.cod_agrupador,
+            e.cod_variable
+        FROM dwsge.dwe_consulta_externa_citados_{anio}_{mes_str} a
+        LEFT JOIN dssge.dw_homologacion_enlaces e 
+            ON a.cod_actividad::text = e.cod_actividad::text 
+            AND a.cod_subactividad::text = e.cod_subactividad::text 
+            AND a.cod_servicio::text = e.cod_servicio::text      
+
         """
 
         df = pd.read_sql_query(query, conn_src)

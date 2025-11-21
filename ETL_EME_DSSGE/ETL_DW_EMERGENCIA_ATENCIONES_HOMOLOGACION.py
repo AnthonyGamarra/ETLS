@@ -87,7 +87,8 @@ for mes in range(1,10):
                 f.diagcod                               AS COD_DIAGNOSTICO,
                 j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
                 a.ateemesecnum                                   AS SECUEN_ATEN,
-                a.ateemearehoscod                AS COD_AREA
+                a.ateemearehoscod                AS COD_AREA,
+                z.cod_estandar
                 from dssge.sgss_mtaem10_{anio}_{mes_str} a
                 left outer join dssge.sgss_mtade10_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
                                         and j.admemecenasicod   = a.ateemecenasicod
@@ -104,8 +105,12 @@ for mes in range(1,10):
                                         and a.ateemeactmednum    = b.admemeactmednum
                                         and a.ateememovsecnum    = b.admemdsecnum
                 left outer join dssge.sgss_mbtoe10 i on b.admemdtopemecod    = i.topemecod
+                                LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
+                                        ON z.cod_centro     = a.ateemecenasicod
+                                        AND z.cod_topico     = i.topemecod
+                                        AND z.cod_emergencia = j.ADMEMEEMECOD 
                 where  j.actmedestregcod = '1'
-                    and a.ateemearehoscod = '02'
+                and a.ateemearehoscod = '02'
                 order by secuen_aten desc
         """
 

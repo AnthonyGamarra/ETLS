@@ -14,6 +14,8 @@ CREATE TABLE dwe_consulta_externa_homologacion (
     cod_tip_seguro VARCHAR(20),
     cod_tipo_parentesco VARCHAR(20),
     cod_tipo_paciente VARCHAR(20),
+    cod_tipdoc_medico VARCHAR(20),
+    cmp VARCHAR(20),
     fecha_solic VARCHAR(20),
     fecha_cita VARCHAR(20),
     fecha_atencion VARCHAR(20),
@@ -653,3 +655,48 @@ CREATE TABLE dwsge.sgss_ctdaa10_anio_v2_2025_09 PARTITION OF dwsge.sgss_ctdaa10_
 CREATE TABLE dwsge.sgss_ctdaa10_anio_v2_2025_10 PARTITION OF dwsge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202510');
 CREATE TABLE dwsge.sgss_ctdaa10_anio_v2_2025_11 PARTITION OF dwsge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202511');
 CREATE TABLE dwsge.sgss_ctdaa10_anio_v2_2025_12 PARTITION OF dwsge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202512');
+
+
+
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion (
+            anio char(4),
+            periodo char(6),
+            cod_oricentro VARCHAR(20),
+            cod_centro VARCHAR(20),
+            acto_med NUMERIC,
+            cod_area VARCHAR(20),
+            cod_servicio VARCHAR(20),
+            cod_actividad VARCHAR(20),
+            cod_subactividad VARCHAR(20),
+            cod_estado VARCHAR(20),
+            cod_paciente VARCHAR(20),
+            cod_especialidad VARCHAR(20),
+            cod_subespecialidad VARCHAR(20),
+            cod_agrupador VARCHAR(20),
+            cod_variable VARCHAR(20)
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_01 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202501');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_02 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202502');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_03 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202503');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_04 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202504');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_05 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202505');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_06 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202506');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_07 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202507');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_08 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202508');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_09 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202509');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_10 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202510');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_11 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202511');
+CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion_2025_12 PARTITION OF dwsge.dwe_consulta_externa_citados_homologacion_2025 FOR VALUES IN ('202512');
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dwsge.dim_agrupador
+ (cod_agrupador text,
+   agrupador text)
+

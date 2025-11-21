@@ -71,7 +71,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"public.sgss_htaho10_{anio}_{mes}"
+    tabla_destino = f"public.sgss_htaho10_V2_{anio}_{mes}"
     
     # ==============================
     # TRUNCAR PARTICIÓN DESTINO
@@ -110,40 +110,44 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 TO_CHAR(a.ATENHOSFEC, 'YYYY') AS anio,
                 TO_CHAR(a.ATENHOSFEC, 'YYYYMM') AS periodo,
                 a.ATENHOSORICENASICOD,
+                e.redasiscod,
                 a.ATENHOSCENASICOD,
+                d.NIVCENTASISCOD,
                 a.ATENHOSACTMEDNUM,
                 a.ATENHOSFEC,
                 a.ATENHOSHOR,
                 a.ATENHOSAREHOSCOD,
                 a.ATENHOSSERVHOSCOD,
+                q.PERNACFEC,
+                FLOOR(MONTHS_BETWEEN(SYSDATE, q.PERNACFEC) / 12) AS edad,
                 c.SIGVITTALLA,
                 c.SIGVITPESO,
                 c.SigVitPreArtSist,
                 c.SIGVITTEMP,
-                c.SigVitRegSecNum,
-                h.ATENHOSNUMSEC,
-                h.ATENHOSDIAGORD,
-                h.ATENHOSTIPODIAGCOD,
-                h.CONDDIAGCOD,
-                h.DIAGCOD
+                c.SigVitRegSecNum
             FROM SGSS.HTAHO10 a
             LEFT JOIN SGSS.CMAME10 b 
                 ON  a.ATENHOSORICENASICOD = b.ORICENASICOD
                 AND a.ATENHOSCENASICOD    = b.CENASICOD
                 AND a.ATENHOSACTMEDNUM    = b.ACTMEDNUM
+            LEFT JOIN SGSS.CMPAC10 p
+                ON b.ACTMEDORICENASICOD = P.ORICENASICOD
+                AND b.ACTMEDCENASICOD= P.CENASICOD
+                AND b.ACTMEDPACSECNUM = P.PACSECNUM
+            LEFT JOIN SGSS.CMPER10 q
+                ON q.PERSECNUM = p.PACSECNUM
             LEFT JOIN ctsvi_filtrado c
                 ON  c.SIGVITORICENASICOD = b.ORICENASICOD
                 AND c.SIGVITCENASICOD    = b.CENASICOD
                 AND c.SIGVITACTMEDNUM    = b.ACTMEDNUM
                 AND c.rn = 1  -- solo el último registro por acto médico
-            LEFT JOIN SGSS.HTDAH10 h
-                ON h.ATENHOSORICENASICOD = a.ATENHOSORICENASICOD
-                AND h.ATENHOSCENASICOD   = a.ATENHOSCENASICOD
-                AND h.ATENHOSACTMEDNUM   = a.ATENHOSACTMEDNUM
-                AND h.ATENHOSNUMSEC      = a.ATENHOSNUMSEC
-                AND h.ATENHOSDIAGORD     = 1
-                WHERE a.ATENHOSFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-                AND a.ATENHOSFEC <  TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            LEFT JOIN SGSS.CMCAS10 d
+                ON a.ATENHOSORICENASICOD = d.oricenasicod
+                AND a.ATENHOSCENASICOD = d.cenasicod
+            LEFT JOIN SGSS.CMRAS10 e
+                ON e.redasiscod = d.redasiscod
+            WHERE a.ATENHOSFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            AND a.ATENHOSFEC <  TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 

@@ -77,7 +77,7 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2019, 11, 1)
+start_date = datetime(2025, 6, 1)
 end_date = datetime(2025, 12, 31)
 
 
@@ -100,6 +100,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
            EstCitOtoCod AS cod_cita_otorgar,
            motelicitcod as cod_mot_eli,
            citambsolfec as fecha_solicitud,
+           citambcrefec as fecha_creacion,
            citambarehoscod as cod_area,
            citambservhoscod as cod_servicio,
            citambactcod as cod_actividad,

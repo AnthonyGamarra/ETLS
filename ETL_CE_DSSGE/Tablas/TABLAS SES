@@ -501,6 +501,11 @@ fecha_cita VARCHAR(20),
 horaini VARCHAR(20),
 horafin VARCHAR(20),
 cod_estado_cita VARCHAR(20)
+cod_tipo_paciente VARCHAR(20),
+doc_paciente VARCHAR(20),
+cod_tipdoc_paciente VARCHAR(20),
+anio_edad VARCHAR(20),
+sexo VARCHAR(20)    
 
 ) PARTITION BY LIST (anio);
 

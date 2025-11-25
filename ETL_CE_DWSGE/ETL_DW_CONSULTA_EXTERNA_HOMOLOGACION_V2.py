@@ -130,6 +130,8 @@ for mes in range(1,11):
                     a.fecha_atencion,
                     a.acto_med,
                     a.cod_tipo_consulta,
+                    a.cas_referencia,
+                    a.cas_adscripcion,
                     e.cod_especialidad,
                     e.cod_subespecialidad,
                     e.cod_agrupador,

@@ -14,6 +14,7 @@ CREATE TABLE dwe_consulta_externa_homologacion (
     cod_tip_seguro VARCHAR(20),
     cod_tipo_parentesco VARCHAR(20),
     cod_tipo_paciente VARCHAR(20),
+    cod_tipdoc_paciente VARCHAR(20),
     cod_tipdoc_medico VARCHAR(20),
     cmp VARCHAR(20),
     fecha_solic VARCHAR(20),
@@ -21,6 +22,8 @@ CREATE TABLE dwe_consulta_externa_homologacion (
     fecha_atencion VARCHAR(20),
     acto_med NUMERIC
     cod_tipo_consulta VARCHAR(20),
+    cas_referencia VARCHAR(20),
+    cas_adscripcion VARCHAR(20),
     cod_diag VARCHAR(20),
     total_horas VARCHAR(20),
     cod_especialidad VARCHAR(20),

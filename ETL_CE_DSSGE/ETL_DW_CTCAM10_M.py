@@ -77,8 +77,8 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2025, 6, 1)
-end_date = datetime(2025, 12, 31)
+start_date = datetime(2025, 8, 1)
+end_date = datetime(2025, 10, 31)
 
 
 # ==============================
@@ -110,9 +110,19 @@ for start_mes, end_mes in month_range(start_date, end_date):
            citambproconfec as fecha_cita,
            citambproconturhorini as horaini,
            citambproconturhorfin as horafin,
-           estcitcod as cod_estado_cita
+           estcitcod as cod_estado_cita,
+           n.tipopacicod as cod_tipo_paciente,
+            d.perdocidennum                     as doc_paciente,
+            d.PERTIPDOCIDENCOD                 as cod_tipdoc_paciente,
+            k.actmededadaten                    as anio_edad,
+            decode(d.persexocod, '1', 'M', '0', 'F', '')       AS sexo
 
     FROM SGSS.ctcam10
+    left outer join sgss.cmame10 k on citamboricenasicod  = k.oricenasicod
+                         and citambcenasicod     = k.cenasicod
+                         and citambnum           = k.actmednum
+    left outer join sgss.cmper10 d on k.actmedpacsecnum       = d.persecnum                         
+    left outer join sgss.cbtpc10 n on k.actmedtipopacicod       = n.tipopacicod
     WHERE citambproconfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
       AND citambproconfec <= TO_DATE('{end_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
     ORDER BY periodo ASC

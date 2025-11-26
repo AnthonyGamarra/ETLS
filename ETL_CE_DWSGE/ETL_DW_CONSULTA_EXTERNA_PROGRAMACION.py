@@ -74,6 +74,8 @@ for mes in range(1,11):
                         a.periodo as PERIODO,
                         a.oricenasicod as COD_ORICENTRO,
                         a.cenasicod as COD_CENTRO,
+                        a.tipdocidenpercod as cod_tipdoc_medico,
+	                    a.perasisdocidennum as dni_medico,
                         a.actcod as COD_ACTIVIDAD,
                         a.actespcod as COD_SUBACTIVIDAD,
                         a.servhoscod as COD_SERVICIO,

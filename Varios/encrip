@@ -1,0 +1,136 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+UPDATE ietsi.mtd_lista_unica_pacientes
+SET doc_paciente = encode(
+        encrypt(doc_paciente::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.mtd_lista_unica_pacientes
+SET cmame_pacsecnum = encode(
+        encrypt(cmame_pacsecnum::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.mtd_lista_unica_pacientes
+SET dni_medico = encode(
+        encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdaa10
+ALTER COLUMN doc_paciente TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdaa10
+ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdaa10
+ALTER COLUMN dni_medico TYPE varchar(500);
+
+UPDATE ietsi.tmp_ip06_actmed_ctdaa10
+SET doc_paciente = encode(
+        encrypt(doc_paciente::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_ctdaa10
+SET cmame_pacsecnum = encode(
+        encrypt(cmame_pacsecnum::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_ctdaa10
+SET dni_medico = encode(
+        encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdan10
+ALTER COLUMN doc_paciente TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdan10
+ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdan10
+ALTER COLUMN dni_medico TYPE varchar(500);
+
+UPDATE ietsi.tmp_ip06_actmed_ctdan10
+SET doc_paciente = encode(
+        encrypt(doc_paciente::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_ctdan10
+SET cmame_pacsecnum = encode(
+        encrypt(cmame_pacsecnum::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
+UPDATE ietsi.tmp_ip06_actmed_ctdan10
+SET dni_medico = encode(
+        encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
+
+ALTER TABLE ietsi.tmp_ip06_actmed_htdah10
+ALTER COLUMN doc_paciente TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_htdah10
+ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_htdah10
+ALTER COLUMN dni_medico TYPE varchar(500);
+
+UPDATE ietsi.tmp_ip06_actmed_htdah10
+SET doc_paciente = encode(
+        encrypt(doc_paciente::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_htdah10
+SET cmame_pacsecnum = encode(
+        encrypt(cmame_pacsecnum::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
+UPDATE ietsi.tmp_ip06_actmed_htdah10
+SET dni_medico = encode(
+        encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
+ALTER TABLE ietsi.tmp_ip06_actmed_mtdae10
+ALTER COLUMN doc_paciente TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_mtdae10
+ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_mtdae10
+ALTER COLUMN dni_medico TYPE varchar(500);
+
+UPDATE ietsi.tmp_ip06_actmed_mtdae10
+SET doc_paciente = encode(
+        encrypt(doc_paciente::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_mtdae10
+SET cmame_pacsecnum = encode(
+        encrypt(cmame_pacsecnum::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_mtdae10
+SET dni_medico = encode(
+        encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
+ALTER TABLE ietsi.tmp_ip06_actmed_qtiod10
+ALTER COLUMN doc_paciente TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_qtiod10
+ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_qtiod10
+ALTER COLUMN dni_medico TYPE varchar(500);
+
+
+UPDATE ietsi.tmp_ip06_actmed_qtiod10
+SET doc_paciente = encode(
+        encrypt(doc_paciente::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_qtiod10
+SET cmame_pacsecnum = encode(
+        encrypt(cmame_pacsecnum::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+UPDATE ietsi.tmp_ip06_actmed_qtiod10
+SET dni_medico = encode(
+        encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );

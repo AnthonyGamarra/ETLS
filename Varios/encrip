@@ -1,5 +1,9 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+
+ALTER TABLE ietsi.mtd_lista_unica_pacientes
+ALTER COLUMN acto_med TYPE text;
+
 UPDATE ietsi.mtd_lista_unica_pacientes
 SET doc_paciente = encode(
         encrypt(doc_paciente::bytea, 'gcpp_ggi_sge_ag', 'aes'),
@@ -15,6 +19,12 @@ SET dni_medico = encode(
         encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
         'hex'
       );
+UPDATE ietsi.mtd_lista_unica_pacientes
+SET acto_med = encode(
+        encrypt(acto_med::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
 
 ALTER TABLE ietsi.tmp_ip06_actmed_ctdaa10
 ALTER COLUMN doc_paciente TYPE varchar(500);
@@ -22,6 +32,8 @@ ALTER TABLE ietsi.tmp_ip06_actmed_ctdaa10
 ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
 ALTER TABLE ietsi.tmp_ip06_actmed_ctdaa10
 ALTER COLUMN dni_medico TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdaa10
+ALTER COLUMN acto_med TYPE text;
 
 UPDATE ietsi.tmp_ip06_actmed_ctdaa10
 SET doc_paciente = encode(
@@ -38,6 +50,12 @@ SET dni_medico = encode(
         encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
         'hex'
       );
+UPDATE ietsi.tmp_ip06_actmed_ctdaa10
+SET acto_med = encode(
+        encrypt(acto_med::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
 
 ALTER TABLE ietsi.tmp_ip06_actmed_ctdan10
 ALTER COLUMN doc_paciente TYPE varchar(500);
@@ -45,6 +63,8 @@ ALTER TABLE ietsi.tmp_ip06_actmed_ctdan10
 ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
 ALTER TABLE ietsi.tmp_ip06_actmed_ctdan10
 ALTER COLUMN dni_medico TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_ctdan10
+ALTER COLUMN acto_med TYPE varchar(500);
 
 UPDATE ietsi.tmp_ip06_actmed_ctdan10
 SET doc_paciente = encode(
@@ -63,6 +83,11 @@ SET dni_medico = encode(
         'hex'
       );
 
+UPDATE ietsi.tmp_ip06_actmed_ctdan10
+SET acto_med = encode(
+        encrypt(acto_med::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
 
 ALTER TABLE ietsi.tmp_ip06_actmed_htdah10
 ALTER COLUMN doc_paciente TYPE varchar(500);
@@ -70,6 +95,8 @@ ALTER TABLE ietsi.tmp_ip06_actmed_htdah10
 ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
 ALTER TABLE ietsi.tmp_ip06_actmed_htdah10
 ALTER COLUMN dni_medico TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_htdah10
+ALTER COLUMN acto_med TYPE varchar(500);
 
 UPDATE ietsi.tmp_ip06_actmed_htdah10
 SET doc_paciente = encode(
@@ -88,12 +115,20 @@ SET dni_medico = encode(
         'hex'
       );
 
+UPDATE ietsi.tmp_ip06_actmed_htdah10
+SET acto_med = encode(
+        encrypt(acto_med::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+
 ALTER TABLE ietsi.tmp_ip06_actmed_mtdae10
 ALTER COLUMN doc_paciente TYPE varchar(500);
 ALTER TABLE ietsi.tmp_ip06_actmed_mtdae10
 ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
 ALTER TABLE ietsi.tmp_ip06_actmed_mtdae10
 ALTER COLUMN dni_medico TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_mtdae10
+ALTER COLUMN acto_med TYPE varchar(500)
 
 UPDATE ietsi.tmp_ip06_actmed_mtdae10
 SET doc_paciente = encode(
@@ -110,6 +145,11 @@ SET dni_medico = encode(
         encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
         'hex'
       );
+UPDATE ietsi.tmp_ip06_actmed_mtdae10
+SET acto_med = encode(
+        encrypt(acto_med::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
 
 ALTER TABLE ietsi.tmp_ip06_actmed_qtiod10
 ALTER COLUMN doc_paciente TYPE varchar(500);
@@ -117,6 +157,8 @@ ALTER TABLE ietsi.tmp_ip06_actmed_qtiod10
 ALTER COLUMN cmame_pacsecnum TYPE varchar(500);
 ALTER TABLE ietsi.tmp_ip06_actmed_qtiod10
 ALTER COLUMN dni_medico TYPE varchar(500);
+ALTER TABLE ietsi.tmp_ip06_actmed_qtiod10
+ALTER COLUMN acto_med TYPE varchar(500)
 
 
 UPDATE ietsi.tmp_ip06_actmed_qtiod10
@@ -134,3 +176,11 @@ SET dni_medico = encode(
         encrypt(dni_medico::bytea, 'gcpp_ggi_sge_ag', 'aes'),
         'hex'
       );
+
+UPDATE ietsi.tmp_ip06_actmed_qtiod10
+SET acto_med = encode(
+        encrypt(acto_med::bytea, 'gcpp_ggi_sge_ag', 'aes'),
+        'hex'
+      );
+REVOKE CONNECT ON DATABASE sispoi_produccion2 FROM PUBLIC;
+REVOKE CONNECT ON DATABASE sispoi_produccion2 FROM ietsi;

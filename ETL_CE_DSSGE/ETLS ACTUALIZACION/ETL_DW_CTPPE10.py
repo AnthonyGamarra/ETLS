@@ -29,10 +29,11 @@ pg_db   = os.getenv("PG_DB")
 # 2. Función para obtener rango mensual
 # ==============================
 def month_range(start_date, end_date):
-    current = start_date
+    current = start_date.replace(day=1)
     while current <= end_date:
+        # primer día del siguiente mes
         next_month = (current.replace(day=1) + timedelta(days=32)).replace(day=1)
-        yield current, min(next_month - timedelta(days=1), end_date)
+        yield current, next_month
         current = next_month
 
 # ==============================
@@ -61,41 +62,64 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 9, 1)
-end_date = datetime(2025, 9, 30)
+start_date = datetime(2025, 10, 1)
+end_date = datetime(2025, 11, 30)
+
+print(f"\n--- Iniciando extracción mes a mes entre {start_date.strftime('%Y-%m-%d')} y {end_date.strftime('%Y-%m-%d')} ---")
 
 # ==============================
-# 6. Ciclo para extraer y copiar mes a mes
+# 6. Procesar mes a mes sin paginación
 # ==============================
-for start_mes, end_mes in month_range(start_date, end_date):
-    print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
+for start_mes, start_next_mes in month_range(start_date, end_date):
     anio = start_mes.strftime('%Y')
-    mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.dwe_consulta_externa_citados_{anio}_{mes}"
-    query = f"""
-            select
-            to_char(t.citambproconfec, 'yyyy') anio,
-            t.CITAMBORICENASICOD as cod_oricentro,
-            t.CITAMBCENASICOD as cod_centro,
-            t.CITAMBNUM as acto_med,
-            t.CITAMBAREHOSCOD as cod_area,
-            t.CITAMBSERVHOSCOD as cod_servicio,
-            t.CITAMBACTCOD as cod_actividad,
-            t.CITAMBACTESPCOD as cod_subactividad,
-            to_char(t.citambproconfec, 'yyyymm') periodo,
-            t.ESTCITCOD as cod_estado,
-            n.tipopacicod as cod_paciente
-            from SGSS.ctcam10 t
-            left outer join SGSS.cmame10 k on t.citamboricenasicod  = k.oricenasicod
-                                    and t.citambcenasicod     = k.cenasicod
-                                    and t.citambnum           = k.actmednum
-            left outer join SGSS.cbtpc10 n on k.actmedtipopacicod       = n.tipopacicod
+    mes = start_mes.strftime('%m')
+    print(f"\nProcesando mes: {start_mes.strftime('%Y-%m')}")
 
-            where t.citamboricenasicod                  in ('1','2','3','4','5','6','7')
-            and t.citambproconfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and t.citambproconfec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and t.citambactcod = '91'
-            ORDER BY periodo ASC
+    query = f"""
+    SELECT 
+        to_char(properfec, 'yyyy') as anio,
+        to_char(properfec, 'yyyymm') as periodo,
+        ORICENASICOD,
+        CENASICOD,
+        AREHOSCOD,
+        SERVHOSCOD,
+        ACTCOD,
+        ACTESPCOD,
+        TIPDOCIDENPERCOD,
+        PERASISDOCIDENNUM,
+        PROPERFEC,
+        PROPERTURHORINI,
+        PROPERTURHORFIN,
+        PROPERTIPOPROGPERSCOD,
+        TIPOHORPROGCOD,
+        PROPERPROHORTOT,
+        PROPERPROHORMAXNOR,
+        PROPERPROHORMAXEXT,
+        ESTPROGCITCOD,
+        MOTSUSPROGCOD,
+        PROPERESTREGCOD,
+        PROPERUSUCRECOD,
+        PROPERCREFEC,
+        PROPERUSUMODCOD,
+        PROPERMODFEC,
+        PROPERPROEXAFLG,
+        PROPERIPCRE,
+        PROPERIPMOD,
+        PROPERUSUSUSCOD,
+        PROPERSUSFEC,
+        PROPERIPSUS,
+        PROPERUSUANUSUSCOD,
+        PROPERANUSUSFEC,
+        PROPERIPANUSUS,
+        PROPERTURFLG,
+        PROPERTURAPEFEC,
+        PROPERTURCIEFEC,
+        PROPERUSUTURAPE,
+        PROPERUSUTURCIE,
+        PROPERTIPOHORDET
+    FROM SGSS.ctppe10
+    WHERE properfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+      AND properfec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -103,33 +127,31 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"Datos extraídos: {len(df)} filas.")
 
     if df.empty:
-        print("No hay datos para este mes.")
+        print(f"No hay datos para el mes {start_mes.strftime('%Y-%m')}.")
         continue
 
     df.columns = df.columns.str.lower()
 
-
-    # ==============================
-    # TRUNCAR PARTICIÓN DESTINO
-    # ==============================
-    print(f"Truncando partición destino: {tabla_destino}...")
+        # Truncar la tabla particionada destino en PostgreSQL antes de la carga
+    tabla_particion = f"dssge.sgss_ctppe10_{anio}_{mes}"
     try:
-        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
-        print(f"Tabla {tabla_destino} truncada correctamente.")
+        print(f"Truncando tabla particionada destino: {tabla_particion}...")
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_particion};")
+        conn_pg.commit()
+        print(f"Tabla {tabla_particion} truncada correctamente.")
     except Exception as e:
-        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
-        continue  # Saltar este mes si no existe la partición
+        print(f"Error al truncar la tabla {tabla_particion}: {e}")
+        continue
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()
     df.to_csv(csv_buffer, index=False, header=False)
     csv_buffer.seek(0)
 
-    # Usamos COPY para cargar datos a PostgreSQL
     print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
     try:
         cursor_pg.copy_expert(
-            sql=f"COPY {tabla_destino} ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            sql=f"COPY dssge.sgss_ctppe10 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
             file=csv_buffer
         )
         print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")
@@ -144,7 +166,3 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
-
-
-
-

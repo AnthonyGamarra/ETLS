@@ -29,11 +29,10 @@ pg_db   = os.getenv("PG_DB")
 # 2. Función para obtener rango mensual
 # ==============================
 def month_range(start_date, end_date):
-    current = start_date.replace(day=1)
+    current = start_date
     while current <= end_date:
-        # primer día del siguiente mes
         next_month = (current.replace(day=1) + timedelta(days=32)).replace(day=1)
-        yield current, next_month
+        yield current, min(next_month - timedelta(days=1), end_date)
         current = next_month
 
 # ==============================
@@ -62,40 +61,41 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 9, 1)
-end_date = datetime(2025, 9, 30)
-
-print(f"\n--- Iniciando extracción mes a mes entre {start_date.strftime('%Y-%m-%d')} y {end_date.strftime('%Y-%m-%d')} ---")
+start_date = datetime(2025, 10, 1)
+end_date = datetime(2025, 11, 30)
 
 # ==============================
-# 6. Procesar mes a mes sin paginación
+# 6. Ciclo para extraer y copiar mes a mes
 # ==============================
-for start_mes, start_next_mes in month_range(start_date, end_date):
-    print(f"\nProcesando mes: {start_mes.strftime('%Y-%m')}")
-
+for start_mes, end_mes in month_range(start_date, end_date):
+    print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
+    anio = start_mes.strftime('%Y')
+    mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
+    tabla_destino = f"dssge.dwe_consulta_externa_citados_{anio}_{mes}"
     query = f"""
-            SELECT 
-                a.ATENAMBORICENASICOD, 
-                a.ATENAMBCENASICOD, 
-                a.ATENAMBNUM, 
-                a.CONDDIAGCOD, 
-                a.DIAGCOD, 
-                a.ATENAMBDIAGORD, 
-                a.ATENAMBTIPODIAGCOD, 
-                a.ATENAMBCASODIAGCOD, 
-                a.DIAGATENAMBALTAFLAG, 
-                a.DIAGATENAMBPEAS,
-                TO_CHAR(TRUNC(c.atenambatenfec), 'yyyymm') AS periodo,
-                TO_CHAR(TRUNC(c.atenambatenfec), 'yyyy') AS anio
-            FROM sgss.ctdaa10 a
-            LEFT OUTER JOIN sgss.ctaam10 c 
-                ON c.ATENAMBORICENASICOD = a.ATENAMBORICENASICOD
-            AND c.ATENAMBCENASICOD    = a.ATENAMBCENASICOD
-            AND c.ATENAMBNUM          = a.ATENAMBNUM
-            WHERE c.atenambestregcod = '1'
-        AND atenambatenfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-        AND atenambatenfec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-        ORDER BY atenambatenfec
+            select
+            to_char(t.citambproconfec, 'yyyy') anio,
+            t.CITAMBORICENASICOD as cod_oricentro,
+            t.CITAMBCENASICOD as cod_centro,
+            t.CITAMBNUM as acto_med,
+            t.CITAMBAREHOSCOD as cod_area,
+            t.CITAMBSERVHOSCOD as cod_servicio,
+            t.CITAMBACTCOD as cod_actividad,
+            t.CITAMBACTESPCOD as cod_subactividad,
+            to_char(t.citambproconfec, 'yyyymm') periodo,
+            t.ESTCITCOD as cod_estado,
+            n.tipopacicod as cod_paciente
+            from SGSS.ctcam10 t
+            left outer join SGSS.cmame10 k on t.citamboricenasicod  = k.oricenasicod
+                                    and t.citambcenasicod     = k.cenasicod
+                                    and t.citambnum           = k.actmednum
+            left outer join SGSS.cbtpc10 n on k.actmedtipopacicod       = n.tipopacicod
+
+            where t.citamboricenasicod                  in ('1','2','3','4','5','6','7')
+            and t.citambproconfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and t.citambproconfec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and t.citambactcod = '91'
+            ORDER BY periodo ASC
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -103,20 +103,33 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
     print(f"Datos extraídos: {len(df)} filas.")
 
     if df.empty:
-        print(f"No hay datos para el mes {start_mes.strftime('%Y-%m')}.")
+        print("No hay datos para este mes.")
         continue
 
     df.columns = df.columns.str.lower()
+
+
+    # ==============================
+    # TRUNCAR PARTICIÓN DESTINO
+    # ==============================
+    print(f"Truncando partición destino: {tabla_destino}...")
+    try:
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
+        print(f"Tabla {tabla_destino} truncada correctamente.")
+    except Exception as e:
+        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
+        continue  # Saltar este mes si no existe la partición
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()
     df.to_csv(csv_buffer, index=False, header=False)
     csv_buffer.seek(0)
 
+    # Usamos COPY para cargar datos a PostgreSQL
     print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
     try:
         cursor_pg.copy_expert(
-            sql=f"COPY dssge.sgss_ctdaa10_anio_v2 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            sql=f"COPY {tabla_destino} ({', '.join(df.columns)}) FROM STDIN WITH CSV",
             file=csv_buffer
         )
         print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")
@@ -131,3 +144,7 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
+
+
+
+

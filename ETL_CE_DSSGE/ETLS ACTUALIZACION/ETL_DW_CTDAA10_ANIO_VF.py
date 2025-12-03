@@ -62,8 +62,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 9, 1)
-end_date = datetime(2025, 9, 30 )
+start_date = datetime(2025, 10, 1)
+end_date = datetime(2025, 11, 30)
 
 print(f"\n--- Iniciando extracción mes a mes entre {start_date.strftime('%Y-%m-%d')} y {end_date.strftime('%Y-%m-%d')} ---")
 
@@ -71,53 +71,33 @@ print(f"\n--- Iniciando extracción mes a mes entre {start_date.strftime('%Y-%m-
 # 6. Procesar mes a mes sin paginación
 # ==============================
 for start_mes, start_next_mes in month_range(start_date, end_date):
+    anio = start_mes.strftime('%Y')
+    mes = start_mes.strftime('%m')
     print(f"\nProcesando mes: {start_mes.strftime('%Y-%m')}")
 
     query = f"""
-    SELECT 
-        to_char(properfec, 'yyyy') as anio,
-        to_char(properfec, 'yyyymm') as periodo,
-        ORICENASICOD,
-        CENASICOD,
-        AREHOSCOD,
-        SERVHOSCOD,
-        ACTCOD,
-        ACTESPCOD,
-        TIPDOCIDENPERCOD,
-        PERASISDOCIDENNUM,
-        PROPERFEC,
-        PROPERTURHORINI,
-        PROPERTURHORFIN,
-        PROPERTIPOPROGPERSCOD,
-        TIPOHORPROGCOD,
-        PROPERPROHORTOT,
-        PROPERPROHORMAXNOR,
-        PROPERPROHORMAXEXT,
-        ESTPROGCITCOD,
-        MOTSUSPROGCOD,
-        PROPERESTREGCOD,
-        PROPERUSUCRECOD,
-        PROPERCREFEC,
-        PROPERUSUMODCOD,
-        PROPERMODFEC,
-        PROPERPROEXAFLG,
-        PROPERIPCRE,
-        PROPERIPMOD,
-        PROPERUSUSUSCOD,
-        PROPERSUSFEC,
-        PROPERIPSUS,
-        PROPERUSUANUSUSCOD,
-        PROPERANUSUSFEC,
-        PROPERIPANUSUS,
-        PROPERTURFLG,
-        PROPERTURAPEFEC,
-        PROPERTURCIEFEC,
-        PROPERUSUTURAPE,
-        PROPERUSUTURCIE,
-        PROPERTIPOHORDET
-    FROM SGSS.ctppe10
-    WHERE properfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-      AND properfec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            SELECT 
+                a.ATENAMBORICENASICOD, 
+                a.ATENAMBCENASICOD, 
+                a.ATENAMBNUM, 
+                a.CONDDIAGCOD, 
+                a.DIAGCOD, 
+                a.ATENAMBDIAGORD, 
+                a.ATENAMBTIPODIAGCOD, 
+                a.ATENAMBCASODIAGCOD, 
+                a.DIAGATENAMBALTAFLAG, 
+                a.DIAGATENAMBPEAS,
+                TO_CHAR(TRUNC(c.atenambatenfec), 'yyyymm') AS periodo,
+                TO_CHAR(TRUNC(c.atenambatenfec), 'yyyy') AS anio
+            FROM sgss.ctdaa10 a
+            LEFT OUTER JOIN sgss.ctaam10 c 
+                ON c.ATENAMBORICENASICOD = a.ATENAMBORICENASICOD
+            AND c.ATENAMBCENASICOD    = a.ATENAMBCENASICOD
+            AND c.ATENAMBNUM          = a.ATENAMBNUM
+            WHERE c.atenambestregcod = '1'
+        AND atenambatenfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        AND atenambatenfec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        ORDER BY atenambatenfec
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -130,6 +110,18 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
 
     df.columns = df.columns.str.lower()
 
+
+    # Truncar la tabla particionada destino en PostgreSQL antes de la carga
+    tabla_particion = f"dssge.sgss_ctdaa10_anio_v2_{anio}_{mes}"
+    try:
+        print(f"Truncando tabla particionada destino: {tabla_particion}...")
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_particion};")
+        conn_pg.commit()
+        print(f"Tabla {tabla_particion} truncada correctamente.")
+    except Exception as e:
+        print(f"Error al truncar la tabla {tabla_particion}: {e}")
+        continue
+
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()
     df.to_csv(csv_buffer, index=False, header=False)
@@ -138,7 +130,7 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
     print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
     try:
         cursor_pg.copy_expert(
-            sql=f"COPY dssge.sgss_ctppe10 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            sql=f"COPY dssge.sgss_ctdaa10_anio_v2 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
             file=csv_buffer
         )
         print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")

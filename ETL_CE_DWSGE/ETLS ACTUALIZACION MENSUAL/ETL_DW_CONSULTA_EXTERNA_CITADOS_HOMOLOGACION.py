@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_consulta_externa_citados_homologacion"
 
 
-for mes in range(1,11):
+for mes in range(10,12):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -83,17 +83,18 @@ for mes in range(1,11):
             a.cod_actividad,
             a.cod_subactividad,
             a.periodo,
-            a.cod_estado,
-            a.cod_paciente,
+            a.cod_estado_cita as cod_estado,
+            a.cod_tipo_paciente as cod_paciente,
             e.cod_especialidad,
             e.cod_subespecialidad,
             e.cod_agrupador,
             e.cod_variable
-        FROM dwsge.dwe_consulta_externa_citados_{anio}_{mes_str} a
+        FROM dssge.sgss_ctcam10_m_{anio}_{mes_str} a
         LEFT JOIN dssge.dw_homologacion_enlaces e 
             ON a.cod_actividad::text = e.cod_actividad::text 
             AND a.cod_subactividad::text = e.cod_subactividad::text 
-            AND a.cod_servicio::text = e.cod_servicio::text      
+            AND a.cod_servicio::text = e.cod_servicio::text 
+        WHERE a.cod_actividad ='91'    
 
         """
 

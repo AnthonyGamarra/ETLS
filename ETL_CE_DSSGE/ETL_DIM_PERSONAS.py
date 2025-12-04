@@ -1,106 +1,160 @@
 import os
+import oracledb
 import pandas as pd
-from sqlalchemy import create_engine
+import psycopg2
+from io import StringIO
 from dotenv import load_dotenv
 from datetime import datetime
-from io import StringIO
-import psycopg2
 
+# ==============================
+# 1. Cargar variables desde .env
+# ==============================
 load_dotenv()
 
-pg_user = os.getenv("PG_USER2")
-pg_pass = os.getenv("PG_PASS2")
-pg_host = os.getenv("PG_HOST2")
-pg_db   = os.getenv("PG_DB2")
+# ORACLE ORIGEN
+oracle_user = os.getenv("ORACLE_USER")
+oracle_pass = os.getenv("ORACLE_PASS")
+oracle_host = os.getenv("ORACLE_HOST")
+oracle_port = os.getenv("ORACLE_PORT")
+oracle_service = os.getenv("ORACLE_SERVICE")
 
-pg_user2 = os.getenv("PG_USER")
-pg_pass2 = os.getenv("PG_PASS")
-pg_host2 = os.getenv("PG_HOST")
-pg_db2   = os.getenv("PG_DB")
+# POSTGRES DESTINO
+pg_user_dst = os.getenv("PG_USER")
+pg_pass_dst = os.getenv("PG_PASS")
+pg_host_dst = os.getenv("PG_HOST")
+pg_db_dst   = os.getenv("PG_DB")
 
-print(f"Base de datos origen: {pg_db}")
-print(f"Base de datos destino: {pg_db2}")
+print(f"🔵 Base de datos ORIGEN (ORACLE):  {oracle_service}")
+print(f"🟢 Base de datos DESTINO (POSTGRES): {pg_db_dst}")
 
-engine_pg2 = create_engine(f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:5433/{pg_db}")
-conn_pg = psycopg2.connect(
-    dbname=pg_db2,
-    user=pg_user2,
-    password=pg_pass2,
-    host=pg_host2,
+# ==============================
+# 2. Conexión ORACLE
+# ==============================
+oracle_dsn = f"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={oracle_host})(PORT={oracle_port}))(CONNECT_DATA=(SERVICE_NAME={oracle_service})))"
+
+conn_src = oracledb.connect(
+    user=oracle_user,
+    password=oracle_pass,
+    dsn=oracle_dsn
+)
+
+cursor_src = conn_src.cursor()
+
+# ==============================
+# 3. Conexión POSTGRES
+# ==============================
+conn_dst = psycopg2.connect(
+    dbname=pg_db_dst,
+    user=pg_user_dst,
+    password=pg_pass_dst,
+    host=pg_host_dst,
     port=5433
 )
 
+# ==============================
+# CONFIG
+# ==============================
 chunksize = 500000
 data_found = False
 
 start_time = datetime.now()
-print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"\n🕒 Inicio del ETL: {start_time:%Y-%m-%d %H:%M:%S}")
 
 try:
-    table_name = "public.personas_essi_4"
-    start_time_process = datetime.now()
+    query = """
+        SELECT 
+            REPLACE(p.PERSECNUM, CHR(0), '') AS PERSECNUM,
+            REPLACE(p.PERTIPDOCIDENCOD, CHR(0), '') AS PERTIPDOCIDENCOD,
+            REPLACE(p.PERDOCIDENNUM, CHR(0), '') AS PERDOCIDENNUM,
+            REPLACE(p.PERAPEPATDES, CHR(0), '') AS PERAPEPATDES,
+            REPLACE(p.PERAPEMATDES, CHR(0), '') AS PERAPEMATDES,
+            REPLACE(p.PERPRINOMDES, CHR(0), '') AS PERPRINOMDES,
+            REPLACE(p.PERSEGNOMDES, CHR(0), '') AS PERSEGNOMDES,
+            TO_CHAR(p.PERNACFEC,'dd/mm/yyyy') AS PERNACFEC,
+            REPLACE(p.PERSEXOCOD, CHR(0), '') AS PERSEXOCOD,
+            REPLACE(p.PERESTCIVCOD, CHR(0), '') AS PERESTCIVCOD,
+            REPLACE(p.PERTIPSEGCOD, CHR(0), '') AS PERTIPSEGCOD,
+            REPLACE(p.PERAUTCOD, CHR(0), '') AS PERAUTCOD,
+            REPLACE(p.PERUBIGEONACNOM, CHR(0), '') AS PERUBIGEONACNOM,
+            REPLACE(p.PEREMPASECOD, CHR(0), '') AS PEREMPASECOD,
+            REPLACE(p.PERORICENASIADSCOD, CHR(0), '') AS PERORICENASIADSCOD,
+            REPLACE(p.PERCENASIADSCOD, CHR(0), '') AS PERCENASIADSCOD,
+            TO_CHAR(p.PERINSFEC,'dd/mm/yyyy') AS PERINSFEC,
+            TO_CHAR(p.PERVIGFEC,'dd/mm/yyyy') AS PERVIGFEC,
+            TO_CHAR(p.PERFALFEC,'dd/mm/yyyy') AS PERFALFEC,
+            REPLACE(p.PERCALDOMNOM, CHR(0), '') AS PERCALDOMNOM,
+            REPLACE(p.PERNMKDOMNUM, CHR(0), '') AS PERNMKDOMNUM,
+            REPLACE(p.PERINLDOMNUM, CHR(0), '') AS PERINLDOMNUM,
+            REPLACE(p.PERURBDOMNOM, CHR(0), '') AS PERURBDOMNOM,
+            REPLACE(p.PERUBIGEODOMNOM, CHR(0), '') AS PERUBIGEODOMNOM,
+            REPLACE(p.PERSECTITNUM, CHR(0), '') AS PERSECTITNUM,
+            REPLACE(p.PERCITTFLG, CHR(0), '') AS PERCITTFLG,
+            REPLACE(p.PERAFESCTRFLG, CHR(0), '') AS PERAFESCTRFLG,
+            REPLACE(p.PERAFEESSVIDFLG, CHR(0), '') AS PERAFEESSVIDFLG,
+            REPLACE(p.PERLATFLG, CHR(0), '') AS PERLATFLG,
+            REPLACE(p.PERFACFLG, CHR(0), '') AS PERFACFLG,
+            REPLACE(p.PERCERTMEDNUM, CHR(0), '') AS PERCERTMEDNUM,
+            REPLACE(p.PERPLANSALUCOD, CHR(0), '') AS PERPLANSALUCOD,
+            REPLACE(p.PERTIPOPARECOD, CHR(0), '') AS PERTIPOPARECOD,
+            REPLACE(p.PERESTREGCOD, CHR(0), '') AS PERESTREGCOD,
+            REPLACE(p.PERUSUCRECOD, CHR(0), '') AS PERUSUCRECOD,
+            TO_CHAR(p.PERCREFEC,'dd/mm/yyyy') AS PERCREFEC,
+            REPLACE(p.PERUSUMODCOD, CHR(0), '') AS PERUSUMODCOD,
+            TO_CHAR(p.PERMODFEC,'dd/mm/yyyy') AS PERMODFEC,
+            REPLACE(p.PERACRCOMTIPCOD, CHR(0), '') AS PERACRCOMTIPCOD,
+            REPLACE(p.PERACRCOMNUM, CHR(0), '') AS PERACRCOMNUM,
+            REPLACE(p.PERACRCOMMOTCOD, CHR(0), '') AS PERACRCOMMOTCOD,
+            REPLACE(p.PERINTPREAUTCOD, CHR(0), '') AS PERINTPREAUTCOD,
+            REPLACE(p.PERUBIGEONAC, CHR(0), '') AS PERUBIGEONAC,
+            REPLACE(p.PERRUCEMPNUM, CHR(0), '') AS PERRUCEMPNUM,
+            REPLACE(p.PERUBIGEODOM, CHR(0), '') AS PERUBIGEODOM,
+            REPLACE(p.PERAUTTITCOD, CHR(0), '') AS PERAUTTITCOD,
+            TO_CHAR(p.PERAPORPERIO,'dd/mm/yyyy') AS PERAPORPERIO,
+            REPLACE(p.PERRAZANEGRAFLG, CHR(0), '') AS PERRAZANEGRAFLG,
+            REPLACE(p.PERINDATE, CHR(0), '') AS PERINDATE,
+            REPLACE(p.PERBLOHC, CHR(0), '') AS PERBLOHC
+        FROM sgss.cmper10 p
+    """
 
-    offset = 0
+    cursor_src.execute(query)
+
     rows_processed = 0
 
     while True:
-        query = f"""
-            SELECT * FROM {table_name}
-            ORDER BY persecnum
-            LIMIT {chunksize} OFFSET {offset}
-        """
-        chunk_df = pd.read_sql_query(query, engine_pg2)
-
-        if chunk_df.empty:
-            if offset == 0:
-                print(f"⚠️  No se encontraron datos en la tabla {table_name}")
+        rows = cursor_src.fetchmany(chunksize)
+        if not rows:
             break
 
         data_found = True
-        print(f"📥 Leyendo batch de {table_name} con OFFSET {offset}, filas leídas: {len(chunk_df)}")
 
-        chunk_df.columns = chunk_df.columns.str.lower()
+        colnames = [col[0].lower() for col in cursor_src.description]
+        df = pd.DataFrame(rows, columns=colnames)
 
-        # Exportar DataFrame a CSV en memoria (sin índice, sin encabezado)
-        csv_buffer = StringIO()
-        chunk_df.to_csv(csv_buffer, index=False, header=False)
-        csv_buffer.seek(0)
+        print(f"📥 Batch leído: {len(df)} filas")
 
-        # Usar COPY para insertar rápido
-        with conn_pg.cursor() as cur:
-            copy_sql = f"""
-                COPY dssge.dwe_personas_essi ({', '.join(chunk_df.columns)})
-                FROM STDIN WITH CSV
-            """
-            cur.copy_expert(copy_sql, csv_buffer)
-            conn_pg.commit()
+        buffer = StringIO()
+        df.to_csv(buffer, index=False, header=False)
+        buffer.seek(0)
 
-        print(f"✅ Insertadas filas batch de {table_name} con OFFSET {offset}: {len(chunk_df)}")
-        rows_processed += len(chunk_df)
+        copy_sql = f"""
+            COPY dssge.dwe_personas_essi ({', '.join(colnames)})
+            FROM STDIN WITH CSV
+        """
 
-        offset += chunksize
+        with conn_dst.cursor() as cur:
+            cur.copy_expert(copy_sql, buffer)
+            conn_dst.commit()
 
-    end_time_process = datetime.now()
-    duration = (end_time_process - start_time_process).total_seconds() / 60  # minutos
+        rows_processed += len(df)
+        print(f"✅ Batch insertado: {len(df)} filas")
 
-    if rows_processed > 0:
-        print(f"🕒 Tiempo total de ejecución para {table_name}: {duration:.2f} minutos\n")
+    print(f"\n🟢 Total insertado: {rows_processed} filas")
 
 except Exception as e:
-    print(f"❌ Error durante la ejecución del ETL: {e}")
+    print(f"❌ Error durante el ETL: {e}")
 
 finally:
-    engine_pg2.dispose()
-    conn_pg.close()
+    cursor_src.close()
+    conn_src.close()
+    conn_dst.close()
     print("🔌 Conexiones cerradas.")
-
-end_time = datetime.now()
-print(f"\n🕓 Fin del ETL: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
-
-duration = end_time - start_time
-print(f"⏱️ Tiempo total de procesamiento: {duration}")
-
-if data_found:
-    print("✅ ETL finalizado correctamente.")
-else:
-    print("⚠️  No se encontraron datos en ninguna partición.")

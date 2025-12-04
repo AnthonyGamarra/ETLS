@@ -48,20 +48,11 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(9,10):
+for mes in range(10,12):
     mes_str = f"{mes:02d}"
-    try:
-        cur_dst = conn_dst.cursor()
-        partition_name = f"dwsge.dwe_consulta_externa_horas_efectivas_{anio}_{mes_str}"
-        cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
-        conn_dst.commit()
-        cur_dst.close()
-        print(f"Partición truncada correctamente: {partition_name}")
-    except Exception as e:
-        print(f"Error truncando partición {partition_name}: {e}")  
 
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")
-    
+
     try:
         query = f"""
             WITH atenciones AS (
@@ -147,30 +138,44 @@ for mes in range(9,10):
                     AND t.actcod = '91'
                     AND t.estprogcitcod IN ('2','4')
                     AND t.actespcod <> '092'
-
             ) b
-            WHERE b.ate <> 0"""
+            WHERE b.ate <> 0
+        """
 
-        # Leer datos
+        # Leer datos primero
         df = pd.read_sql_query(query, conn_src)
 
         if df.empty:
             print(f"⚠️ No se encontraron datos para {anio}-{mes_str}")
-        else:
-            df.columns = df.columns.str.lower()
-            table_name = "dwsge.dwe_consulta_externa_horas_efectivas"
+            continue
 
-            buffer = io.StringIO()
-            df.to_csv(buffer, index=False, header=False)
-            buffer.seek(0)
+        df.columns = df.columns.str.lower()
 
-            with conn_dst.cursor() as cur_dst:
-                cols = ','.join(df.columns)
-                copy_sql = f"COPY {table_name} ({cols}) FROM STDIN WITH CSV"
-                cur_dst.copy_expert(sql=copy_sql, file=buffer)
-                conn_dst.commit()
+        # Ahora recién truncamos la partición
+        try:
+            cur_dst = conn_dst.cursor()
+            partition_name = f"dwsge.dwe_consulta_externa_horas_efectivas_{anio}_{mes_str}"
+            cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
+            conn_dst.commit()
+            cur_dst.close()
+            print(f"Partición truncada correctamente: {partition_name}")
+        except Exception as e:
+            print(f"❌ Error truncando partición {partition_name}: {e}")
+            continue
 
-            print(f"✅ Carga completada para {anio}-{mes_str}: filas cargadas {len(df)}")
+        # Cargar datos
+        table_name = "dwsge.dwe_consulta_externa_horas_efectivas"
+        buffer = io.StringIO()
+        df.to_csv(buffer, index=False, header=False)
+        buffer.seek(0)
+
+        with conn_dst.cursor() as cur_dst:
+            cols = ','.join(df.columns)
+            copy_sql = f"COPY {table_name} ({cols}) FROM STDIN WITH CSV"
+            cur_dst.copy_expert(sql=copy_sql, file=buffer)
+            conn_dst.commit()
+
+        print(f"✅ Carga completada para {anio}-{mes_str}: filas cargadas {len(df)}")
 
     except Exception as e:
         print(f"❌ Error en {anio}-{mes_str}: {e}")

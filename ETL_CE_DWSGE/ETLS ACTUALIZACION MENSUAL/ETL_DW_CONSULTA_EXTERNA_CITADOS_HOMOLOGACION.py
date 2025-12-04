@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_consulta_externa_citados_homologacion"
 
 
-for mes in range(10,12):
+for mes in range(1,12):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -74,28 +74,112 @@ for mes in range(10,12):
     try:
         query = f"""
         SELECT
-            a.anio,
-            a.cod_oricentro,
-            a.cod_centro,
-            a.acto_med,
-            a.cod_area,
-            a.cod_servicio,
-            a.cod_actividad,
-            a.cod_subactividad,
-            a.periodo,
-            a.cod_estado_cita as cod_estado,
-            a.cod_tipo_paciente as cod_paciente,
+            d.anio,
+            d.periodo,
+            d.cod_oricentro,
+            d.cod_centro,
+            d.acto_med,
+            d.cod_area,
+            d.cod_servicio,    
+            d.cod_actividad,
+            d.cod_subactividad,
+            d.cod_tipo_paciente as cod_paciente,
             e.cod_especialidad,
             e.cod_subespecialidad,
             e.cod_agrupador,
-            e.cod_variable
-        FROM dssge.sgss_ctcam10_m_{anio}_{mes_str} a
-        LEFT JOIN dssge.dw_homologacion_enlaces e 
-            ON a.cod_actividad::text = e.cod_actividad::text 
-            AND a.cod_subactividad::text = e.cod_subactividad::text 
-            AND a.cod_servicio::text = e.cod_servicio::text 
-        WHERE a.cod_actividad ='91'    
+            e.cod_variable,
+            d.cod_estado_cita as cod_estado,
+            d.cod_tipo_cita,
+            d.doc_paciente,    
+            d.sexo,
+            d.fecha_solicitud,
+            d.fecha_creacion,
+            d.fecha_cita,
+            CASE 
+                    WHEN (d.fecha_solicitud = '0001-01-01') 
+                    OR (TO_DATE(d.fecha_solicitud,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD') 
+                        AND d.fecha_solicitud <> '0001-01-01')  
+                    THEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD'))
+                    ELSE (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD'))
+                END AS diferimiento,
 
+                CASE 
+                    WHEN d.fecha_solicitud = '0001-01-01' THEN
+                        CASE
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) < 7 THEN '1'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) > 150 THEN '8'
+                            ELSE '0'
+                        END
+                    
+                    WHEN TO_DATE(d.fecha_solicitud,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD')
+                        AND d.fecha_solicitud <> '0001-01-01' THEN
+                        CASE
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) < 7 THEN '1'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) > 150 THEN '8'
+                            ELSE '0'
+                        END
+
+                    ELSE 
+                        CASE
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) < 7 THEN '1'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
+                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) > 150 THEN '8'
+                            ELSE '0'
+                        END
+                END AS dif_clasificado,
+
+                d.anio_edad,
+
+                CASE 
+                    WHEN CAST(d.anio_edad AS INTEGER) <= 10 THEN '1'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 11 AND 20 THEN '2'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 21 AND 30 THEN '3'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 31 AND 40 THEN '4'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 41 AND 50 THEN '5'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 51 AND 60 THEN '6'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 61 AND 70 THEN '7'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 71 AND 80 THEN '8'
+                    WHEN CAST(d.anio_edad AS INTEGER) BETWEEN 81 AND 90 THEN '9'
+                    WHEN CAST(d.anio_edad AS INTEGER) > 90 THEN '10'
+                    ELSE '0'
+                END AS edad_clasificado,
+
+                CASE 
+                    WHEN d.fecha_solicitud = '0001-01-01' THEN '2'
+                    WHEN (TO_DATE(d.fecha_solicitud,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) 
+                        AND d.fecha_solicitud <> '0001-01-01' THEN '3'
+                    WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') < TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) 
+                    AND (TO_DATE(d.fecha_cita,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) THEN '4'
+                    WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') < TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) 
+                    AND (TO_DATE(d.fecha_cita,'YYYY-MM-DD') > TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) THEN '5'
+                    WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') = TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) THEN '6'
+                    ELSE '1'
+                END AS flag_calidad,
+                
+                1 AS num_citas
+
+            FROM dssge.sgss_ctcam10_m_{anio}_{mes_str} d
+                LEFT JOIN dssge.dw_homologacion_enlaces e 
+                        ON d.cod_actividad::text = e.cod_actividad::text 
+                        AND d.cod_subactividad::text = e.cod_subactividad::text 
+                        AND d.cod_servicio::text = e.cod_servicio::text
         """
 
         df = pd.read_sql_query(query, conn_src)

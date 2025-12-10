@@ -1,0 +1,56 @@
+CREATE TABLE DWE_CONSULTA_EXTERNA_HOMOLOGACION (
+    cod_oricentro           VARCHAR2(20),
+    cod_centro              VARCHAR2(20),
+    periodo                 CHAR(6) NOT NULL,
+    cod_servicio            VARCHAR2(20),
+    cod_actividad           VARCHAR2(20),
+    cod_subactividad        VARCHAR2(20),
+    dni_medico              VARCHAR2(20),
+    doc_paciente            VARCHAR2(20),
+    anio                    CHAR(4) NOT NULL,
+    meses                   VARCHAR2(10),
+    sexo                    VARCHAR2(10),
+    h_c                     VARCHAR2(20),
+    cod_tip_seguro          VARCHAR2(20),
+    cod_tipo_parentesco     VARCHAR2(20),
+    cod_tipo_paciente       VARCHAR2(20),
+    cod_tipdoc_paciente     VARCHAR2(20),
+    cod_tipdoc_medico       VARCHAR2(20),
+    cmp                     VARCHAR2(20),
+    fecha_solic             VARCHAR2(20),
+    fecha_cita              VARCHAR2(20),
+    fecha_atencion          VARCHAR2(20),
+    acto_med                NUMBER,
+    cod_tipo_consulta       VARCHAR2(20),
+    cas_referencia          VARCHAR2(20),
+    cas_adscripcion         VARCHAR2(20),
+    cod_diag                VARCHAR2(20),
+    total_horas             VARCHAR2(20),
+    cod_especialidad        VARCHAR2(20),
+    cod_subespecialidad     VARCHAR2(20),
+    cod_agrupador           VARCHAR2(20),
+    cod_variable            VARCHAR2(20),
+    total_en_particion      NUMBER,
+    clasificacion           NUMBER,
+    row_num                VARCHAR2(100),
+    anio_edad              VARCHAR2(100)
+)
+PARTITION BY LIST (anio)
+SUBPARTITION BY LIST (periodo)
+(
+    PARTITION p2025 VALUES ('2025')
+    (
+        SUBPARTITION p2025_01 VALUES ('202501'),
+        SUBPARTITION p2025_02 VALUES ('202502'),
+        SUBPARTITION p2025_03 VALUES ('202503'),
+        SUBPARTITION p2025_04 VALUES ('202504'),
+        SUBPARTITION p2025_05 VALUES ('202505'),
+        SUBPARTITION p2025_06 VALUES ('202506'),
+        SUBPARTITION p2025_07 VALUES ('202507'),
+        SUBPARTITION p2025_08 VALUES ('202508'),
+        SUBPARTITION p2025_09 VALUES ('202509'),
+        SUBPARTITION p2025_10 VALUES ('202510'),
+        SUBPARTITION p2025_11 VALUES ('202511'),
+        SUBPARTITION p2025_12 VALUES ('202512')
+    )
+);

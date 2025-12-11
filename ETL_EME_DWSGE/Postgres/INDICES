@@ -1,0 +1,222 @@
+------------------------------------------------------ crear ids dim
+ALTER TABLE dwsge.sgss_cbcod10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cbcod10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cbtid10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cbtid10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cmaho10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cmaho10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cmcpp10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cmcpp10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_cmtse10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_cmtse10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbacp10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbacp10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbegp10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbegp10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbepe10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbepe10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbmeg10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbmeg10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbpae10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbpae10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbrai10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbrai10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbtac10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbtac10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbtae10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbtae10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mbtoe10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mbtoe10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mmaem10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mmaem10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mmaet10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mmaet10
+ADD PRIMARY KEY (id);
+
+ALTER TABLE dwsge.sgss_mmeme10
+ADD COLUMN id SERIAL;
+ALTER TABLE dwsge.sgss_mmeme10
+ADD PRIMARY KEY (id);
+
+
+-- ============================================
+-- RESTRICCIONES UNIQUE EN TABLAS DIMENSIONES
+-- ============================================
+ALTER TABLE dwsge.sgss_mbtoe10
+ADD CONSTRAINT uq_cbcod10_topemecod
+UNIQUE (topemecod);
+
+ALTER TABLE dwsge.sgss_mbpae10
+ADD CONSTRAINT uq_cbcod10_priatecod
+UNIQUE (priatecod);
+
+ALTER TABLE dwsge.sgss_mmaem10
+ADD CONSTRAINT uq_cbcod10_emecod
+UNIQUE (oricenasicod,cenasicod,arehoscod,emecod);
+
+
+
+
+-- ====================================================================
+--  LLAVES FORÁNEAS PARA LA TABLA DE HECHOS ATENCIONES EMERGENCIA
+-- ====================================================================
+
+ALTER TABLE dwsge.dwe_emergencia_atenciones_homologacion
+ADD CONSTRAINT fk_dwe_atenciones_eme_centro
+FOREIGN KEY (cod_oricentro, cod_centro)
+REFERENCES dwsge.sgss_cmcas10 (oricenasicod, cenasicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_atenciones_homologacion
+ADD CONSTRAINT fk_dwe_topico
+FOREIGN KEY (cod_topico)
+REFERENCES dwsge.sgss_mbtoe10 (topemecod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_atenciones_homologacion
+ADD CONSTRAINT fk_dwe_atenciones_eme_tipopaci
+FOREIGN KEY (cod_tipo_paciente)
+REFERENCES dwsge.sgss_cbtpc10 (tipopacicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_atenciones_homologacion
+ADD CONSTRAINT fk_dwe_atenciones_eme_prioridad
+FOREIGN KEY (cod_prioridad)
+REFERENCES dwsge.dim_prioridad (cod_prioridad)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_atenciones_homologacion
+ADD CONSTRAINT fk_dwe_atenciones_eme_diag
+FOREIGN KEY (cod_diagnostico)
+REFERENCES dwsge.sgss_cmdia10 (diagcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_atenciones_homologacion
+ADD CONSTRAINT fk_dwe_atenciones_eme_codeme
+FOREIGN KEY (cod_oricentro,cod_centro,cod_Area,cod_emergencia)
+REFERENCES dwsge.sgss_mmaem10 (oricenasicod,cenasicod,arehoscod,emecod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+-- ====================================================================
+--  LLAVES FORÁNEAS PARA LA TABLA DE HECHOS DEFUNCIONES EMERGENCIA
+-- ====================================================================
+
+ALTER TABLE dwsge.dwe_emergencia_defunciones_homologacion
+ADD CONSTRAINT fk_dwe_defunciones_eme_centro
+FOREIGN KEY (cod_oricentro, cod_centro)
+REFERENCES dwsge.sgss_cmcas10 (oricenasicod, cenasicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_defunciones_homologacion
+ADD CONSTRAINT fk_dwe_defunciones_eme_tipdoc
+FOREIGN KEY (cod_tip_doc)
+REFERENCES dwsge.sgss_cbtdi10 (tipdocidenpercod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_defunciones_homologacion
+ADD CONSTRAINT fk_dwe_defunciones_eme_tippaci
+FOREIGN KEY (cod_tipo_paciente)
+REFERENCES dwsge.sgss_cbtpc10 (tipopacicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+
+-- ====================================================================
+--  LLAVES FORÁNEAS PARA LA TABLA DE HECHOS ESTANCIA EMERGENCIA
+-- ====================================================================
+
+ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
+ADD CONSTRAINT fk_dwe_estancia_eme_centro
+FOREIGN KEY (cod_oricentro, cod_centro)
+REFERENCES dwsge.sgss_cmcas10 (oricenasicod, cenasicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
+ADD CONSTRAINT fk_dwe_estancia_eme_tipopaci
+FOREIGN KEY (cod_tipo_paciente)
+REFERENCES dwsge.sgss_cbtpc10 (tipopacicod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
+ADD CONSTRAINT fk_dwe_estancia_eme_tipopare
+FOREIGN KEY (cod_tipo_parentesco)
+REFERENCES dwsge.sgss_cbtpa10 (tipoparecod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
+ADD CONSTRAINT fk_dwe_estancia_eme_rango
+FOREIGN KEY (rango_estancia)
+REFERENCES dwsge.dim_estancia (id_estancia)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
+ADD CONSTRAINT fk_dwe_estancia_eme_diag
+FOREIGN KEY (cod_diag_emer)
+REFERENCES dwsge.sgss_cmdia10 (diagcod)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;
+
+ALTER TABLE dwsge.dwe_emergencia_estancia_homologacion
+ADD CONSTRAINT fk_dwe_estancia_eme_estan
+FOREIGN KEY (cod_estandar)
+REFERENCES dwsge.dim_estandar(id_estandar)
+ON UPDATE CASCADE
+ON DELETE RESTRICT;

@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_emergencia_estancia_homologacion"
 
 
-for mes in range(1,11):
+for mes in range(11,12):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()

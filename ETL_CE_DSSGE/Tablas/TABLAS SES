@@ -1152,3 +1152,5 @@ CREATE TABLE dssge.dw_odonto_2019_09 PARTITION OF dssge.dw_odonto_2019 FOR VALUE
 CREATE TABLE dssge.dw_odonto_2019_10 PARTITION OF dssge.dw_odonto_2019 FOR VALUES IN ('201910');
 CREATE TABLE dssge.dw_odonto_2019_11 PARTITION OF dssge.dw_odonto_2019 FOR VALUES IN ('201911');
 CREATE TABLE dssge.dw_odonto_2019_12 PARTITION OF dssge.dw_odonto_2019 FOR VALUES IN ('201912');
+
+-------------------------------------------------------------------------------------------------

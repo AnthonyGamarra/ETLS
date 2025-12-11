@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 10, 1)
-end_date = datetime(2025, 10, 31)
+start_date = datetime(2025, 11, 1)
+end_date = datetime(2025, 11, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -71,42 +71,76 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.sgss_ctdef10_{anio}_{mes}"
+    tabla_destino = f"dssge.sgss_mtade10_{anio}_{mes}"
+    
+    # ==============================
+    # TRUNCAR PARTICIÓN DESTINO
+    # ==============================
+    print(f"Truncando partición destino: {tabla_destino}...")
+    try:
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
+        print(f"Tabla {tabla_destino} truncada correctamente.")
+    except Exception as e:
+        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
+        continue  # Saltar este mes si no existe la partición
     query = f"""
             SELECT 
-                    DEFPACSECNUM,
-                    DEFREGSECNUM,
-                    DEFPACHISCLINUM,
-                    DEFORICENASICOD,
-                    DEFCENASICOD,
-                    DEFACTMEDNUM,
-                    DEFAREHOSCOD,
-                    DEFHORFEC,
-                    DEFANOEDAD,
-                    DEFMESEDAD,
-                    DEFDIASEDAD,
-                    DEFTIPDOCIDENPERCOD,
-                    DEFPERASISDOCIDENNUM,
-                    DEFCERTNUM,
-                    DEFCONFREGFLG,
-                    DEFCONFREGFEC,
-                    DEFESTREGCOD,
-                    DEFUSUCRECOD,
-                    DEFCREFEC,
-                    DEFUSUMODCOD,
-                    DEFMODFEC,
-                    DEFATENNUMSEC,
-                    e1.TIPOPACICOD AS TIPO_PACIENTE,
-                    TO_CHAR(TRUNC(a.DEFHORFEC), 'yyyymm') AS periodo,
-                    TO_CHAR(TRUNC(a.DEFHORFEC), 'yyyy') AS anio
-                FROM sgss.ctdef10 a
-                LEFT OUTER JOIN SGSS.cmame10 am ON a.defpacsecnum = am.actmedpacsecnum
-                                        AND a.DEFORICENASICOD = am.oricenasicod
-                                        AND a.defcenasicod    = am.cenasicod
-                                        AND a.defactmednum    = am.actmednum
-                LEFT OUTER JOIN SGSS.cbtpc10 e1 on am.actmedtipopacicod = e1.tipopacicod
-                WHERE a.DEFHORFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-                and a.DEFHORFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+                a.ADMEMEORICENASICOD,
+                a.ADMEMECENASICOD,
+                a.ADMEMEACTMEDNUM,
+                a.ADMEMEAREHOSCOD,
+                a.ADMEMEEMECOD,
+                to_char(a.ADMEMEADMFEC, 'yyyy') as anio,
+                to_char(a.ADMEMEADMFEC, 'yyyymm') as periodo,                
+                to_char(a.ADMEMEADMFEC, 'DD-MM-YYYY') AS ADMEMEADMFEC,
+                to_char(a.ADMEMEADMHOR, 'HH24:MI:SS') AS ADMEMEADMHOR,
+                a.TIPACCCOD,
+                a.ACOPACCOD,
+                a.ADMEMEEGRFLG,
+                to_char(a.ADMEMEALTMEDFEC, 'DD-MM-YYYY') AS ADMEMEALTMEDFEC,
+                to_char(a.ADMEMEALTMEDHOR, 'HH24:MI:SS') AS ADMEMEALTMEDHOR,
+                a.ADMEMEESTREGCOD,
+                a.ADMEMETOPEMECOD,
+                to_char(a.ADMEMEALTADMFEC, 'DD-MM-YYYY') AS ADMEMEALTADMFEC,
+                to_char(a.ADMEMEALTADMHOR, 'HH24:MI:SS') AS ADMEMEALTADMHOR,
+                a.ADMEMEATETRIORICENASICOD,
+                a.ADMEMEATETRICENASICOD,
+                a.ADMEMEATETRIAREHOSCOD,
+                a.ADMEMEATETRIEMECOD,
+                a.ADMEMEATETRIANO,
+                a.ADMEMEATETRINUM,
+                a.ADMEMEMOTEGRCOD,
+                a.ADMEMEULTPRIATECOD,
+                a.ADMEMEPACSECNUM,
+                a.ADMEMESOSCOVID,
+                b.TIPCONCOD,
+                b.ACTMEDFAC,
+                b.ACTMEDFECATEN,
+                b.ACTMEDTIPOPARDIACOD,
+                b.ACTMEDTIPOPARPROCOD,
+                b.ACTMEDATE,
+                b.ACTMEDHOS,
+                b.ACTMEDCITT,
+                b.ACTMEDOPE,
+                b.ACTMEDESTREGCOD,
+                b.ACTMEDTIPATECOD,
+                b.ACTMEDAFESCTRFLG,   
+                b.ORICENASICOD,
+                b.CENASICOD,
+                b.ACTMEDNUM,
+                b.ACTMEDPACSECNUM,
+                b.ACTMEDAREHOSCOD,
+                b.ACTMEDSERVHOSCOD,
+                b.ACTMEDTIPSEGCOD,
+                b.ACTMEDPLANTIPSEGCOD,          
+                b.ACTMEDTIPOPACICOD,
+                b.TIPOPARECOD
+            FROM SGSS.MTADE10 a
+            LEFT OUTER JOIN SGSS.CMAME10 b ON a.ADMEMEORICENASICOD=b.ORICENASICOD
+                            AND a.ADMEMECENASICOD=b.CENASICOD
+                            AND a.ADMEMEACTMEDNUM=b.ACTMEDNUM
+            WHERE ADMEMEADMFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and ADMEMEADMFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 
@@ -119,17 +153,6 @@ for start_mes, end_mes in month_range(start_date, end_date):
         continue
 
     df.columns = df.columns.str.lower()
-
-    # ==============================
-    # TRUNCAR PARTICIÓN DESTINO
-    # ==============================
-    print(f"Truncando partición destino: {tabla_destino}...")
-    try:
-        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
-        print(f"Tabla {tabla_destino} truncada correctamente.")
-    except Exception as e:
-        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
-        continue  # Saltar este mes si no existe la partición
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()

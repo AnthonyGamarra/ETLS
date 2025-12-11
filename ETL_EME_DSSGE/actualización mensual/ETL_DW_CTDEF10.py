@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 9, 1)
-end_date = datetime(2025, 10, 31)
+start_date = datetime(2025, 11, 1)
+end_date = datetime(2025, 11, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -71,36 +71,42 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.sgss_mtaem10_{anio}_{mes}"
+    tabla_destino = f"dssge.sgss_ctdef10_{anio}_{mes}"
     query = f"""
             SELECT 
-                ATEEMEORICENASICOD,
-                ATEEMECENASICOD,
-                ATEEMEACTMEDNUM,
-                to_char(ATEEMEFEC, 'YYYY') as anio,
-                to_char(ATEEMEFEC, 'YYYYMM') as periodo,
-                ATEEMESECNUM    ,
-                ATEEMEPERORICENASICOD ,
-                ATEEMEPERCENASICOD   ,
-                ATEEMEAREHOSCOD  ,
-                ATEEMESERVHOSCOD  ,
-                ATEEMEACTCOD,
-                ATEEMETIPDOCIDENPERCOD,
-                ATEEMEPERASISDOCIDENNUM,
-                ATEEMEPERPROFLG,
-                ATEEMEPRIATECOD,
-                MOTEGRCOD,
-                ATEEMEUSUCRECOD,
-                to_char(ATEEMEFEC, 'DD-MM-YYYY') as ATEEMEFEC,
-                to_char(ATEEMEHOR, 'HH24:MI:SS') as ATEEMEHOR,
-                CPSCOD,
-                RESATENINTECOD,
-                ATEEMEMOVSECNUM,
-                TIPOATEEMECOD,
-                ATEEMESIGVITSECNUM
-            FROM SGSS.MTAEM10 
-            WHERE ATEEMEFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and ATEEMEFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+                    DEFPACSECNUM,
+                    DEFREGSECNUM,
+                    DEFPACHISCLINUM,
+                    DEFORICENASICOD,
+                    DEFCENASICOD,
+                    DEFACTMEDNUM,
+                    DEFAREHOSCOD,
+                    DEFHORFEC,
+                    DEFANOEDAD,
+                    DEFMESEDAD,
+                    DEFDIASEDAD,
+                    DEFTIPDOCIDENPERCOD,
+                    DEFPERASISDOCIDENNUM,
+                    DEFCERTNUM,
+                    DEFCONFREGFLG,
+                    DEFCONFREGFEC,
+                    DEFESTREGCOD,
+                    DEFUSUCRECOD,
+                    DEFCREFEC,
+                    DEFUSUMODCOD,
+                    DEFMODFEC,
+                    DEFATENNUMSEC,
+                    e1.TIPOPACICOD AS TIPO_PACIENTE,
+                    TO_CHAR(TRUNC(a.DEFHORFEC), 'yyyymm') AS periodo,
+                    TO_CHAR(TRUNC(a.DEFHORFEC), 'yyyy') AS anio
+                FROM sgss.ctdef10 a
+                LEFT OUTER JOIN SGSS.cmame10 am ON a.defpacsecnum = am.actmedpacsecnum
+                                        AND a.DEFORICENASICOD = am.oricenasicod
+                                        AND a.defcenasicod    = am.cenasicod
+                                        AND a.defactmednum    = am.actmednum
+                LEFT OUTER JOIN SGSS.cbtpc10 e1 on am.actmedtipopacicod = e1.tipopacicod
+                WHERE a.DEFHORFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+                and a.DEFHORFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 

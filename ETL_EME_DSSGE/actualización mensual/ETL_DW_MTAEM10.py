@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 9, 1)
-end_date = datetime(2025, 10, 31)
+start_date = datetime(2025, 11, 1)
+end_date = datetime(2025, 11, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -71,34 +71,36 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.sgss_mtadd10_{anio}_{mes}"
+    tabla_destino = f"dssge.sgss_mtaem10_{anio}_{mes}"
     query = f"""
             SELECT 
-                    ADMEMEORICENASICOD,
-                    ADMEMECENASICOD,
-                    ADMEMEACTMEDNUM,
-                    ADMEMDSECNUM,
-                    ADMEMDAREHOSCOD,
-                    ADMEMDEMECOD,
-                    ADMEMDTOPEMECOD,
-                    to_char(ADMEMDINGFEC, 'YYYY') AS anio,
-                    to_char(ADMEMDINGFEC, 'YYYYMM') AS periodo,
-                    to_char(ADMEMDINGFEC, 'YYYY-MM-DD') AS ADMEMDINGFEC,
-                    to_char(ADMEMDINGHOR, 'HH24:MI:SS') AS ADMEMDINGHOR,
-                    ESTPEECOD,
-                    ADMEMDAREHOSDESCOD,
-                    ADMEMDEMEDESCOD,
-                    ADMEMDTOPEMEDESCOD,
-                    to_char(ADMEMDEGRFEC, 'YYYY-MM-DD') AS ADMEMDEGRFEC,
-                    to_char(ADMEMDEGRHOR, 'HH24:MI:SS') AS ADMEMDEGRHOR,
-                    ADMEMDUSUCRECOD,
-                    ADMEMDCREFEC,
-                    ADMEMDUSUMODCOD,
-                    ADMEMDMODFEC,
-                    ADMEMDATEFLG
-            FROM SGSS.MTADD10 
-            WHERE ADMEMDINGFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and ADMEMDINGFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+                ATEEMEORICENASICOD,
+                ATEEMECENASICOD,
+                ATEEMEACTMEDNUM,
+                to_char(ATEEMEFEC, 'YYYY') as anio,
+                to_char(ATEEMEFEC, 'YYYYMM') as periodo,
+                ATEEMESECNUM    ,
+                ATEEMEPERORICENASICOD ,
+                ATEEMEPERCENASICOD   ,
+                ATEEMEAREHOSCOD  ,
+                ATEEMESERVHOSCOD  ,
+                ATEEMEACTCOD,
+                ATEEMETIPDOCIDENPERCOD,
+                ATEEMEPERASISDOCIDENNUM,
+                ATEEMEPERPROFLG,
+                ATEEMEPRIATECOD,
+                MOTEGRCOD,
+                ATEEMEUSUCRECOD,
+                to_char(ATEEMEFEC, 'DD-MM-YYYY') as ATEEMEFEC,
+                to_char(ATEEMEHOR, 'HH24:MI:SS') as ATEEMEHOR,
+                CPSCOD,
+                RESATENINTECOD,
+                ATEEMEMOVSECNUM,
+                TIPOATEEMECOD,
+                ATEEMESIGVITSECNUM
+            FROM SGSS.MTAEM10 
+            WHERE ATEEMEFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and ATEEMEFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 

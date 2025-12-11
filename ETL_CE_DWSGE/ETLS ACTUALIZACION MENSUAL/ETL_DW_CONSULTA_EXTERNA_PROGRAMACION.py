@@ -52,7 +52,7 @@ else:
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 table_name = "dwsge.dwe_consulta_externa_programacion"
-for mes in range(1,2):
+for mes in range(6,7):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -64,7 +64,6 @@ for mes in range(1,2):
     except Exception as e:
         print(f"Error truncando partición {partition_name}: {e}")  
 
-    print(f"\n📆 Procesando mes: {anio}-{mes_str}")
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")
 
     try:

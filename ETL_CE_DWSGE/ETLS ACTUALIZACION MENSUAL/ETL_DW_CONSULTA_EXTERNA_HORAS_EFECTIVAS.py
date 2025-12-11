@@ -85,9 +85,9 @@ for mes in range(10,12):
                     u.fecha_cita,
                     u.horaini,
                     u.horafin
-            )
+            ),
 
-            SELECT b.*
+            base2 as (SELECT b.*
             FROM (
                 SELECT
                     t.anio,
@@ -108,6 +108,17 @@ for mes in range(10,12):
                         ELSE
                             (EXTRACT(EPOCH FROM (CAST(t.properturhorfin AS time) + INTERVAL '24 hours' - CAST(t.properturhorini AS time))) / 3600)
                     END AS hras_prog,
+
+
+                    CASE
+                        WHEN t.estado_progcita::text = '4'::text THEN
+                        CASE
+                            WHEN t.ate::numeric::integer > 0 AND t.ate::numeric::integer < 5 THEN '1'::character varying
+                            WHEN t.ate::numeric::integer::numeric <= (t.hras_prog::numeric * 5::numeric) THEN (t.ate::numeric / 5::numeric)::integer::character varying
+                            ELSE t.hras_prog
+                        END
+                        ELSE t.hras_efec_sus
+
                     t.estprogcitcod AS estado_progcita
                 FROM 
                     dssge.sgss_ctppe10_{anio}_{mes_str} t
@@ -139,7 +150,9 @@ for mes in range(10,12):
                     AND t.estprogcitcod IN ('2','4')
                     AND t.actespcod <> '092'
             ) b
-            WHERE b.ate <> 0
+            WHERE b.ate <> 0),
+
+
         """
 
         # Leer datos primero

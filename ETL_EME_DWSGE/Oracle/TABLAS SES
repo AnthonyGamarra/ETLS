@@ -278,3 +278,79 @@ INSERT ALL
     INTO dim_prioridad (cod_prioridad, des_prioridad1, des_prioridad2, prioridad_descor) VALUES ('04', 'PRIORIDAD IV','URGENCIA MENOR','P.IV')
     INTO dim_prioridad (cod_prioridad, des_prioridad1, des_prioridad2, prioridad_descor) VALUES ('05', 'PRIORIDAD V','CONSULTA','P.V')
 SELECT 1 FROM dual;
+
+-------------------------------------------------------------------------------------------
+
+-- Tabla principal en Oracle
+CREATE TABLE dwe_emergencia_defunciones_homologacion (
+    cod_oricentro        VARCHAR2(20),
+    cod_centro           VARCHAR2(20),
+    periodo              CHAR(6),
+    anio                 CHAR(4),
+    cod_tip_doc          VARCHAR2(20),
+    cod_tipo_paciente    VARCHAR2(20),
+    acto_med             NUMBER,
+    anio_def             VARCHAR2(4)
+)
+PARTITION BY LIST (anio)
+SUBPARTITION BY LIST (periodo)
+(
+    PARTITION p2025 VALUES ('2025')
+    (
+        SUBPARTITION p2025_01 VALUES ('202501'),
+        SUBPARTITION p2025_02 VALUES ('202502'),
+        SUBPARTITION p2025_03 VALUES ('202503'),
+        SUBPARTITION p2025_04 VALUES ('202504'),
+        SUBPARTITION p2025_05 VALUES ('202505'),
+        SUBPARTITION p2025_06 VALUES ('202506'),
+        SUBPARTITION p2025_07 VALUES ('202507'),
+        SUBPARTITION p2025_08 VALUES ('202508'),
+        SUBPARTITION p2025_09 VALUES ('202509'),
+        SUBPARTITION p2025_10 VALUES ('202510'),
+        SUBPARTITION p2025_11 VALUES ('202511'),
+        SUBPARTITION p2025_12 VALUES ('202512')
+    )
+);
+
+------------------------------------------------------------
+
+-- Tabla principal particionada por LIST (anio)
+CREATE TABLE dwe_emergencia_estancia_homologacion (
+    cod_oricentro           VARCHAR2(20),
+    cod_centro              VARCHAR2(20),
+    anio                    CHAR(4),
+    periodo                 CHAR(6),
+    cod_estandar            VARCHAR2(20),
+    cod_tipo_paciente       VARCHAR2(20),
+    acto_med                NUMBER,
+    cod_area                VARCHAR2(20),
+    cod_servicio            VARCHAR2(20),
+    cod_tipo_parentesco     VARCHAR2(20),
+    fecha_admision          VARCHAR2(20),
+    fecha_alta              VARCHAR2(20),
+    hora_admision           VARCHAR2(20),
+    hora_alta_adm           VARCHAR2(20),
+    estancia_horas          VARCHAR2(20),
+    rango_estancia          VARCHAR2(20),
+    cod_diag_emer           VARCHAR2(20)
+)
+PARTITION BY LIST (anio)
+SUBPARTITION BY LIST (periodo)
+(
+    -- Partición del año 2025 con subparticiones mensuales
+    PARTITION p2025 VALUES ('2025')
+    (
+        SUBPARTITION p2025_01 VALUES ('202501'),
+        SUBPARTITION p2025_02 VALUES ('202502'),
+        SUBPARTITION p2025_03 VALUES ('202503'),
+        SUBPARTITION p2025_04 VALUES ('202504'),
+        SUBPARTITION p2025_05 VALUES ('202505'),
+        SUBPARTITION p2025_06 VALUES ('202506'),
+        SUBPARTITION p2025_07 VALUES ('202507'),
+        SUBPARTITION p2025_08 VALUES ('202508'),
+        SUBPARTITION p2025_09 VALUES ('202509'),
+        SUBPARTITION p2025_10 VALUES ('202510'),
+        SUBPARTITION p2025_11 VALUES ('202511'),
+        SUBPARTITION p2025_12 VALUES ('202512')
+    )
+);

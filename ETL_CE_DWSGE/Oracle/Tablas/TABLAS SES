@@ -54,3 +54,93 @@ SUBPARTITION BY LIST (periodo)
         SUBPARTITION p2025_12 VALUES ('202512')
     )
 );
+
+----------------------------------------------------------------------------------------------------
+
+CREATE TABLE dwe_consulta_externa_citados_homologacion (
+    anio CHAR(4),
+    periodo CHAR(6),
+    cod_oricentro VARCHAR2(20),
+    cod_centro VARCHAR2(20),
+    acto_med NUMBER,
+    cod_area VARCHAR2(20),
+    cod_servicio VARCHAR2(20),
+    cod_actividad VARCHAR2(20),
+    cod_subactividad VARCHAR2(20),
+    cod_estado VARCHAR2(20),
+    cod_paciente VARCHAR2(20),
+    cod_especialidad VARCHAR2(20),
+    cod_subespecialidad VARCHAR2(20),
+    cod_agrupador VARCHAR2(20),
+    cod_variable VARCHAR2(20),
+    cod_tipo_cita VARCHAR2(20),
+    doc_paciente VARCHAR2(20),
+    sexo VARCHAR2(10),
+    fecha_solicitud VARCHAR2(20),
+    fecha_creacion VARCHAR2(20),
+    fecha_cita VARCHAR2(20),
+    diferimiento VARCHAR2(20),
+    dif_clasificado VARCHAR2(20),
+    anio_edad VARCHAR2(20),
+    edad_clasificado VARCHAR2(20),
+    num_citas VARCHAR2(20),
+    flag_calidad VARCHAR2(20)
+)
+PARTITION BY LIST (anio)
+SUBPARTITION BY LIST (periodo)
+(
+    PARTITION p2025 VALUES ('2025')
+    (
+        SUBPARTITION p2025_01 VALUES ('202501'),
+        SUBPARTITION p2025_02 VALUES ('202502'),
+        SUBPARTITION p2025_03 VALUES ('202503'),
+        SUBPARTITION p2025_04 VALUES ('202504'),
+        SUBPARTITION p2025_05 VALUES ('202505'),
+        SUBPARTITION p2025_06 VALUES ('202506'),
+        SUBPARTITION p2025_07 VALUES ('202507'),
+        SUBPARTITION p2025_08 VALUES ('202508'),
+        SUBPARTITION p2025_09 VALUES ('202509'),
+        SUBPARTITION p2025_10 VALUES ('202510'),
+        SUBPARTITION p2025_11 VALUES ('202511'),
+        SUBPARTITION p2025_12 VALUES ('202512')
+    )
+);
+
+
+
+CREATE TABLE dwe_consulta_externa_horas_efectivas (
+    anio VARCHAR2(4),
+    periodo VARCHAR2(6),
+    cod_oricentro VARCHAR2(20),
+    cod_centro VARCHAR2(20),
+    cod_area VARCHAR2(20),
+    cod_actividad VARCHAR2(20),
+    cod_subactividad VARCHAR2(20),
+    cod_servicio VARCHAR2(20),
+    ate NUMBER,
+    hras_prog NUMBER,
+    estado_progcita VARCHAR2(20),
+    cod_especialidad VARCHAR2(20),
+    cod_subespecialidad VARCHAR2(20),
+    cod_agrupador VARCHAR2(20),
+    cod_variable VARCHAR2(20)
+)
+PARTITION BY LIST (anio)
+SUBPARTITION BY LIST (periodo)
+(
+    PARTITION p2025 VALUES ('2025')
+    (
+        SUBPARTITION p2025_01 VALUES ('202501'),
+        SUBPARTITION p2025_02 VALUES ('202502'),
+        SUBPARTITION p2025_03 VALUES ('202503'),
+        SUBPARTITION p2025_04 VALUES ('202504'),
+        SUBPARTITION p2025_05 VALUES ('202505'),
+        SUBPARTITION p2025_06 VALUES ('202506'),
+        SUBPARTITION p2025_07 VALUES ('202507'),
+        SUBPARTITION p2025_08 VALUES ('202508'),
+        SUBPARTITION p2025_09 VALUES ('202509'),
+        SUBPARTITION p2025_10 VALUES ('202510'),
+        SUBPARTITION p2025_11 VALUES ('202511'),
+        SUBPARTITION p2025_12 VALUES ('202512')
+    )
+);

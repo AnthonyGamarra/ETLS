@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,text
 from dotenv import load_dotenv
 from datetime import datetime
 
@@ -38,11 +38,13 @@ try:
         print("⚠️  No se encontraron datos en la tabla de origen.")
     else:
         df.columns = df.columns.str.lower()  # Normalizar columnas
+        with engine_dst.begin() as conn:
+            conn.execute(text("TRUNCATE TABLE DWH_SGE.dw_homologacion_enlaces"))
         df.to_sql(
             name="dw_homologacion_enlaces_eme",
             con=engine_dst,
             schema="DWH_SGE",
-            if_exists="replace",
+            if_exists="append",
             index=False
         )
         print(f"✅ Datos cargados exitosamente: {len(df)} filas")

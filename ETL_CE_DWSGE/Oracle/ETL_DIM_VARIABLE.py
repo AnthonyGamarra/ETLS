@@ -44,11 +44,14 @@ try:
         print("⚠️  No se encontraron datos en la tabla de origen.")
     else:
         df.columns = df.columns.str.lower()  # Normalizar columnas
+
+        with engine_dst.begin() as conn:
+            conn.execute(text("TRUNCATE TABLE DWH_SGE.DIM_VARIABLE"))
         df.to_sql(
             name="dim_variable",
             con=engine_dst,
             schema="DWH_SGE",
-            if_exists="replace",
+            if_exists="append",
             index=False
         )
         print(f"✅ Datos cargados exitosamente: {len(df)} filas")

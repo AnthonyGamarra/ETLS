@@ -64,6 +64,9 @@ try:
         # Normalizar columnas
         df.columns = df.columns.str.lower()
 
+        with engine_dst.begin() as conn:
+            conn.execute(text("TRUNCATE TABLE DWH_SGE.DIM_AGRUPADOR"))
+
         # ============================
         # 6. Insertar en Oracle destino
         # ============================

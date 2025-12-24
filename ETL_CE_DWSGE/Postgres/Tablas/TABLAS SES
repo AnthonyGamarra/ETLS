@@ -659,7 +659,7 @@ CREATE TABLE dwsge.sgss_ctdaa10_anio_v2_2025_10 PARTITION OF dwsge.sgss_ctdaa10_
 CREATE TABLE dwsge.sgss_ctdaa10_anio_v2_2025_11 PARTITION OF dwsge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202511');
 CREATE TABLE dwsge.sgss_ctdaa10_anio_v2_2025_12 PARTITION OF dwsge.sgss_ctdaa10_anio_v2_2025 FOR VALUES IN ('202512');
 
-
+----------------------------------------------------------------------------------------
 
 CREATE TABLE dwsge.dwe_consulta_externa_citados_homologacion (
             anio char(4),
@@ -703,3 +703,73 @@ CREATE TABLE dwsge.dim_agrupador
  (cod_agrupador text,
    agrupador text)
 
+---------------------------------------------------
+
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas (
+COD_ORICENTRO varchar(20),
+COD_CENTRO varchar(20),
+PERIODO char(6),
+ANIO char(4),
+HORA_ATEN varchar(5),
+cod_area varchar(20),
+COD_SERVICIO varchar(20),
+COD_ACTIVIDAD varchar(20),
+COD_SUBACTIVIDAD varchar(20),
+cod_cartera varchar(20),
+cod_cpms varchar(20),
+COD_TIPDOC_MEDICO varchar(20),
+DNI_MEDICO varchar(20),
+FECHA_ATENCION varchar(20),
+CMAME_PACSECNUM varchar(20),
+DOC_PACIENTE varchar(20),
+ANIO_EDAD varchar(4),
+MESES varchar(4),
+COD_TIPO_SEGURO varchar(20),
+COD_TIPO_PARENTESCO varchar(20),
+FECHA_SOLIC varchar(20),
+FECHA_CITA varchar(20),
+COD_CONDICION_CITA varchar(20),
+COD_TIPO_PACIENTE varchar(20),
+ACTO_MED numeric,
+DNI_DIGITADOR varchar(20),
+N_R_C_SER varchar(20),
+FECHA_REG varchar(20),
+HORA_REG varchar(20),
+COD_TIPO_GRAVIDEZ varchar(20),
+ACTMEDORIREFNUM varchar(20),
+CAS_ADSCRIPCION varchar(20),
+COD_CONSULTORIO varchar(20),
+COD_TIP_PROGRAMACION varchar(20),
+COD_TIPHORA varchar(20),
+COD_RESULT_ATENCION varchar(20),
+HORAINI varchar(20),
+HORAFIN varchar(20),
+TURNO varchar(20),
+COD_TIP_PROGRAMACION_PERS varchar(20),
+PERTENECE varchar(20),
+COD_TIPDOC_PACIENTE varchar(20),
+USUA_MODIF varchar(20),
+FECHA_MODIF varchar(20),
+HORA_MODIF varchar(20),
+COD_ESTADO_PROGRAMACION varchar(20), 
+COD_MOTIVO_SUSPENSION varchar(20)
+diagcod varchar(20)
+) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025 PARTITION OF dwsge.dwe_consulta_externa_no_medicas
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_01 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202501');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_02 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202502');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_03 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202503');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_04 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202504');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_05 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202505');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_06 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202506');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_07 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202507');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_08 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202508');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_09 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202509');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_10 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202510');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_11 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202511');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_12 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202512');

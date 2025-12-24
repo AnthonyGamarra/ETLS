@@ -3,6 +3,7 @@ import oracledb
 import pandas as pd
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
+from sqlalchemy.dialects.oracle import VARCHAR2
 
 load_dotenv()
 
@@ -38,12 +39,15 @@ engine_oracle_dest = create_engine(
 df.columns = df.columns.str.lower()
 df = df.astype(str)
 
+dtype_mapping = {col: VARCHAR2(500) for col in df.columns}
+
 df.to_sql(
     "sgss_cmaho10",
     engine_oracle_dest,
     schema="DWH_SGE",
     if_exists="replace",
-    index=False
+    index=False,
+    dtype=dtype_mapping
 )
 
 

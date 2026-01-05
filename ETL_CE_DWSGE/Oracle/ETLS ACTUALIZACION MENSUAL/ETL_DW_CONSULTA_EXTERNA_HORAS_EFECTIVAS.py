@@ -42,7 +42,7 @@ conn_dst = oracledb.connect(
 )
 conn_dst.autocommit = False
 
-anio = datetime.now().year
+anio = datetime.now().year - 1
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 today = datetime.today()
@@ -59,7 +59,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(1,12):
+for mes in range(12,13):
     mes_str = f"{mes:02d}"
 
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")

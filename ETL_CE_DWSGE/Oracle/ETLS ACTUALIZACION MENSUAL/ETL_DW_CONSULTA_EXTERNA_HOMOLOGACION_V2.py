@@ -6,32 +6,23 @@ import io
 from dotenv import load_dotenv
 from datetime import datetime
 
-# ==========================================================
-# Inicializar Instant Client 23.0 para habilitar MODO THICK
-# ==========================================================
-# Reemplace esta ruta por la ubicación donde descomprimiste
-# instantclient_23_0
-oracledb.init_oracle_client(lib_dir=r"C:\oracle\instantclient_23_0")
-
-# =============================
 # Cargar variables de entorno
-# =============================
 load_dotenv()
 
+# Configuración de base de datos origen (para pd.read_sql_query usamos psycopg2 connection)
 pg_user_src = os.getenv("PG_USER")
 pg_pass_src = os.getenv("PG_PASS")
 pg_host_src = os.getenv("PG_HOST")
 pg_db_src   = os.getenv("PG_DB")
 
+# Configuración de base de datos destino
 oracle_user2 = os.getenv("ORACLE_USER2")
 oracle_pass2 = os.getenv("ORACLE_PASS2")
 oracle_host2 = os.getenv("ORACLE_HOST2")
 oracle_port2 = os.getenv("ORACLE_PORT2")
 oracle_service2 = os.getenv("ORACLE_SERVICE2")
 
-# =============================
-# Conexión PostgreSQL ORIGEN
-# =============================
+# Crear conexión origen (para leer datos)
 conn_src = psycopg2.connect(
     dbname=pg_db_src,
     user=pg_user_src,
@@ -40,9 +31,7 @@ conn_src = psycopg2.connect(
     port=5433
 )
 
-# =============================
-# Conexión Oracle DESTINO
-# =============================
+# Crear conexión destino (para cargar datos)
 dsn = f"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={oracle_host2})(PORT={oracle_port2}))(CONNECT_DATA=(SERVICE_NAME={oracle_service2})))"
 
 conn_dst = oracledb.connect(
@@ -52,12 +41,19 @@ conn_dst = oracledb.connect(
 )
 conn_dst.autocommit = False
 
-# =============================
-# Parametrización
-# =============================
-anio = datetime.now().year
+anio = datetime.now().year - 1
 start_time = datetime.now()
 today = datetime.today()
+current_year = today.year
+current_month = today.month
+
+# Calcular los dos meses anteriores
+if current_month == 1:
+    months_to_process = [(current_year - 1, 11), (current_year - 1, 12)]
+elif current_month == 2:
+    months_to_process = [(current_year - 1, 12), (current_year, 1)]
+else:
+    months_to_process = [(current_year, current_month - 2), (current_year, current_month - 1)]
 
 table_name = "DWH_SGE.DWE_CONSULTA_EXTERNA_HOMOLOGACION"
 
@@ -66,7 +62,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 # =============================
 # PROCESO POR MES
 # =============================
-for mes in range(1, 12):
+for mes in range(12, 13):
     mes_str = f"{mes:02d}"
     print(f"\n>>> Procesando mes {anio}-{mes_str} ...")
 

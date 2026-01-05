@@ -41,7 +41,7 @@ conn_dst = oracledb.connect(
 )
 conn_dst.autocommit = False
 
-anio = datetime.now().year
+anio = datetime.now().year -1
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -60,7 +60,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "DWH_SGE.dwe_emergencia_estancia_homologacion"
 
 
-for mes in range(1,12):
+for mes in range(12,13):
     mes_str = f"{mes:02d}"
 
     try:

@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year
+anio = datetime.now().year -1 
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_emergencia_atenciones_homologacion"
 
 
-for mes in range(11,12):
+for mes in range(12,13):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()

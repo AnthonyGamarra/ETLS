@@ -31,7 +31,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year
+anio = datetime.now().year - 1
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 today = datetime.today()
@@ -48,7 +48,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(10,12):
+for mes in range(1,13):
     mes_str = f"{mes:02d}"
 
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")
@@ -85,13 +85,14 @@ for mes in range(10,12):
                     u.fecha_cita,
                     u.horaini,
                     u.horafin
-            ),
+            )
 
-            base2 as (SELECT b.*
+            SELECT b.*
             FROM (
                 SELECT
                     t.anio,
                     t.periodo,
+                    t.oricenasicod AS cod_oricentro,
                     t.cenasicod AS cod_centro,
                     t.arehoscod AS cod_area,
                     t.actcod AS cod_actividad,
@@ -108,17 +109,6 @@ for mes in range(10,12):
                         ELSE
                             (EXTRACT(EPOCH FROM (CAST(t.properturhorfin AS time) + INTERVAL '24 hours' - CAST(t.properturhorini AS time))) / 3600)
                     END AS hras_prog,
-
-
-                    CASE
-                        WHEN t.estado_progcita::text = '4'::text THEN
-                        CASE
-                            WHEN t.ate::numeric::integer > 0 AND t.ate::numeric::integer < 5 THEN '1'::character varying
-                            WHEN t.ate::numeric::integer::numeric <= (t.hras_prog::numeric * 5::numeric) THEN (t.ate::numeric / 5::numeric)::integer::character varying
-                            ELSE t.hras_prog
-                        END
-                        ELSE t.hras_efec_sus
-
                     t.estprogcitcod AS estado_progcita
                 FROM 
                     dssge.sgss_ctppe10_{anio}_{mes_str} t
@@ -149,10 +139,9 @@ for mes in range(10,12):
                     AND t.actcod = '91'
                     AND t.estprogcitcod IN ('2','4')
                     AND t.actespcod <> '092'
+
             ) b
-            WHERE b.ate <> 0),
-
-
+            WHERE b.ate <> 0
         """
 
         # Leer datos primero

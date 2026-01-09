@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year
+anio = datetime.now().year - 1
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dssge.dwe_emergencia_estancia_homologacion"
 
 
-for anio,mes in months_to_process:
+for mes in (1,13):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()
@@ -130,6 +130,7 @@ for anio,mes in months_to_process:
                     mt.admemealtadmfec    AS fecha_alta,
                     mt.admemealtadmhor    AS hora_alta_adm,
                     mt.ADMEMEADMHOR       AS hora_admision,
+                    dl.diagcod            AS cod_diag_emer,
 
                     -- formateo HH:MM desde horas_totales 
                     LPAD(TRUNC(mt.horas_totales)::text, 6, '0') || ':' ||

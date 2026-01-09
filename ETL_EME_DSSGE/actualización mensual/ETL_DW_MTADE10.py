@@ -61,7 +61,7 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 12, 1)
+start_date = datetime(2025, 1, 1)
 end_date = datetime(2025, 12, 31)
 
 # ==============================
@@ -73,16 +73,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
     tabla_destino = f"dssge.sgss_mtade10_{anio}_{mes}"
     
-    # ==============================
-    # TRUNCAR PARTICIÓN DESTINO
-    # ==============================
-    print(f"Truncando partición destino: {tabla_destino}...")
-    try:
-        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
-        print(f"Tabla {tabla_destino} truncada correctamente.")
-    except Exception as e:
-        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
-        continue  # Saltar este mes si no existe la partición
+
     query = f"""
             SELECT 
                 a.ADMEMEORICENASICOD,
@@ -90,8 +81,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 a.ADMEMEACTMEDNUM,
                 a.ADMEMEAREHOSCOD,
                 a.ADMEMEEMECOD,
-                to_char(a.ADMEMEADMFEC, 'yyyy') as anio,
-                to_char(a.ADMEMEADMFEC, 'yyyymm') as periodo,                
+                to_char(a.ADMEMEALTMEDFEC, 'yyyy') as anio,
+                to_char(a.ADMEMEALTMEDFEC, 'yyyymm') as periodo,                
                 to_char(a.ADMEMEADMFEC, 'DD-MM-YYYY') AS ADMEMEADMFEC,
                 to_char(a.ADMEMEADMHOR, 'HH24:MI:SS') AS ADMEMEADMHOR,
                 a.TIPACCCOD,
@@ -139,8 +130,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
             LEFT OUTER JOIN SGSS.CMAME10 b ON a.ADMEMEORICENASICOD=b.ORICENASICOD
                             AND a.ADMEMECENASICOD=b.CENASICOD
                             AND a.ADMEMEACTMEDNUM=b.ACTMEDNUM
-            WHERE ADMEMEADMFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and ADMEMEADMFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            WHERE ADMEMEALTMEDFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and ADMEMEALTMEDFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 
@@ -151,6 +142,17 @@ for start_mes, end_mes in month_range(start_date, end_date):
     if df.empty:
         print("No hay datos para este mes.")
         continue
+
+    # ==============================
+    # TRUNCAR PARTICIÓN DESTINO
+    # ==============================
+    print(f"Truncando partición destino: {tabla_destino}...")
+    try:
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
+        print(f"Tabla {tabla_destino} truncada correctamente.")
+    except Exception as e:
+        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
+        continue  # Saltar este mes si no existe la partición
 
     df.columns = df.columns.str.lower()
 

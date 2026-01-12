@@ -160,7 +160,6 @@ for mes in (1,13):
                 ON h.cod_centro     = mt.admemecenasicod
                 AND h.cod_topico     = mt.ADMEMETOPEMECOD
                 AND h.cod_emergencia = mt.ADMEMEEMECOD
-
                 WHERE h.cod_estandar IN ('01');
     
         """

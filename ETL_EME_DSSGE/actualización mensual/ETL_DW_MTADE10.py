@@ -81,8 +81,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 a.ADMEMEACTMEDNUM,
                 a.ADMEMEAREHOSCOD,
                 a.ADMEMEEMECOD,
-                to_char(a.ADMEMEALTMEDFEC, 'yyyy') as anio,
-                to_char(a.ADMEMEALTMEDFEC, 'yyyymm') as periodo,                
+                to_char(a.ADMEMEALTADMFEC, 'yyyy') as anio,
+                to_char(a.ADMEMEALTADMFEC, 'yyyymm') as periodo,                
                 to_char(a.ADMEMEADMFEC, 'DD-MM-YYYY') AS ADMEMEADMFEC,
                 to_char(a.ADMEMEADMHOR, 'HH24:MI:SS') AS ADMEMEADMHOR,
                 a.TIPACCCOD,
@@ -130,8 +130,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
             LEFT OUTER JOIN SGSS.CMAME10 b ON a.ADMEMEORICENASICOD=b.ORICENASICOD
                             AND a.ADMEMECENASICOD=b.CENASICOD
                             AND a.ADMEMEACTMEDNUM=b.ACTMEDNUM
-            WHERE ADMEMEALTMEDFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and ADMEMEALTMEDFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            WHERE ADMEMEALTADMFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and ADMEMEALTADMFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 
@@ -180,7 +180,3 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
-
-
-
-

@@ -79,30 +79,30 @@ for mes in range(1,13):
                 t1.admemealtadmhor                                                  AS hora_alta_adm,
                 dlast.diagcod                                                       AS cod_diag_emer,
 
-                /* === Estancia en formato HH:MI === */
+                /* === Estancia en HORAS REALES (HHH:MM) === */
                 (
-                    lpad(floor(calc.segundos / 3600)::text, 2, '0')
+                    floor(calc.segundos / 3600)::text
                     || ':' ||
                     lpad(floor(mod(calc.segundos / 60, 60))::text, 2, '0')
                 ) AS estancia_horas,
 
                 /* === RANGO DE ESTANCIA === */
                 CASE
-                    WHEN calc.segundos > 24 * 3600 THEN 1
-                    ELSE 2
+                    WHEN calc.segundos >= 24 * 3600 THEN 1  -- >= 24 horas
+                    ELSE 2                                  -- < 24 horas
                 END AS rango_estancia
 
             FROM dssge.sgss_mtade10_{anio}_{mes_str} t1
 
             LEFT JOIN dssge.dw_homologacion_enlaces_emergencia h
                 ON h.cod_centro     = t1.admemecenasicod
-                AND h.cod_topico     = t1.admemetopemecod
-                AND h.cod_emergencia = t1.admemeemecod
+            AND h.cod_topico     = t1.admemetopemecod
+            AND h.cod_emergencia = t1.admemeemecod
 
             LEFT JOIN LATERAL (
                 SELECT d.diagcod
-                FROM dssge.sgss_mtdae10_{anio}_{mes_str} d
-                INNER JOIN dssge.sgss_mtaem10_{anio}_{mes_str} c
+                FROM dssge.sgss_mtdae10_{anio} d
+                INNER JOIN dssge.sgss_mtaem10_{anio} c
                         ON c.ateemeoricenasicod = d.ateemeoricenasicod
                     AND c.ateemecenasicod    = d.ateemecenasicod
                     AND c.ateemeactmednum    = d.ateemeactmednum
@@ -114,12 +114,12 @@ for mes in range(1,13):
                 LIMIT 1
             ) dlast ON true
 
-            /* === Cálculo único de duración === */
+            /* === Cálculo único correcto de duración === */
             CROSS JOIN LATERAL (
                 SELECT
-                    extract(epoch from (
-                        to_timestamp(t1.admemealtadmfec || ' ' || t1.admemealtadmhor, 'DD-MM-YYYY HH24:MI')
-                    - to_timestamp(t1.admemeadmfec     || ' ' || t1.admemeadmhor,     'DD-MM-YYYY HH24:MI')
+                    extract(epoch FROM (
+                        to_timestamp(t1.admemealtadmfec || ' ' || t1.admemealtadmhor, 'DD-MM-YYYY HH24:MI:SS')
+                    - to_timestamp(t1.admemeadmfec     || ' ' || t1.admemeadmhor,     'DD-MM-YYYY HH24:MI:SS')
                     )) AS segundos
             ) calc
 

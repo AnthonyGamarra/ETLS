@@ -102,6 +102,7 @@ for mes in range(1,13):
                             e.cod_agrupador,
                             e.cod_variable,
                             t.properprohortot as total_horas,
+                            t.perasisdocidennum as dni_medico,
                             a.ate,
                             t.properfec AS fecha_prog,
                             CASE

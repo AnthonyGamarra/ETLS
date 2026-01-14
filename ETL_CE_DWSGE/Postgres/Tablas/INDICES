@@ -425,3 +425,17 @@ FOREIGN KEY (clasificacion)
 REFERENCES dwsge.dim_cl10 (id_cl)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;
+
+
+
+CREATE INDEX idx_dwe_ceh_2025_parcial_pacientes
+ON dwsge.dwe_consulta_externa_homologacion_2025
+(
+    cod_centro,
+    doc_paciente,
+    cod_oricentro,
+    fecha_atencion
+)
+WHERE cod_variable = '001'
+  AND cod_actividad = '91'
+  AND clasificacion IN (2,4,6);

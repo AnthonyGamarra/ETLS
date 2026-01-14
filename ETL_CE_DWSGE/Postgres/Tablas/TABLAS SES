@@ -567,12 +567,16 @@ CREATE TABLE dwsge.dwe_consulta_externa_horas_efectivas
         cod_subactividad VARCHAR(20),
         cod_servicio    VARCHAR(20),
         ate INTEGER,
+        fecha_prog VARCHAR(20),
         hras_prog NUMERIC,
         estado_progcita VARCHAR(20),
         cod_especialidad VARCHAR(20),
         cod_subespecialidad VARCHAR(20),
         cod_agrupador VARCHAR(20),
-        cod_variable VARCHAR(20)
+        cod_variable VARCHAR(20),
+        total_horas varchar(20),
+        horas_efec varchar(20),
+        horas_efec_def varchar(20)
 
 	) PARTITION BY LIST (anio);
 

@@ -36,7 +36,7 @@ conn_dst = psycopg2.connect(
 ##fecha_inicio = datetime(2025, 1, 1)  # Cambia esto si quieres otro inicio
 ##fecha_fin = datetime(2025, 12, 31)    # Cambia esto si quieres otro fin
 
-anio = datetime.now().year - 1
+anio = datetime.now().year 
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -52,7 +52,7 @@ else:
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 table_name = "dwsge.dwe_consulta_externa_programacion"
-for mes in range(12,13):
+for mes in range(1,2):
     mes_str = f"{mes:02d}"
     try:
         cur_dst = conn_dst.cursor()

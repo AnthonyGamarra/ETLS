@@ -51,10 +51,29 @@ CREATE TABLE dssge.sgss_mtade10 (
                 TIPOPARECOD VARCHAR(20)
 ) PARTITION BY LIST (anio);
 
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtade10_2026 PARTITION OF dssge.sgss_mtade10
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
 -- Crear partición anual para 2025
 CREATE TABLE dssge.sgss_mtade10_2025 PARTITION OF dssge.sgss_mtade10
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_mtade10_2026_01 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.sgss_mtade10_2026_02 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.sgss_mtade10_2026_03 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.sgss_mtade10_2026_04 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.sgss_mtade10_2026_05 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.sgss_mtade10_2026_06 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.sgss_mtade10_2026_07 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.sgss_mtade10_2026_08 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.sgss_mtade10_2026_09 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.sgss_mtade10_2026_10 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.sgss_mtade10_2026_11 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.sgss_mtade10_2026_12 PARTITION OF dssge.sgss_mtade10_2026 FOR VALUES IN ('202612');
 
 CREATE TABLE dssge.sgss_mtade10_2025_01 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202501');
 CREATE TABLE dssge.sgss_mtade10_2025_02 PARTITION OF dssge.sgss_mtade10_2025 FOR VALUES IN ('202502');
@@ -98,9 +117,28 @@ ADMEMDATEFLG VARCHAR(20)
 ) PARTITION BY LIST (anio);
 
 -- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtadd10_2026 PARTITION OF dssge.sgss_mtadd10
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2025
 CREATE TABLE dssge.sgss_mtadd10_2025 PARTITION OF dssge.sgss_mtadd10
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
+
+
+CREATE TABLE dssge.sgss_mtadd10_2026_01 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.sgss_mtadd10_2026_02 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.sgss_mtadd10_2026_03 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.sgss_mtadd10_2026_04 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.sgss_mtadd10_2026_05 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.sgss_mtadd10_2026_06 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.sgss_mtadd10_2026_07 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.sgss_mtadd10_2026_08 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.sgss_mtadd10_2026_09 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.sgss_mtadd10_2026_10 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.sgss_mtadd10_2026_11 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.sgss_mtadd10_2026_12 PARTITION OF dssge.sgss_mtadd10_2026 FOR VALUES IN ('202612');
 
 CREATE TABLE dssge.sgss_mtadd10_2025_01 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202501');
 CREATE TABLE dssge.sgss_mtadd10_2025_02 PARTITION OF dssge.sgss_mtadd10_2025 FOR VALUES IN ('202502');
@@ -151,6 +189,11 @@ CREATE TABLE dssge.sgss_mtaem10_2025 PARTITION OF dssge.sgss_mtaem10
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
 
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtaem10_2026 PARTITION OF dssge.sgss_mtaem10
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
 CREATE TABLE dssge.sgss_mtaem10_2025_01 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202501');
 CREATE TABLE dssge.sgss_mtaem10_2025_02 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202502');
 CREATE TABLE dssge.sgss_mtaem10_2025_03 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202503');
@@ -164,7 +207,20 @@ CREATE TABLE dssge.sgss_mtaem10_2025_10 PARTITION OF dssge.sgss_mtaem10_2025 FOR
 CREATE TABLE dssge.sgss_mtaem10_2025_11 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202511');
 CREATE TABLE dssge.sgss_mtaem10_2025_12 PARTITION OF dssge.sgss_mtaem10_2025 FOR VALUES IN ('202512');
 
------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE dssge.sgss_mtaem10_2026_01 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.sgss_mtaem10_2026_02 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.sgss_mtaem10_2026_03 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.sgss_mtaem10_2026_04 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.sgss_mtaem10_2026_05 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.sgss_mtaem10_2026_06 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.sgss_mtaem10_2026_07 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.sgss_mtaem10_2026_08 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.sgss_mtaem10_2026_09 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.sgss_mtaem10_2026_10 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.sgss_mtaem10_2026_11 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.sgss_mtaem10_2026_12 PARTITION OF dssge.sgss_mtaem10_2026 FOR VALUES IN ('202612');
+--------------------------------------6--------------------6-----------------------------------------------
 
 CREATE TABLE dssge.sgss_mtdae10 (
 
@@ -181,10 +237,29 @@ ANIO CHAR(4)
 
 ) PARTITION BY LIST (anio);
 
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_mtdae10_2026 PARTITION OF dssge.sgss_mtdae10
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
 -- Crear partición anual para 2025
 CREATE TABLE dssge.sgss_mtdae10_2025 PARTITION OF dssge.sgss_mtdae10
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_mtdae10_2026_01 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.sgss_mtdae10_2026_02 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.sgss_mtdae10_2026_03 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.sgss_mtdae10_2026_04 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.sgss_mtdae10_2026_05 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.sgss_mtdae10_2026_06 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.sgss_mtdae10_2026_07 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.sgss_mtdae10_2026_08 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.sgss_mtdae10_2026_09 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.sgss_mtdae10_2026_10 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.sgss_mtdae10_2026_11 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.sgss_mtdae10_2026_12 PARTITION OF dssge.sgss_mtdae10_2026 FOR VALUES IN ('202612');
 
 CREATE TABLE dssge.sgss_mtdae10_2025_01 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202501');
 CREATE TABLE dssge.sgss_mtdae10_2025_02 PARTITION OF dssge.sgss_mtdae10_2025 FOR VALUES IN ('202502');
@@ -405,6 +480,24 @@ TIPO_PACIENTE VARCHAR(20)
 CREATE TABLE dssge.sgss_ctdef10_2025 PARTITION OF dssge.sgss_ctdef10
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_ctdef10_2026 PARTITION OF dssge.sgss_ctdef10
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.sgss_ctdef10_2026_01 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.sgss_ctdef10_2026_02 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.sgss_ctdef10_2026_03 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.sgss_ctdef10_2026_04 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.sgss_ctdef10_2026_05 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.sgss_ctdef10_2026_06 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.sgss_ctdef10_2026_07 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.sgss_ctdef10_2026_08 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.sgss_ctdef10_2026_09 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.sgss_ctdef10_2026_10 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.sgss_ctdef10_2026_11 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.sgss_ctdef10_2026_12 PARTITION OF dssge.sgss_ctdef10_2026 FOR VALUES IN ('202612');
 
 CREATE TABLE dssge.sgss_ctdef10_2025_01 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202501');
 CREATE TABLE dssge.sgss_ctdef10_2025_02 PARTITION OF dssge.sgss_ctdef10_2025 FOR VALUES IN ('202502');

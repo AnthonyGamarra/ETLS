@@ -314,10 +314,28 @@ cod_diag_emer varchar(20)
 
 ) PARTITION BY LIST (anio);
 
+
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
 -- Crear partición anual para 2025
 CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2025 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_01 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202601');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_02 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202602');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_03 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202603');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_04 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202604');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_05 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202605');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_06 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202606');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_07 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202607');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_08 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202608');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_09 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202609');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_10 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202610');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_11 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202611');
+CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2026_12 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2026 FOR VALUES IN ('202612');
 
 CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2025_01 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202501');
 CREATE TABLE dwsge.dwe_emergencia_estancia_homologacion_2025_02 PARTITION OF dwsge.dwe_emergencia_estancia_homologacion_2025 FOR VALUES IN ('202502');
@@ -371,10 +389,27 @@ SECUEN_ATEN varchar(20),
 COD_AREA varchar(20)
 ) PARTITION BY LIST (anio);
 
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
 -- Crear partición anual para 2025
 CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2025 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_01 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202601');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_02 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202602');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_03 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202603');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_04 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202604');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_05 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202605');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_06 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202606');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_07 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202607');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_08 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202608');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_09 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202609');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_10 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202610');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_11 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202611');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026_12 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2026 FOR VALUES IN ('202612');
 
 CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2025_01 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202501');
 CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2025_02 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2025 FOR VALUES IN ('202502');
@@ -453,9 +488,26 @@ anio_def VARCHAR(4)
 ) PARTITION BY LIST (anio);
 
 -- Crear partición anual para 2025
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
 CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2025 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_01 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202601');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_02 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202602');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_03 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202603');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_04 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202604');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_05 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202605');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_06 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202606');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_07 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202607');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_08 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202608');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_09 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202609');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_10 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202610');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_11 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202611');
+CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2026_12 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2026 FOR VALUES IN ('202612');
 
 CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2025_01 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202501');
 CREATE TABLE dwsge.dwe_emergencia_defunciones_homologacion_2025_02 PARTITION OF dwsge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202502');

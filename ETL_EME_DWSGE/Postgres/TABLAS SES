@@ -386,7 +386,11 @@ COD_PRIORIDAD varchar(20),
 COD_DIAGNOSTICO varchar(20),
 COD_EMERGENCIA varchar(20),
 SECUEN_ATEN varchar(20),
-COD_AREA varchar(20)
+COD_AREA varchar(20),
+COD_TIPDOC_PACIENTE VARCHAR(20),
+DOC_PACIENTE VARCHAR(20),
+ANIO_EDAD VARCHAR(20),
+SEXO VARCHAR(20),
 ) PARTITION BY LIST (anio);
 
 CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion

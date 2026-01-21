@@ -334,7 +334,9 @@ CREATE TABLE dssge.sgss_ctppe10 (
   properturciefec DATE,
   properusuturape VARCHAR(20),
   properusuturcie VARCHAR(20),
-  propertipohordet VARCHAR(20)
+  propertipohordet VARCHAR(20),
+  pertipdocidencod VARCHAR(20),
+  perdocidennum VARCHAR(20)
 ) PARTITION BY LIST (anio);
 
 

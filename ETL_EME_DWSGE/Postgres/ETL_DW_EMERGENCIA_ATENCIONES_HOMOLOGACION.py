@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year
+anio = datetime.now().year - 1
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,20 +57,9 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_emergencia_atenciones_homologacion"
 
 
-for mes in range(1,2):
+for mes in range(1,13):
     mes_str = f"{mes:02d}"
-    try:
-        cur_dst = conn_dst.cursor()
-        partition_name = f"dwsge.dwe_emergencia_atenciones_homologacion_{anio}_{mes_str}"
-        cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
-        conn_dst.commit()
-        cur_dst.close()
-        print(f"Partición truncada correctamente: {partition_name}")
-    except Exception as e:
-        print(f"Error truncando partición {partition_name}: {e}")   
     print(f"\nProcesando mes: {anio}-{mes_str}")
-    # Truncar partición del mes antes de cargar datos
-
     try:
         query = f"""
                 SELECT
@@ -88,7 +77,11 @@ for mes in range(1,2):
                 j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
                 a.ateemesecnum                                   AS SECUEN_ATEN,
                 a.ateemearehoscod                AS COD_AREA,
-                z.cod_estandar
+                z.cod_estandar,
+                a.cod_tipdoc_paciente,
+                a.doc_paciente,
+                a.anio_edad,
+                a.sexo
                 from dssge.sgss_mtaem10_{anio}_{mes_str} a
                 left outer join dssge.sgss_mtade10_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
                                         and j.admemecenasicod   = a.ateemecenasicod
@@ -121,6 +114,18 @@ for mes in range(1,2):
             print(f"No se encontraron datos para el mes {mes_str}")
         else:
             df.columns = df.columns.str.lower()
+
+            try:
+                    cur_dst = conn_dst.cursor()
+                    partition_name = f"dwsge.dwe_emergencia_atenciones_homologacion_{anio}_{mes_str}"
+                    cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
+                    conn_dst.commit()
+                    cur_dst.close()
+                    print(f"Partición truncada correctamente: {partition_name}")
+            except Exception as e:
+                    print(f"Error truncando partición {partition_name}: {e}")   
+            
+                # Truncar partición del mes antes de cargar datos
 
             # Exportar DataFrame a CSV en memoria
             buffer = io.StringIO()

@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year -1
+anio = datetime.now().year 
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,23 +57,14 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_consulta_externa_no_medicas"
 
 
-for mes in range(12,13):
-    mes_str = f"{mes:02d}"
-    try:
-        cur_dst = conn_dst.cursor()
-        partition_name = f"dwsge.dwe_consulta_externa_no_medicas_{anio}_{mes_str}"
-        cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
-        conn_dst.commit()
-        cur_dst.close()
-        print(f"Partición truncada correctamente: {partition_name}")
-    except Exception as e:
-        print(f"Error truncando partición {partition_name}: {e}")   
+for mes in range(1,2):
+    mes_str = f"{mes:02d}" 
     print(f"\nProcesando mes: {anio}-{mes_str}")
     # Truncar partición del mes antes de cargar datos
 
     try:
         query = f"""
-            SELECT *, i.ATENMDDIAGCOD as diagcod  FROM dssge.dw_nomed_{anio}_{mes_str} a
+            SELECT a.*, i.ATENMDDIAGCOD as diagcod  FROM dssge.dw_nomed_{anio}_{mes_str} a
                 LEFT JOIN dssge.sgss_ctdan10_anio_v2_{anio}_{mes_str} i 
                     ON a.cod_oricentro = i.ATENOMORICENASICOD
                     AND a.cod_centro = i.ATENOMCENASICOD
@@ -87,6 +78,16 @@ for mes in range(12,13):
             print(f"No se encontraron datos para el mes {mes_str}")
         else:
             df.columns = df.columns.str.lower()
+
+            try:
+                cur_dst = conn_dst.cursor()
+                partition_name = f"dwsge.dwe_consulta_externa_no_medicas_{anio}_{mes_str}"
+                cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
+                conn_dst.commit()
+                cur_dst.close()
+                print(f"Partición truncada correctamente: {partition_name}")
+            except Exception as e:
+                print(f"Error truncando partición {partition_name}: {e}")  
 
             # Exportar DataFrame a CSV en memoria
             buffer = io.StringIO()

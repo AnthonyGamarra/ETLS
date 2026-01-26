@@ -71,10 +71,10 @@ for mes in range(1,2):
                 a.ateemeactmednum                AS ACTO_MED,
                 a.ateemefec      AS FECHA_ATEN,
                 a.ateemehor        AS HORA_ATEN,
-                e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
+                e.tipopacicod                           AS COD_TIPO_PACIENTE,
                 h.priatecod                                 AS COD_PRIORIDAD,
                 f.diagcod                               AS COD_DIAGNOSTICO,
-                j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
+                j.admemeemecod                           AS COD_EMERGENCIA,
                 a.ateemesecnum                                   AS SECUEN_ATEN,
                 a.ateemearehoscod                AS COD_AREA,
                 z.cod_estandar,
@@ -99,13 +99,13 @@ for mes in range(1,2):
                                         and a.ateememovsecnum    = b.admemdsecnum
                 left outer join dssge.sgss_mbtoe10 i 
                                         on b.admemdtopemecod    = i.topemecod
-                LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
+                left outer join dssge.dw_homologacion_enlaces_emergencia z
                                         ON z.cod_centro     = a.ateemecenasicod
                                         AND z.cod_topico     = i.topemecod
-                                        AND z.cod_emergencia = j.ADMEMEEMECOD 
+                                        AND z.cod_emergencia = j.admemeemecod 
                 where  j.actmedestregcod = '1'
                 and a.ateemearehoscod = '02'
-                and f.ATEEMEDIAGORD ='1'
+                and f.ateemediagord ='1'
                 order by secuen_aten desc
         """
 

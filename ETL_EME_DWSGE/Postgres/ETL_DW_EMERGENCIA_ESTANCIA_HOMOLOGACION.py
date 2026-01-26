@@ -110,7 +110,7 @@ for mes in range(1,2):
                 WHERE d.ateemeoricenasicod = t1.admemeoricenasicod
                 AND d.ateemecenasicod    = t1.admemecenasicod
                 AND d.ateemeactmednum    = t1.admemeactmednum
-                AND d.ATEEMEDIAGORD ='1'
+                AND d.ateemediagord ='1'
                 ORDER BY c.ateemesecnum DESC
                 LIMIT 1
             ) dlast ON true

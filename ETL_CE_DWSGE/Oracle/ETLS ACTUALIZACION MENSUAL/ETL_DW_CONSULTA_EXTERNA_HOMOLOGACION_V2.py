@@ -163,8 +163,8 @@ for mes in range(12, 13):
                     ON a.cod_actividad::text = e.cod_actividad::text 
                     AND a.cod_subactividad::text = e.cod_subactividad::text 
                     AND a.cod_servicio::text = e.cod_servicio::text
-            ),
-            analitico AS (
+            )
+            , analitico AS (
                 SELECT 
                     b.*,
                     ROW_NUMBER() OVER (
@@ -185,15 +185,22 @@ for mes in range(12, 13):
                 a.*,
                 CASE 
                     WHEN a.cod_diag IS NULL OR a.cod_diag = '' THEN 0
+
                     WHEN z.atenamboricenasicod IS NOT NULL THEN 6
+
                     WHEN a.total_en_particion = 1 
                         AND (a.cod_diag LIKE 'Z75.%' OR a.cod_diag LIKE 'Z53.%') THEN 1
+
                     WHEN a.total_en_particion = 1 THEN 2
+
                     WHEN a.row_num = 1 
                         AND (a.cod_diag LIKE 'Z75.%' OR a.cod_diag LIKE 'Z53.%') THEN 3
+
                     WHEN a.row_num = 1 THEN 4
+
                     ELSE 5
                 END AS clasificacion
+
             FROM analitico a
             LEFT JOIN incluido_z z
                 ON a.cod_oricentro = z.atenamboricenasicod

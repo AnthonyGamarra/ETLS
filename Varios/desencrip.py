@@ -3,20 +3,15 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import binascii
 
-# ==============================
-# CONFIGURACIÓN
-# ==============================
-ARCHIVO_ENTRADA = r"C:\Users\gcpp.ggi.sge2\Desktop\GGI\df_pacientes_rebagliati_dnianonimizado (2).xlsx"
-ARCHIVO_SALIDA = "pacientes_desencriptado.xlsx"
-COLUMNA = "doc_paciente"
-CLAVE = b"gcpp_ggi_sge_ag\x00"  # 16 bytes exactos
 
-# AES en pgcrypto usa ECB por defecto cuando pones solo 'aes'
+ARCHIVO_ENTRADA = r"C:\Users\gcpp.ggi.sge2\Desktop\GGI\df_traza_rebagliati_cut.xlsx"
+ARCHIVO_SALIDA = "pacientes_desencriptado_acto_med.xlsx"
+COLUMNA = "acto_med"
+CLAVE = b"gcpp_ggi_sge_ag\x00"  
+
+
 BLOCK_SIZE = 16
 
-# ==============================
-# FUNCIÓN DE DESENCRIPTADO
-# ==============================
 def decrypt_aes_hex(valor_hex):
     if pd.isna(valor_hex):
         return None
@@ -29,9 +24,6 @@ def decrypt_aes_hex(valor_hex):
     except Exception as e:
         return f"ERROR: {e}"
 
-# ==============================
-# PROCESO
-# ==============================
 df = pd.read_excel(ARCHIVO_ENTRADA)
 
 df[COLUMNA + "_original"] = df[COLUMNA].apply(decrypt_aes_hex)

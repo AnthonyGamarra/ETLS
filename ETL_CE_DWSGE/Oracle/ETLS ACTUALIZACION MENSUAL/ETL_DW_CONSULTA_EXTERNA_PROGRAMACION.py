@@ -85,7 +85,8 @@ for mes in range(12,13):
                         e.cod_subespecialidad,
                         e.cod_agrupador,
                         e.cod_variable,
-                        a.motsusprogcod as COD_MOTIVO_SUSPENSION
+                        a.motsusprogcod as COD_MOTIVO_SUSPENSION,
+                        a.properfec AS fecha_prog
                     FROM dssge.sgss_ctppe10_{anio}_{mes_str} a 
                     LEFT OUTER JOIN dssge.sgss_cmprs10 m 
                         ON m.tipdocidenpercod = a.tipdocidenpercod

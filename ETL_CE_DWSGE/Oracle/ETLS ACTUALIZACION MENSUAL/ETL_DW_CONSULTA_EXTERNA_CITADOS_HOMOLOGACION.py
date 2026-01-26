@@ -105,54 +105,54 @@ for mes in range(12,13):
             d.fecha_creacion,
             d.fecha_cita,
             CASE 
-                    WHEN (d.fecha_solicitud = '0001-01-01') 
-                    OR (TO_DATE(d.fecha_solicitud,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD') 
-                        AND d.fecha_solicitud <> '0001-01-01')  
-                    THEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD'))
-                    ELSE (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD'))
+                WHEN (d.fecha_solicitud = '0001-01-01') 
+            OR (TO_DATE(d.fecha_solicitud,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD') 
+                AND d.fecha_solicitud <> '0001-01-01')  
+            THEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD'))
+                ELSE (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD'))
                 END AS diferimiento,
 
-                CASE 
-                    WHEN d.fecha_solicitud = '0001-01-01' THEN
-                        CASE
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) < 7 THEN '1'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) > 150 THEN '8'
-                            ELSE '0'
-                        END
-                    
-                    WHEN TO_DATE(d.fecha_solicitud,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD')
-                        AND d.fecha_solicitud <> '0001-01-01' THEN
-                        CASE
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) < 7 THEN '1'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) > 150 THEN '8'
-                            ELSE '0'
-                        END
+            CASE 
+                WHEN d.fecha_solicitud = '0001-01-01' THEN
+                    CASE
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) < 7 THEN '1'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) > 150 THEN '8'
+                        ELSE '0'
+                    END
+                
+                WHEN TO_DATE(d.fecha_solicitud,'YYYY-MM-DD') < TO_DATE(d.fecha_creacion,'YYYY-MM-DD')
+                    AND d.fecha_solicitud <> '0001-01-01' THEN
+                    CASE
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) < 7 THEN '1'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_creacion,'YYYY-MM-DD')) > 150 THEN '8'
+                        ELSE '0'
+                    END
 
-                    ELSE 
-                        CASE
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) < 7 THEN '1'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
-                            WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) > 150 THEN '8'
-                            ELSE '0'
-                        END
-                END AS dif_clasificado,
+                ELSE 
+                    CASE
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) < 7 THEN '1'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 7 AND 10 THEN '2'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 11 AND 30 THEN '3'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 31 AND 60 THEN '4'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 61 AND 90 THEN '5'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 91 AND 120 THEN '6'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) BETWEEN 121 AND 150 THEN '7'
+                        WHEN (TO_DATE(d.fecha_cita,'YYYY-MM-DD') - TO_DATE(d.fecha_solicitud,'YYYY-MM-DD')) > 150 THEN '8'
+                        ELSE '0'
+                    END
+            END AS dif_clasificado,
 
                 d.anio_edad,
 

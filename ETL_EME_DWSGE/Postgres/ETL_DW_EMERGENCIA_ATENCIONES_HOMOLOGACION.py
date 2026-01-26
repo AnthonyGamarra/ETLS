@@ -105,6 +105,7 @@ for mes in range(1,2):
                                         AND z.cod_emergencia = j.ADMEMEEMECOD 
                 where  j.actmedestregcod = '1'
                 and a.ateemearehoscod = '02'
+                and f.ATEEMEDIAGORD ='1'
                 order by secuen_aten desc
         """
 

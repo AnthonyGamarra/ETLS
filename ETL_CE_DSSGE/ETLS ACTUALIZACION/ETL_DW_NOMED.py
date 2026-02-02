@@ -77,8 +77,8 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 1, 31)
+start_date = datetime(2025, 1, 1)
+end_date = datetime(2026, 12, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -108,6 +108,7 @@ k.actmedpacsecnum                   as CMAME_PACSECNUM,
 s.perdocidennum                                                  AS DOC_PACIENTE,
 (FLOOR(MONTHS_BETWEEN(a.atenomfec, s.pernacfec) / 12))      as ANIO_EDAD,
 (FLOOR(MOD(MONTHS_BETWEEN(a.atenomfec, s.pernacfec), 12)))  as MESES,
+decode(s.persexocod, '1', 'M', '0', 'F', '')                                    as SEXO, 
 k.actmedtipsegcod                                                AS COD_TIPO_SEGURO,
 
 s.pertipoparecod                                                AS COD_TIPO_PARENTESCO,

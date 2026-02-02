@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year - 1
+anio = datetime.now().year -1
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -54,22 +54,52 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-table_name = "dwsge.dwe_consulta_externa_no_medicas"
+table_name = "dwsge.dwe_consulta_externa_odonto_homologacion"
 
 
 for mes in range(1,13):
-    mes_str = f"{mes:02d}" 
+    mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
-    # Truncar partición del mes antes de cargar datos
-
     try:
         query = f"""
-            SELECT a.*, i.ATENMDDIAGCOD as diagcod  FROM dssge.dw_nomed_{anio}_{mes_str} a
-                LEFT JOIN dssge.sgss_ctdan10_anio_v2_{anio}_{mes_str} i 
-                    ON a.cod_oricentro = i.ATENOMORICENASICOD
-                    AND a.cod_centro = i.ATENOMCENASICOD
-                    AND a.acto_med = i.ATENOMACTMEDNUM
-                    AND i.ATENMDDIAGORD = 1
+            SELECT 
+                    a.cod_oricentro,
+                    a.cod_centro,
+                    a.periodo,
+                    a.cod_servicio,
+                    a.cod_actividad,
+                    a.cod_subactividad,
+                    a.dni_medico,
+                    a.doc_paciente,
+                    a.anio,
+                    a.meses,
+                    a.sexo,
+                    a.h_c,
+                    a.cod_tip_seguro,
+                    a.cod_tipo_parentesco,
+                    a.cod_tipo_paciente,
+                    a.cod_tipdoc_paciente,
+                    a.cod_tipdoc_medico,
+                    a.fecha_atencion,
+                    a.acto_med,
+                    a.cod_tipo_consulta,
+                    a.cas_referencia,
+                    a.cas_adscripcion,
+                    e.cod_especialidad,
+                    e.cod_subespecialidad,
+                    e.cod_agrupador,
+                    e.cod_variable,
+                    i.diagcod AS cod_diag
+                    FROM dssge.dw_odonto_{anio}_{mes_str} a
+                LEFT JOIN dssge.sgss_ctdao10_anio_v2_{anio}_{mes_str} i 
+                    ON a.cod_oricentro = i.atenodooricenasicod
+                    AND a.cod_centro = i.atenodocenasicod
+                    AND a.acto_med = i.atenodonum
+                    AND i.atenododiagord = 1
+                LEFT JOIN dssge.dw_homologacion_enlaces e 
+                    ON a.cod_actividad::text = e.cod_actividad::text 
+                    AND a.cod_subactividad::text = e.cod_subactividad::text 
+                    AND a.cod_servicio::text = e.cod_servicio::text
         """
 
         df = pd.read_sql_query(query, conn_src)
@@ -81,13 +111,14 @@ for mes in range(1,13):
 
             try:
                 cur_dst = conn_dst.cursor()
-                partition_name = f"dwsge.dwe_consulta_externa_no_medicas_{anio}_{mes_str}"
+                partition_name = f"dwsge.dw_consulta_externa_odonto_homologacion_{anio}_{mes_str}"
                 cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
                 conn_dst.commit()
                 cur_dst.close()
                 print(f"Partición truncada correctamente: {partition_name}")
             except Exception as e:
-                print(f"Error truncando partición {partition_name}: {e}")  
+                print(f"Error truncando partición {partition_name}: {e}")   
+            # Truncar partición del mes antes de cargar datos
 
             # Exportar DataFrame a CSV en memoria
             buffer = io.StringIO()

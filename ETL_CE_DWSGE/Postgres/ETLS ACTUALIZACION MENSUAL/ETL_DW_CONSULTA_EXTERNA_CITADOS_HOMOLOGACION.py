@@ -60,7 +60,7 @@ table_name = "dwsge.dwe_consulta_externa_citados_homologacion"
 for mes in range(1,2):
     mes_str = f"{mes:02d}"
 
-
+    print(f"\nProcesando mes: {anio}-{mes_str}")
     try:
         query = f"""
         SELECT
@@ -187,7 +187,7 @@ for mes in range(1,2):
                 print(f"Partición truncada correctamente: {partition_name}")
             except Exception as e:
                 print(f"Error truncando partición {partition_name}: {e}")   
-            print(f"\nProcesando mes: {anio}-{mes_str}")
+
             # Truncar partición del mes antes de cargar datos
 
             # Exportar DataFrame a CSV en memoria

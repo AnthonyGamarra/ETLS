@@ -593,10 +593,11 @@ CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2025_12 PARTITION OF 
 -------------------------------------------------------
 CREATE TABLE dwsge.sgss_cmdia10_chapter
  (
-    diagcod   varchar(500),
-    diagdes   varchar(500),
-	chapter  varchar(500),
-    chapterdes   varchar(500)
+DIAGCOD VARCHAR(200),
+DIAGDES VARCHAR(200),
+edxcapdes VARCHAR(200),
+edxgpodes VARCHAR(200),
+edxsgpdes VARCHAR(200)
  );
 
 

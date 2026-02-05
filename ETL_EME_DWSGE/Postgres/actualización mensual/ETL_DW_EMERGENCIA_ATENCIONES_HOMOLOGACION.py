@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year 
+anio = datetime.now().year -1
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_emergencia_atenciones_homologacion"
 
 
-for mes in range(1,2):
+for mes in range(1,13):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:
@@ -71,19 +71,15 @@ for mes in range(1,2):
                 a.ateemeactmednum                AS ACTO_MED,
                 a.ateemefec      AS FECHA_ATEN,
                 a.ateemehor        AS HORA_ATEN,
-                e.tipopacicod                           AS COD_TIPO_PACIENTE,
+                e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
                 h.priatecod                                 AS COD_PRIORIDAD,
                 f.diagcod                               AS COD_DIAGNOSTICO,
-                j.admemeemecod                           AS COD_EMERGENCIA,
+                j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
                 a.ateemesecnum                                   AS SECUEN_ATEN,
                 a.ateemearehoscod                AS COD_AREA,
-                z.cod_estandar,
-                a.cod_tipdoc_paciente,
-                a.doc_paciente,
-                a.anio_edad,
-                a.sexo
+                z.cod_estandar
                 from dssge.sgss_mtaem10_{anio}_{mes_str} a
-                left outer join dssge.sgss_mtade10_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
+                left outer join dssge.sgss_mtade10_v2_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
                                         and j.admemecenasicod   = a.ateemecenasicod
                                         and j.admemeactmednum   = a.ateemeactmednum
                 left outer join dssge.sgss_mtdae10 f on a.ateemeoricenasicod = f.ateemeoricenasicod
@@ -99,13 +95,12 @@ for mes in range(1,2):
                                         and a.ateememovsecnum    = b.admemdsecnum
                 left outer join dssge.sgss_mbtoe10 i 
                                         on b.admemdtopemecod    = i.topemecod
-                left outer join dssge.dw_homologacion_enlaces_emergencia z
+                LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
                                         ON z.cod_centro     = a.ateemecenasicod
                                         AND z.cod_topico     = i.topemecod
-                                        AND z.cod_emergencia = j.admemeemecod 
+                                        AND z.cod_emergencia = j.ADMEMEEMECOD 
                 where  j.actmedestregcod = '1'
                 and a.ateemearehoscod = '02'
-                and f.ateemediagord ='1'
                 order by secuen_aten desc
         """
 

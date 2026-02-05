@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 1, 31)
+start_date = datetime(2025, 1, 1)
+end_date = datetime(2025, 1, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -97,16 +97,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 RESATENINTECOD,
                 ATEEMEMOVSECNUM,
                 TIPOATEEMECOD,
-                ATEEMESIGVITSECNUM,
-                s.perdocidennum                                                            as DOC_PACIENTE,
-                (FLOOR(MONTHS_BETWEEN(a.ATEEMEFEC, s.pernacfec) / 12))                     as ANIO_EDAD,
-                s.pertipdocidencod                                                         AS COD_TIPDOC_PACIENTE,
-                decode(s.persexocod, '1', 'M', '0', 'F', '')                                    as SEXO
-            FROM SGSS.MTAEM10 a
-            LEFT OUTER JOIN sgss.cmame10 k ON k.oricenasicod = a.ATEEMEORICENASICOD
-                                    AND k.cenasicod    = a.ATEEMECENASICOD
-                                    AND k.actmednum    = a.ATEEMEACTMEDNUM
-            LEFT OUTER JOIN sgss.cmper10 s ON k.actmedpacsecnum    = s.persecnum
+                ATEEMESIGVITSECNUM
+            FROM SGSS.MTAEM10 
             WHERE ATEEMEFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
             and ATEEMEFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 

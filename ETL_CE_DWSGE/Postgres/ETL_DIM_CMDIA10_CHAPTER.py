@@ -33,26 +33,13 @@ conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn)
 # ==============================
 query = """
 
-SELECT
-    cap.diagcod AS chapter,
-    cap.diagdes AS chapterdes,
-    cap.diagcod AS diagcod,
-    cap.diagdes AS diagdes
-FROM sgss.cmdia10 cap
-WHERE cap.diagcod NOT LIKE '%.%'
-
-UNION ALL
-
-SELECT
-    cap.diagcod AS chapter,
-    cap.diagdes AS chapterdes,
-    det.diagcod AS diagcod,
-    det.diagdes AS diagdes
-FROM sgss.cmdia10 cap
-JOIN sgss.cmdia10 det
-  ON det.diagcod LIKE cap.diagcod || '.%'
-WHERE cap.diagcod NOT LIKE '%.%'
-ORDER BY chapter, diagcod
+SELECT d.DIAGCOD, d.DIAGDES,c.edxcapdes, g.edxgpodes, s.edxsgpdes  FROM sgss.cmdia10 d
+left outer join sgss.cmedc10 c on c.edxcapcod = d.edxcapcod
+left outer join sgss.cmedg10 g on g.edxcapcod = d.edxcapcod and
+                                  g.edxgpocod = d.edxgpocod
+left outer join sgss.cmeds10 s on s.edxcapcod = d.edxcapcod and
+                                  s.edxgpocod = d.edxgpocod and
+                                  s.edxsgpcod = d.edxsgpcod
  
  """
 df = pd.read_sql(query, conn_oracle)

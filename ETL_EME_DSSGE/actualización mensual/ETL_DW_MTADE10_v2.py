@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 12, 1)
-end_date = datetime(2025, 12, 31)
+start_date = datetime(2026, 1, 1)
+end_date = datetime(2026, 1, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -71,27 +71,67 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.sgss_mtdae10_{anio}_{mes}"
+    tabla_destino = f"dssge.sgss_mtade10_v2_{anio}_{mes}"
+    
+
     query = f"""
             SELECT 
-                    a.ATEEMEORICENASICOD,
-                    a.ATEEMECENASICOD,
-                    a.ATEEMEACTMEDNUM,
-                    a.ATEEMESECNUM,
-                    a.CONDDIAGCOD,
-                    a.DIAGCOD,
-                    a.ATEEMEDIAGORD,
-                    a.ATEEMETIPODIAGCOD,
-                    TO_CHAR(TRUNC(c.ateemefec), 'yyyymm') AS periodo,
-                    TO_CHAR(TRUNC(c.ateemefec), 'yyyy') AS anio
-                FROM sgss.mtdae10 a
-                LEFT JOIN sgss.mtaem10 c 
-                    ON c.ATEEMEORICENASICOD = a.ATEEMEORICENASICOD
-                AND c.ATEEMECENASICOD = a.ATEEMECENASICOD
-                AND c.ATEEMEACTMEDNUM = a.ATEEMEACTMEDNUM
-                AND c.ATEEMESECNUM  = a.ATEEMESECNUM
-                WHERE c.ateemefec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-                and c.ateemefec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+                a.ADMEMEORICENASICOD,
+                a.ADMEMECENASICOD,
+                a.ADMEMEACTMEDNUM,
+                a.ADMEMEAREHOSCOD,
+                a.ADMEMEEMECOD,
+                to_char(a.ADMEMEADMFEC, 'yyyy') as anio,
+                to_char(a.ADMEMEADMFEC, 'yyyymm') as periodo,                
+                to_char(a.ADMEMEADMFEC, 'DD-MM-YYYY') AS ADMEMEADMFEC,
+                to_char(a.ADMEMEADMHOR, 'HH24:MI:SS') AS ADMEMEADMHOR,
+                a.TIPACCCOD,
+                a.ACOPACCOD,
+                a.ADMEMEEGRFLG,
+                to_char(a.ADMEMEALTMEDFEC, 'DD-MM-YYYY') AS ADMEMEALTMEDFEC,
+                to_char(a.ADMEMEALTMEDHOR, 'HH24:MI:SS') AS ADMEMEALTMEDHOR,
+                a.ADMEMEESTREGCOD,
+                a.ADMEMETOPEMECOD,
+                to_char(a.ADMEMEALTADMFEC, 'DD-MM-YYYY') AS ADMEMEALTADMFEC,
+                to_char(a.ADMEMEALTADMHOR, 'HH24:MI:SS') AS ADMEMEALTADMHOR,
+                a.ADMEMEATETRIORICENASICOD,
+                a.ADMEMEATETRICENASICOD,
+                a.ADMEMEATETRIAREHOSCOD,
+                a.ADMEMEATETRIEMECOD,
+                a.ADMEMEATETRIANO,
+                a.ADMEMEATETRINUM,
+                a.ADMEMEMOTEGRCOD,
+                a.ADMEMEULTPRIATECOD,
+                a.ADMEMEPACSECNUM,
+                a.ADMEMESOSCOVID,
+                b.TIPCONCOD,
+                b.ACTMEDFAC,
+                b.ACTMEDFECATEN,
+                b.ACTMEDTIPOPARDIACOD,
+                b.ACTMEDTIPOPARPROCOD,
+                b.ACTMEDATE,
+                b.ACTMEDHOS,
+                b.ACTMEDCITT,
+                b.ACTMEDOPE,
+                b.ACTMEDESTREGCOD,
+                b.ACTMEDTIPATECOD,
+                b.ACTMEDAFESCTRFLG,   
+                b.ORICENASICOD,
+                b.CENASICOD,
+                b.ACTMEDNUM,
+                b.ACTMEDPACSECNUM,
+                b.ACTMEDAREHOSCOD,
+                b.ACTMEDSERVHOSCOD,
+                b.ACTMEDTIPSEGCOD,
+                b.ACTMEDPLANTIPSEGCOD,          
+                b.ACTMEDTIPOPACICOD,
+                b.TIPOPARECOD
+            FROM SGSS.MTADE10 a
+            LEFT OUTER JOIN SGSS.CMAME10 b ON a.ADMEMEORICENASICOD=b.ORICENASICOD
+                            AND a.ADMEMECENASICOD=b.CENASICOD
+                            AND a.ADMEMEACTMEDNUM=b.ACTMEDNUM
+            WHERE ADMEMEADMFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            and ADMEMEADMFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
 
     """
 
@@ -103,8 +143,6 @@ for start_mes, end_mes in month_range(start_date, end_date):
         print("No hay datos para este mes.")
         continue
 
-    df.columns = df.columns.str.lower()
-
     # ==============================
     # TRUNCAR PARTICIÓN DESTINO
     # ==============================
@@ -115,6 +153,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
     except Exception as e:
         print(f"⚠️ Error al truncar {tabla_destino}: {e}")
         continue  # Saltar este mes si no existe la partición
+
+    df.columns = df.columns.str.lower()
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()
@@ -140,7 +180,3 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
-
-
-
-

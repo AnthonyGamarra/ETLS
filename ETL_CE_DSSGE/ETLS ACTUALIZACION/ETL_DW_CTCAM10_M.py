@@ -108,6 +108,10 @@ for start_mes, end_mes in month_range(start_date, end_date):
            citambtipdocidenpercod as cod_tipdoc_medico,
            citambperasisdocidennum as cod_doc_medico,
            citambproconfec as fecha_cita,
+           citambmodfec as fecha_modificacion,
+           case 
+               when citambmodfec is null then citambproconfec 
+               else citambmodfec end as fecha_ultima_modificacion,
            citambproconturhorini as horaini,
            citambproconturhorfin as horafin,
            estcitcod as cod_estado_cita,

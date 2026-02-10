@@ -8,10 +8,10 @@ from datetime import datetime
 load_dotenv()
 
 # Configuración de base de datos origen
-pg_user_src = os.getenv("PG_USER3")
-pg_pass_src = os.getenv("PG_PASS3")
-pg_host_src = os.getenv("PG_HOST3")
-pg_db_src   = os.getenv("PG_DB3")
+pg_user_src = os.getenv("PG_USER")
+pg_pass_src = os.getenv("PG_PASS")
+pg_host_src = os.getenv("PG_HOST")
+pg_db_src   = os.getenv("PG_DB")
 
 # Configuración de base de datos destino
 pg_user_dst = os.getenv("PG_USER")
@@ -23,7 +23,7 @@ print(f"Base de datos origen: {pg_db_src}")
 print(f"Base de datos destino: {pg_db_dst}")
 
 # Crear conexiones
-engine_src = create_engine(f"postgresql+psycopg2://{pg_user_src}:{pg_pass_src}@{pg_host_src}:5432/{pg_db_src}")
+engine_src = create_engine(f"postgresql+psycopg2://{pg_user_src}:{pg_pass_src}@{pg_host_src}:5433/{pg_db_src}")
 engine_dst = create_engine(f"postgresql+psycopg2://{pg_user_dst}:{pg_pass_dst}@{pg_host_dst}:5433/{pg_db_dst}")
 
 # Registrar inicio
@@ -35,7 +35,7 @@ with engine_dst.begin() as conn:
     conn.execute(text("TRUNCATE TABLE dwsge.dim_variable RESTART IDENTITY;"))
 
 try:
-    query = "SELECT DISTINCT cod_variable, variable FROM public.homenlaces_historico_total"
+    query = "SELECT DISTINCT cod_variable, variable FROM dwsge.dw_homologacion_enlaces"
     df = pd.read_sql(query, engine_src)
 
     if df.empty:

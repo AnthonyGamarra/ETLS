@@ -337,25 +337,29 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA dwsge GRANT SELECT ON TABLES TO jhon;
 
 
 --------------------------------------------------------------------------------------------------------
-CREATE USER ietsi WITH PASSWORD 'ietsi2025';
+CREATE USER gcop WITH PASSWORD 'gcop2026';
 REVOKE CONNECT ON DATABASE Data_center_sge FROM PUBLIC;
-GRANT CONNECT ON DATABASE Data_center_sge TO ietsi;
-GRANT USAGE ON SCHEMA IETSI TO ietsi;
-GRANT SELECT ON ALL TABLES IN SCHEMA IETSI TO ietsi;
-
-ALTER DEFAULT PRIVILEGES IN SCHEMA IETSI
-GRANT SELECT ON TABLES TO ietsi;
+GRANT CONNECT ON DATABASE Data_center_sge TO gcop;
+GRANT USAGE ON SCHEMA gcop TO gcop;
+GRANT SELECT ON ALL TABLES IN SCHEMA gcop TO gcop;
+ALTER DEFAULT PRIVILEGES IN SCHEMA gcop
+GRANT SELECT ON TABLES TO gcop;
 
 REVOKE CONNECT ON DATABASE sispoi_produccion2 FROM PUBLIC;
-REVOKE CONNECT ON DATABASE sispoi_produccion2 FROM ietsi;
+REVOKE CONNECT ON DATABASE sispoi_produccion2 FROM gcop;
+REVOKE CONNECT ON DATABASE auth-service FROM PUBLIC;
+REVOKE CONNECT ON DATABASE db_gcpp_backend FROM PUBLIC;
+REVOKE CONNECT ON DATABASE Flask_Prueba FROM PUBLIC;
+REVOKE CONNECT ON DATABASE pgbench_test FROM PUBLIC;
+
 
 REVOKE CONNECT ON DATABASE template1 FROM PUBLIC;
 
 SELECT datname, 
-       pg_catalog.has_database_privilege('ietsi', datname, 'CONNECT') AS can_connect
+       pg_catalog.has_database_privilege('gcop', datname, 'CONNECT') AS can_connect
 FROM pg_database;
 
-REVOKE CONNECT ON DATABASE template0 FROM ietsi;
+REVOKE CONNECT ON DATABASE template0 FROM gcop;
 REVOKE CONNECT ON DATABASE template0 FROM PUBLIC;
 
 

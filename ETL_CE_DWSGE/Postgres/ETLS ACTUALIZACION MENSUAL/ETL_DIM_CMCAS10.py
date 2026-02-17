@@ -49,7 +49,6 @@ with engine_pg.begin() as conn:
 # ==============================
 # 5. Cargar datos a PostgreSQL
 # ==============================
-df = df.astype(str)
 df.columns = df.columns.str.lower() 
 df.to_sql("sgss_cmcas10", engine_pg, schema="dwsge", if_exists="append", index=False)
 

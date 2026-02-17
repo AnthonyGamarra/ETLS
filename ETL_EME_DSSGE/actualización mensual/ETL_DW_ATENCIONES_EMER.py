@@ -71,67 +71,49 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.sgss_mtade10_v2_{anio}_{mes}"
-    
-
+    tabla_destino = f"dssge.dw_ate_emer_{anio}_{mes}"
     query = f"""
-            SELECT 
-                a.ADMEMEORICENASICOD,
-                a.ADMEMECENASICOD,
-                a.ADMEMEACTMEDNUM,
-                a.ADMEMEAREHOSCOD,
-                a.ADMEMEEMECOD,
-                to_char(a.ADMEMEADMFEC, 'yyyy') as anio,
-                to_char(a.ADMEMEADMFEC, 'yyyymm') as periodo,                
-                to_char(a.ADMEMEADMFEC, 'DD-MM-YYYY') AS ADMEMEADMFEC,
-                to_char(a.ADMEMEADMHOR, 'HH24:MI:SS') AS ADMEMEADMHOR,
-                a.TIPACCCOD,
-                a.ACOPACCOD,
-                a.ADMEMEEGRFLG,
-                to_char(a.ADMEMEALTMEDFEC, 'DD-MM-YYYY') AS ADMEMEALTMEDFEC,
-                to_char(a.ADMEMEALTMEDHOR, 'HH24:MI:SS') AS ADMEMEALTMEDHOR,
-                a.ADMEMEESTREGCOD,
-                a.ADMEMETOPEMECOD,
-                to_char(a.ADMEMEALTADMFEC, 'DD-MM-YYYY') AS ADMEMEALTADMFEC,
-                to_char(a.ADMEMEALTADMHOR, 'HH24:MI:SS') AS ADMEMEALTADMHOR,
-                a.ADMEMEATETRIORICENASICOD,
-                a.ADMEMEATETRICENASICOD,
-                a.ADMEMEATETRIAREHOSCOD,
-                a.ADMEMEATETRIEMECOD,
-                a.ADMEMEATETRIANO,
-                a.ADMEMEATETRINUM,
-                a.ADMEMEMOTEGRCOD,
-                a.ADMEMEULTPRIATECOD,
-                a.ADMEMEPACSECNUM,
-                a.ADMEMESOSCOVID,
-                b.TIPCONCOD,
-                b.ACTMEDFAC,
-                b.ACTMEDFECATEN,
-                b.ACTMEDTIPOPARDIACOD,
-                b.ACTMEDTIPOPARPROCOD,
-                b.ACTMEDATE,
-                b.ACTMEDHOS,
-                b.ACTMEDCITT,
-                b.ACTMEDOPE,
-                b.ACTMEDESTREGCOD,
-                b.ACTMEDTIPATECOD,
-                b.ACTMEDAFESCTRFLG,   
-                b.ORICENASICOD,
-                b.CENASICOD,
-                b.ACTMEDNUM,
-                b.ACTMEDPACSECNUM,
-                b.ACTMEDAREHOSCOD,
-                b.ACTMEDSERVHOSCOD,
-                b.ACTMEDTIPSEGCOD,
-                b.ACTMEDPLANTIPSEGCOD,          
-                b.ACTMEDTIPOPACICOD,
-                b.TIPOPARECOD
-            FROM SGSS.MTADE10 a
-            LEFT OUTER JOIN SGSS.CMAME10 b ON a.ADMEMEORICENASICOD=b.ORICENASICOD
-                            AND a.ADMEMECENASICOD=b.CENASICOD
-                            AND a.ADMEMEACTMEDNUM=b.ACTMEDNUM
-            WHERE ADMEMEADMFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and ADMEMEADMFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            SELECT
+            a.ateemeoricenasicod                AS COD_ORICENTRO,
+            a.ateemecenasicod                AS COD_CENTRO,
+            to_char(a.ateemefec,'yyyy')    AS ANIO,
+            to_char(a.ateemefec,'yyyymm')    AS PERIODO,
+            i.topemecod                      AS COD_TOPICO,
+            a.ateemeactmednum                AS ACTO_MED,
+            s.perdocidennum                                              AS DOC_PACIENTE,
+            decode(s.persexocod,'1','M','0','F','') AS SEXO,
+            to_char(a.ateemefec , 'dd/mm/yyyy')     AS FECHA_ATEN,
+            to_char(a.ateemehor, 'HH24:MI')         AS HORA_ATEN,
+            e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
+            h.priatecod                                 AS COD_PRIORIDAD,
+            f.diagcod                               AS COD_DIAGNOSTICO,
+            j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
+            a.ateemesecnum                                   AS SECUEN_ATEN
+            from SGSS.mtaem10 a
+            left outer join SGSS.mtade10 j on j.admemeoricenasicod = a.ateemeoricenasicod
+                                    and j.admemecenasicod   = a.ateemecenasicod
+                                    and j.admemeactmednum   = a.ateemeactmednum
+            left outer join SGSS.cmame10 k on j.admemeoricenasicod = k.oricenasicod
+                                    and j.admemecenasicod    = k.cenasicod
+                                    and j.admemeactmednum    = k.actmednum
+            left outer join SGSS.mtdae10 f on a.ateemeoricenasicod = f.ateemeoricenasicod
+                                    and a.ateemecenasicod    = f.ateemecenasicod
+                                    and a.ateemeactmednum    = f.ateemeactmednum
+                                    and a.ateemesecnum       = f.ateemesecnum
+            left outer join SGSS.cmtse10 m on k.actmedtipsegcod    = m.tipsegcod
+            left outer join SGSS.cmper10 s on k.actmedpacsecnum    = s.persecnum
+            left outer join SGSS.cbtpc10 e on k.actmedtipopacicod  = e.tipopacicod
+            left outer join SGSS.mbpae10 h on a.ateemepriatecod    = h.priatecod
+            left outer join SGSS.mtadd10 b on a.ateemeoricenasicod = b.admemeoricenasicod
+                                    and a.ateemecenasicod    = b.admemecenasicod
+                                    and a.ateemeactmednum    = b.admemeactmednum
+                                    and a.ateememovsecnum    = b.admemdsecnum
+            left outer join SGSS.mbtoe10 i on b.admemdtopemecod    = i.topemecod
+
+            WHERE a.ateemefec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+                and a.ateemefec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+                and k.actmedestregcod = '1'
+                and a.ateemearehoscod = '02'
 
     """
 
@@ -143,6 +125,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
         print("No hay datos para este mes.")
         continue
 
+    df.columns = df.columns.str.lower()
+
     # ==============================
     # TRUNCAR PARTICIÓN DESTINO
     # ==============================
@@ -153,8 +137,6 @@ for start_mes, end_mes in month_range(start_date, end_date):
     except Exception as e:
         print(f"⚠️ Error al truncar {tabla_destino}: {e}")
         continue  # Saltar este mes si no existe la partición
-
-    df.columns = df.columns.str.lower()
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()
@@ -180,3 +162,6 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
+
+
+

@@ -220,3 +220,12 @@ FOREIGN KEY (cod_estandar)
 REFERENCES dwsge.dim_estandar(id_estandar)
 ON UPDATE CASCADE
 ON DELETE RESTRICT;
+
+------------------------------------ indices de performance
+CREATE INDEX idx_dwe_main
+ON dwsge.dwe_emergencia_atenciones_homologacion_2025
+(periodo, cod_centro, cod_estandar, acto_med, cod_emergencia);
+
+CREATE INDEX idx_dwe_seq
+ON dwsge.dwe_emergencia_atenciones_homologacion_2025
+((CAST(secuen_aten AS INTEGER)));

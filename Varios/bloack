@@ -504,3 +504,50 @@ query = f"""
     ) b
     WHERE b.ate <> 0
 """
+
+
+
+--------------------------------------
+atenciones emergencia dw 
+
+
+                SELECT
+                a.ateemeoricenasicod           AS COD_ORICENTRO,
+                a.ateemecenasicod                AS COD_CENTRO,
+                a.anio,
+                a.periodo,
+                i.topemecod                      AS COD_TOPICO,
+                a.ateemeactmednum                AS ACTO_MED,
+                a.ateemefec      AS FECHA_ATEN,
+                a.ateemehor        AS HORA_ATEN,
+                e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
+                h.priatecod                                 AS COD_PRIORIDAD,
+                f.diagcod                               AS COD_DIAGNOSTICO,
+                j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
+                a.ateemesecnum                                   AS SECUEN_ATEN,
+                a.ateemearehoscod                AS COD_AREA,
+                z.cod_estandar
+                from dssge.sgss_mtaem10_{anio}_{mes_str} a
+                left outer join dssge.sgss_mtade10_v2 j on j.admemeoricenasicod = a.ateemeoricenasicod
+                                        and j.admemecenasicod   = a.ateemecenasicod
+                                        and j.admemeactmednum   = a.ateemeactmednum
+                left outer join dssge.sgss_mtdae10 f on a.ateemeoricenasicod = f.ateemeoricenasicod
+                                        and a.ateemecenasicod    = f.ateemecenasicod
+                                        and a.ateemeactmednum    = f.ateemeactmednum
+                                        and a.ateemesecnum       = f.ateemesecnum
+                left outer join dssge.sgss_cmtse10 m on j.actmedtipsegcod    = m.tipsegcod
+                left outer join dssge.sgss_cbtpc10 e on j.actmedtipopacicod  = e.tipopacicod
+                left outer join dssge.sgss_mbpae10 h on a.ateemepriatecod    = h.priatecod
+                left outer join dssge.sgss_mtadd10 b on a.ateemeoricenasicod = b.admemeoricenasicod
+                                        and a.ateemecenasicod    = b.admemecenasicod
+                                        and a.ateemeactmednum    = b.admemeactmednum
+                                        and a.ateememovsecnum    = b.admemdsecnum
+                left outer join dssge.sgss_mbtoe10 i 
+                                        on b.admemdtopemecod    = i.topemecod
+                LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
+                                        ON z.cod_centro     = a.ateemecenasicod
+                                        AND z.cod_topico     = i.topemecod
+                                        AND z.cod_emergencia = j.ADMEMEEMECOD 
+                where  j.actmedestregcod = '1'
+                and a.ateemearehoscod = '02'
+                order by secuen_aten desc

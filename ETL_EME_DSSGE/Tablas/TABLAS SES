@@ -548,57 +548,70 @@ CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_11 PARTITION OF 
 CREATE TABLE dssge.dwe_emergencia_defunciones_homologacion_2025_12 PARTITION OF dssge.dwe_emergencia_defunciones_homologacion_2025 FOR VALUES IN ('202512');
 
 ------------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.dw_ate_emer (
+                COD_ORICENTRO varchar(20),
+                COD_CENTRO varchar(20),
+                ANIO CHAR(4),
+                PERIODO CHAR(6),
+                COD_TOPICO varchar(20),
+                ACTO_MED NUMERIC,
+                FECHA_ATEN VARCHAR(20),
+                HORA_ATEN VARCHAR(20),
+                COD_TIPO_PACIENTE varchar(20),
+                COD_PRIORIDAD varchar(20),
+                COD_DIAGNOSTICO varchar(20),
+                COD_EMERGENCIA varchar(20),
+                SECUEN_ATEN varchar(20),
+                COD_AREA varchar(20),
+                COD_TIPDOC_PACIENTE VARCHAR(20),
+                DOC_PACIENTE VARCHAR(20),
+                ANIO_EDAD VARCHAR(20),
+                SEXO VARCHAR(20)
+                COD_TIPO_DOC VARCHAR(20)
+) PARTITION BY LIST (anio);
+
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dw_ate_emer_2026 PARTITION OF dssge.dw_ate_emer
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dw_ate_emer_2025 PARTITION OF dssge.dw_ate_emer
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dw_ate_emer_2026_01 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.dw_ate_emer_2026_02 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.dw_ate_emer_2026_03 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.dw_ate_emer_2026_04 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.dw_ate_emer_2026_05 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.dw_ate_emer_2026_06 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.dw_ate_emer_2026_07 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.dw_ate_emer_2026_08 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.dw_ate_emer_2026_09 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.dw_ate_emer_2026_10 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.dw_ate_emer_2026_11 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.dw_ate_emer_2026_12 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202612');
+
+CREATE TABLE dssge.dw_ate_emer_2025_01 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dw_ate_emer_2025_02 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dw_ate_emer_2025_03 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dw_ate_emer_2025_04 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dw_ate_emer_2025_05 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dw_ate_emer_2025_06 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dw_ate_emer_2025_07 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dw_ate_emer_2025_08 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dw_ate_emer_2025_09 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dw_ate_emer_2025_10 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dw_ate_emer_2025_11 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dw_ate_emer_2025_12 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202512');
+
+
+
+
 CREATE TABLE dssge.sgss_mtade10_v2 (
-                ADMEMEORICENASICOD VARCHAR(20),
-                ADMEMECENASICOD VARCHAR(20),
-                ADMEMEACTMEDNUM NUMERIC,
-                ADMEMEAREHOSCOD VARCHAR(20),
-                ADMEMEEMECOD VARCHAR(20),
-                anio CHAR(4),
-                periodo CHAR(6),
-                ADMEMEADMFEC VARCHAR(20),
-                ADMEMEADMHOR    VARCHAR(20),
-                TIPACCCOD VARCHAR(20),
-                ACOPACCOD VARCHAR(20),
-                ADMEMEEGRFLG VARCHAR(20),
-                ADMEMEALTMEDFEC VARCHAR(20),
-                ADMEMEALTMEDHOR VARCHAR(20),
-                ADMEMEESTREGCOD VARCHAR(20),
-                ADMEMETOPEMECOD VARCHAR(20),
-                ADMEMEALTADMFEC VARCHAR(20),
-                ADMEMEALTADMHOR VARCHAR(20),
-                ADMEMEATETRIORICENASICOD VARCHAR(20),
-                ADMEMEATETRICENASICOD VARCHAR(20),
-                ADMEMEATETRIAREHOSCOD VARCHAR(20),
-                ADMEMEATETRIEMECOD VARCHAR(20),
-                ADMEMEATETRIANO VARCHAR(20),
-                ADMEMEATETRINUM VARCHAR(20),
-                ADMEMEMOTEGRCOD VARCHAR(20),
-                ADMEMEULTPRIATECOD VARCHAR(20),
-                ADMEMEPACSECNUM NUMERIC,
-                ADMEMESOSCOVID VARCHAR(20),
-                TIPCONCOD VARCHAR(20),
-                ACTMEDFAC VARCHAR(20),
-                ACTMEDFECATEN VARCHAR(20),
-                ACTMEDTIPOPARDIACOD VARCHAR(20),
-                ACTMEDTIPOPARPROCOD VARCHAR(20),
-                ACTMEDATE VARCHAR(20),
-                ACTMEDHOS VARCHAR(20),
-                ACTMEDCITT VARCHAR(20),
-                ACTMEDOPE VARCHAR(20),
-                ACTMEDESTREGCOD VARCHAR(20),
-                ACTMEDTIPATECOD VARCHAR(20),
-                ACTMEDAFESCTRFLG VARCHAR(20),
-                ORICENASICOD VARCHAR(20),
-                CENASICOD VARCHAR(20),
-                ACTMEDNUM NUMERIC,
-                ACTMEDPACSECNUM NUMERIC,
-                ACTMEDAREHOSCOD VARCHAR(20),
-                ACTMEDSERVHOSCOD VARCHAR(20),
-                ACTMEDTIPSEGCOD VARCHAR(20),
-                ACTMEDPLANTIPSEGCOD VARCHAR(20), 
-                ACTMEDTIPOPACICOD VARCHAR(20),
-                TIPOPARECOD VARCHAR(20)
+
 ) PARTITION BY LIST (anio);
 
 

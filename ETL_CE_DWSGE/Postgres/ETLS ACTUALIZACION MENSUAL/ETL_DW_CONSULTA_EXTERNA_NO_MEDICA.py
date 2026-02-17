@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_consulta_externa_no_medicas"
 
 
-for mes in range(1,2):
+for mes in range(2,3):
     mes_str = f"{mes:02d}" 
     print(f"\nProcesando mes: {anio}-{mes_str}")
     # Truncar partición del mes antes de cargar datos

@@ -43,7 +43,7 @@ engine_pg = create_engine(f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:
 
 with engine_pg.begin() as conn:
     # Limpia solo los datos, mantiene estructura e índices
-    conn.execute(text("TRUNCATE TABLE dwsge.sgss_cmace10 RESTART IDENTITY CASCADE;"))
+    conn.execute(text("TRUNCATE TABLE dwsge.sgss_cmace10 RESTART IDENTITY;"))
 
 # ==============================
 # 5. Cargar datos a PostgreSQL

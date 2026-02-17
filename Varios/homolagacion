@@ -1,0 +1,22 @@
+---- CE SIN HOMOLOGACION
+
+SELECT * FROM dwsge.dwe_consulta_externa_homologacion_2026
+WHERE cod_actividad = '91'
+and cod_variable is null
+
+
+---- EME SIN HOMOLOGACION
+SELECT DISTINCT cod_centro,cenasides, cod_topico,topemedes, cod_emergencia FROM (
+SELECT distinct cod_centro,cenasides, cod_topico,t.topemedes,  cod_emergencia FROM dwsge.dwe_emergencia_atenciones_homologacion_2025
+LEFT OUTER JOIN dssge.sgss_mbtoe10 t ON cod_topico = topemecod 
+LEFT JOIN dwsge.sgss_cmcas10 c ON  cod_centro = cenasicod
+where cod_estandar is null
+and cod_topico is not null
+
+UNION ALL
+
+SELECT distinct cod_centro, cenasides, cod_topico,t.topemedes, cod_emergencia FROM dwsge.dwe_emergencia_atenciones_homologacion_2026
+LEFT OUTER JOIN dssge.sgss_mbtoe10 t ON cod_topico = topemecod 
+LEFT OUTER JOIN dwsge.sgss_cmcas10 c  ON  cod_centro = cenasicod
+where cod_estandar is null
+and cod_topico is not null)

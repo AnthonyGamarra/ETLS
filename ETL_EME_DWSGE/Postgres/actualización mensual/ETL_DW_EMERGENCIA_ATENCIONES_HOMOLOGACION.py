@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year -1
+anio = datetime.now().year 
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,50 +57,31 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_emergencia_atenciones_homologacion"
 
 
-for mes in range(1,13):
+for mes in range(2,3):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:
         query = f"""
                 SELECT
-                a.ateemeoricenasicod           AS COD_ORICENTRO,
-                a.ateemecenasicod                AS COD_CENTRO,
+                a.COD_ORICENTRO,
+                a.COD_CENTRO,
                 a.anio,
                 a.periodo,
-                i.topemecod                      AS COD_TOPICO,
-                a.ateemeactmednum                AS ACTO_MED,
-                a.ateemefec      AS FECHA_ATEN,
-                a.ateemehor        AS HORA_ATEN,
-                e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
-                h.priatecod                                 AS COD_PRIORIDAD,
-                f.diagcod                               AS COD_DIAGNOSTICO,
-                j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
-                a.ateemesecnum                                   AS SECUEN_ATEN,
-                a.ateemearehoscod                AS COD_AREA,
+                a.COD_TOPICO,
+                a.ACTO_MED,
+                a.FECHA_ATEN,
+                a.HORA_ATEN,
+                a.COD_TIPO_PACIENTE,
+                a.COD_PRIORIDAD,
+                a.COD_DIAGNOSTICO,
+                a.COD_EMERGENCIA,
+                a.SECUEN_ATEN,
                 z.cod_estandar
-                from dssge.sgss_mtaem10_{anio}_{mes_str} a
-                left outer join dssge.sgss_mtade10_v2_{anio}_{mes_str} j on j.admemeoricenasicod = a.ateemeoricenasicod
-                                        and j.admemecenasicod   = a.ateemecenasicod
-                                        and j.admemeactmednum   = a.ateemeactmednum
-                left outer join dssge.sgss_mtdae10 f on a.ateemeoricenasicod = f.ateemeoricenasicod
-                                        and a.ateemecenasicod    = f.ateemecenasicod
-                                        and a.ateemeactmednum    = f.ateemeactmednum
-                                        and a.ateemesecnum       = f.ateemesecnum
-                left outer join dssge.sgss_cmtse10 m on j.actmedtipsegcod    = m.tipsegcod
-                left outer join dssge.sgss_cbtpc10 e on j.actmedtipopacicod  = e.tipopacicod
-                left outer join dssge.sgss_mbpae10 h on a.ateemepriatecod    = h.priatecod
-                left outer join dssge.sgss_mtadd10_{anio}_{mes_str} b on a.ateemeoricenasicod = b.admemeoricenasicod
-                                        and a.ateemecenasicod    = b.admemecenasicod
-                                        and a.ateemeactmednum    = b.admemeactmednum
-                                        and a.ateememovsecnum    = b.admemdsecnum
-                left outer join dssge.sgss_mbtoe10 i 
-                                        on b.admemdtopemecod    = i.topemecod
+                from dssge.dw_ate_emer_{anio}_{mes_str} a
                 LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
-                                        ON z.cod_centro     = a.ateemecenasicod
-                                        AND z.cod_topico     = i.topemecod
-                                        AND z.cod_emergencia = j.ADMEMEEMECOD 
-                where  j.actmedestregcod = '1'
-                and a.ateemearehoscod = '02'
+                                        ON z.cod_centro     = a.COD_CENTRO
+                                        AND z.cod_topico     = a.COD_TOPICO
+                                        AND z.cod_emergencia = a.COD_EMERGENCIA
                 order by secuen_aten desc
         """
 

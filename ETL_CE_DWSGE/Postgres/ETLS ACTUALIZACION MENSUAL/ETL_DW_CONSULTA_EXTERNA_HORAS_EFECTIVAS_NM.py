@@ -31,7 +31,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year 
+anio = datetime.now().year
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 today = datetime.today()
@@ -48,7 +48,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(2,3):
+for mes in range(1,13):
     mes_str = f"{mes:02d}"
 
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")
@@ -68,11 +68,9 @@ for mes in range(2,3):
                         u.fecha_cita,
                         u.horaini,
                         u.horafin,
-                        COUNT(*) AS ate
-                    FROM 
-                        dssge.sgss_ctcam10_m_{anio}_{mes_str} u
-                    WHERE 
-                        u.cod_estado_cita = '4'
+                        COUNT(*)::integer AS ate           
+                    FROM dssge.sgss_ctcam10_m_{anio}_{mes_str} u
+                    WHERE u.cod_estado_cita = '4'
                     GROUP BY
                         u.cod_oricentro,
                         u.cod_centro,
@@ -85,83 +83,107 @@ for mes in range(2,3):
                         u.fecha_cita,
                         u.horaini,
                         u.horafin
-                ) ,
+                ),
 
-                base as (SELECT b.*
-                FROM (
+                base AS (
                     SELECT
                         t.anio,
                         t.periodo,
+                        t.oricenasicod AS cod_oricentro,
                         t.cenasicod AS cod_centro,
                         t.arehoscod AS cod_area,
                         t.actcod AS cod_actividad,
                         t.actespcod AS cod_subactividad,
                         t.servhoscod AS cod_servicio,
-                        t.properprohortot as total_horas,
-                        t.perasisdocidennum as dni_medico,
-                        a.ate,
+                        e.cod_especialidad,
+                        e.cod_subespecialidad,
+                        e.cod_agrupador,
+                        e.cod_variable,
+                        t.properprohortot::numeric(10,2) AS total_horas,
+                        t.perasisdocidennum AS dni_medico,
+                        t.motsusprogcod AS cod_mot_suspension,
+                        COALESCE(a.ate,0)::integer AS ate, 
                         t.properfec AS fecha_prog,
-                        CASE
-                            WHEN CAST(t.properturhorfin AS time) >= CAST(t.properturhorini AS time) THEN
-                                EXTRACT(EPOCH FROM (CAST(t.properturhorfin AS time) - CAST(t.properturhorini AS time))) / 3600
-                            ELSE
-                                (EXTRACT(EPOCH FROM (CAST(t.properturhorfin AS time) + INTERVAL '24 hours' - CAST(t.properturhorini AS time))) / 3600)
-                        END AS hras_prog,
+                        (
+                            CASE
+                                WHEN CAST(t.properturhorfin AS time) >= CAST(t.properturhorini AS time)
+                                THEN EXTRACT(EPOCH FROM (
+                                        CAST(t.properturhorfin AS time)
+                                    - CAST(t.properturhorini AS time)
+                                    ))
+                                ELSE EXTRACT(EPOCH FROM (
+                                        CAST(t.properturhorfin AS time)
+                                    + INTERVAL '24 hours'
+                                    - CAST(t.properturhorini AS time)
+                                    ))
+                            END
+                        ) / 3600.0
+                        ::numeric(10,2) AS hras_prog,
+
                         t.estprogcitcod AS estado_progcita
-                    FROM 
-                        dssge.sgss_ctppe10_{anio}_{mes_str} t
-                    LEFT JOIN dssge.sgss_cmprs10 pr 
+
+                    FROM dssge.sgss_ctppe10_{anio}_{mes_str} t
+
+                    LEFT JOIN dssge.sgss_cmprs10 pr
                         ON pr.tipdocidenpercod = t.tipdocidenpercod
-                        AND pr.perasisdocidennum = t.perasisdocidennum
-                    LEFT JOIN dssge.dw_homologacion_enlaces e 
-                        ON t.actcod::text = e.cod_actividad::text 
-                        AND t.actespcod::text = e.cod_subactividad::text 
-                        AND t.servhoscod::text = e.cod_servicio::text
-                    LEFT JOIN atenciones a 
+                    AND pr.perasisdocidennum = t.perasisdocidennum
+
+                    LEFT JOIN dssge.dw_homologacion_enlaces e
+                        ON t.actcod::text = e.cod_actividad::text
+                    AND t.actespcod::text = e.cod_subactividad::text
+                    AND t.servhoscod::text = e.cod_servicio::text
+
+                    LEFT JOIN atenciones a
                         ON t.propertipoprogperscod = '1'
-                        AND a.cod_oricentro     = t.oricenasicod
-                        AND a.cod_centro        = t.cenasicod
-                        AND a.cod_area          = t.arehoscod
-                        AND a.cod_servicio      = t.servhoscod
-                        AND a.cod_actividad     = t.actcod
-                        AND a.cod_subactividad  = t.actespcod
-                        AND a.cod_tipdoc_medico = t.tipdocidenpercod
-                        AND a.cod_doc_medico    = t.perasisdocidennum
-                        AND a.fecha_cita        = t.properfec
-                        AND a.horaini           = t.properturhorini
-                        AND a.horafin           = t.properturhorfin
-                    WHERE 
+                    AND a.cod_oricentro     = t.oricenasicod
+                    AND a.cod_centro        = t.cenasicod
+                    AND a.cod_area          = t.arehoscod
+                    AND a.cod_servicio      = t.servhoscod
+                    AND a.cod_actividad     = t.actcod
+                    AND a.cod_subactividad  = t.actespcod
+                    AND a.cod_tipdoc_medico = t.tipdocidenpercod
+                    AND a.cod_doc_medico    = t.perasisdocidennum
+                    AND a.fecha_cita        = t.properfec
+                    AND a.horaini           = t.properturhorini
+                    AND a.horafin           = t.properturhorfin
+
+                    WHERE
                         t.oricenasicod IN ('1','2','3','4','5','6','7')
                         AND a.cod_servicio ='E21'
                         AND a.cod_actividad ='B1'
                         AND a.cod_subactividad ='005'
                         AND t.estprogcitcod IN ('2','4')
-                ) b
-                WHERE b.ate <> 0),
+                ),
 
-                base2 as (SELECT
-                    b.*,
-                    CASE
-                        WHEN b.estado_progcita = '4' THEN
-                            CASE
-                                WHEN b.ate > 0 AND b.ate < 5 THEN
-                                    '1'
-                                WHEN b.ate <= (b.hras_prog * 5) THEN
-                                    (b.ate / 5)::integer::varchar
-                                ELSE
-                                    b.hras_prog::integer::varchar
-                            END
-                        ELSE
-                            b.hras_prog::integer::varchar
-                    END AS horas_efec
-                FROM base b)
+                base2 AS (
+                    SELECT
+                        b.*,
 
-                SELECT *,
                         CASE
-                            WHEN horas_efec::numeric > total_horas::numeric THEN total_horas::numeric
-                            ELSE horas_efec::numeric
-                        END AS horas_efec_def
-                FROM base2
+                            WHEN b.estado_progcita = '4' THEN
+                                CASE
+                                    WHEN b.ate > 0 AND b.ate < 5 THEN '1'
+
+                                    WHEN b.ate::numeric <= (b.hras_prog * 5)
+                                        THEN floor(b.ate / 5.0)::int::varchar
+
+                                    ELSE floor(b.hras_prog)::int::varchar
+                                END
+                            ELSE
+                                floor(b.hras_prog)::int::varchar
+                        END AS horas_efec
+
+                    FROM base b
+                )
+
+                SELECT
+                    *,
+                    CASE
+                        WHEN horas_efec::numeric > total_horas
+                            THEN total_horas
+                        ELSE horas_efec::numeric
+                    END AS horas_efec_def
+                FROM base2;                  
         """
 
         # Leer datos primero

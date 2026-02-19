@@ -110,8 +110,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
            citambproconfec as fecha_cita,
            citambmodfec as fecha_modificacion,
            case 
-               when citambmodfec is null then citambproconfec 
-               else citambmodfec end as fecha_ultima_modificacion,
+               when citambrep = '1' then citambmodfec 
+               else citambproconfec end as fecha_ultima_modificacion, 
            citambproconturhorini as horaini,
            citambproconturhorfin as horafin,
            estcitcod as cod_estado_cita,

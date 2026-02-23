@@ -61,7 +61,7 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 2, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 2, 28)
 
 # ==============================

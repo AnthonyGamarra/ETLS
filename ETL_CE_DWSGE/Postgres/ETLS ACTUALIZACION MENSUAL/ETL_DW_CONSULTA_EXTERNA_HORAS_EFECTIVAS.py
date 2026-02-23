@@ -36,6 +36,7 @@ start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
 current_month = today.month
+time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
 # Calcular los dos meses anteriores
 if current_month == 1:
@@ -185,7 +186,9 @@ for mes in range(2, 3):
                     END AS horas_efec_def
                 FROM base2;
         """
-
+        actualizacion = f"""UPDATE dwsge.fecha_act
+                            SET fecha_act = {time}
+                            WHERE id=3"""
         # Leer datos primero
         df = pd.read_sql_query(query, conn_src)
 
@@ -217,6 +220,8 @@ for mes in range(2, 3):
             cols = ','.join(df.columns)
             copy_sql = f"COPY {table_name} ({cols}) FROM STDIN WITH CSV"
             cur_dst.copy_expert(sql=copy_sql, file=buffer)
+            conn_dst.commit()
+            cur_dst.execute(actualizacion)
             conn_dst.commit()
 
         print(f"✅ Carga completada para {anio}-{mes_str}: filas cargadas {len(df)}")

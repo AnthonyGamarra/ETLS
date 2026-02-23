@@ -55,7 +55,7 @@ else:
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 table_name = "dwsge.dwe_consulta_externa_citados_homologacion"
-
+time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
 for mes in range(2,3): 
     mes_str = f"{mes:02d}"
@@ -171,7 +171,9 @@ for mes in range(2,3):
                         AND d.cod_subactividad::text = e.cod_subactividad::text 
                         AND d.cod_servicio::text = e.cod_servicio::text
         """
-
+        actualizacion = f"""UPDATE dwsge.fecha_act
+                            SET fecha_act = {time}
+                            WHERE id=2"""
         df = pd.read_sql_query(query, conn_src)
 
         if df.empty:
@@ -201,6 +203,8 @@ for mes in range(2,3):
             copy_sql = f"COPY {table_name} ({cols}) FROM STDIN WITH CSV"
 
             cur_dst.copy_expert(sql=copy_sql, file=buffer)
+            conn_dst.commit()
+            cur_dst.execute(actualizacion)
             conn_dst.commit()
             cur_dst.close()
 

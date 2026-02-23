@@ -37,6 +37,7 @@ print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 today = datetime.today()
 current_year = today.year
 current_month = today.month
+time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
 # Calcular los dos meses anteriores
 if current_month == 1:
@@ -48,7 +49,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(1,13):
+for mes in range(2,3):
     mes_str = f"{mes:02d}"
 
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")
@@ -95,10 +96,6 @@ for mes in range(1,13):
                         t.actcod AS cod_actividad,
                         t.actespcod AS cod_subactividad,
                         t.servhoscod AS cod_servicio,
-                        e.cod_especialidad,
-                        e.cod_subespecialidad,
-                        e.cod_agrupador,
-                        e.cod_variable,
                         t.properprohortot::numeric(10,2) AS total_horas,
                         t.perasisdocidennum AS dni_medico,
                         t.motsusprogcod AS cod_mot_suspension,
@@ -185,7 +182,9 @@ for mes in range(1,13):
                     END AS horas_efec_def
                 FROM base2;                  
         """
-
+        actualizacion = f"""UPDATE dwsge.fecha_act
+                            SET fecha_act = {time}
+                            WHERE id=4"""
         # Leer datos primero
         df = pd.read_sql_query(query, conn_src)
 
@@ -217,6 +216,8 @@ for mes in range(1,13):
             cols = ','.join(df.columns)
             copy_sql = f"COPY {table_name} ({cols}) FROM STDIN WITH CSV"
             cur_dst.copy_expert(sql=copy_sql, file=buffer)
+            conn_dst.commit()
+            cur_dst.execute(actualizacion)
             conn_dst.commit()
 
         print(f"✅ Carga completada para {anio}-{mes_str}: filas cargadas {len(df)}")

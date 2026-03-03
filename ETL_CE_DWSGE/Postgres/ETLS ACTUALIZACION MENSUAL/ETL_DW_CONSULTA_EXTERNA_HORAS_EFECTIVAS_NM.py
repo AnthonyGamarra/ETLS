@@ -72,6 +72,9 @@ for mes in range(2,3):
                         COUNT(*)::integer AS ate           
                     FROM dssge.sgss_ctcam10_m_{anio}_{mes_str} u
                     WHERE u.cod_estado_cita = '4'
+                        AND u.cod_servicio in ('E21', 'E11')
+                        AND u.cod_actividad in ('B1','91')
+                        AND u.cod_subactividad in ('003','004','074','262','005')
                     GROUP BY
                         u.cod_oricentro,
                         u.cod_centro,
@@ -96,6 +99,10 @@ for mes in range(2,3):
                         t.actcod AS cod_actividad,
                         t.actespcod AS cod_subactividad,
                         t.servhoscod AS cod_servicio,
+                        e.cod_especialidad,
+                        e.cod_subespecialidad,
+                        e.cod_agrupador,
+                        e.cod_variable,
                         t.properprohortot::numeric(10,2) AS total_horas,
                         t.perasisdocidennum AS dni_medico,
                         t.motsusprogcod AS cod_mot_suspension,
@@ -146,9 +153,9 @@ for mes in range(2,3):
 
                     WHERE
                         t.oricenasicod IN ('1','2','3','4','5','6','7')
-                        AND a.cod_servicio ='E21'
-                        AND a.cod_actividad ='B1'
-                        AND a.cod_subactividad ='005'
+                        AND a.cod_servicio in ('E21', 'E11')
+                        AND a.cod_actividad in ('B1','91')
+                        AND a.cod_subactividad in ('003','004','074','262','005')
                         AND t.estprogcitcod IN ('2','4')
                 ),
 

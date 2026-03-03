@@ -71,6 +71,7 @@ for mes in range(2, 3):
                         COUNT(*)::integer AS ate           
                     FROM dssge.sgss_ctcam10_m_{anio}_{mes_str} u
                     WHERE u.cod_estado_cita = '4'
+                        AND u.cod_actividad = '91'
                     GROUP BY
                         u.cod_oricentro,
                         u.cod_centro,

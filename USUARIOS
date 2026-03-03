@@ -374,11 +374,17 @@ GRANT USAGE ON SCHEMA dwsge TO app_user;
 
 -- SOLO lectura sobre tablas existentes
 GRANT SELECT ON ALL TABLES IN SCHEMA dwsge TO app_user;
-
+GRANT SELECT ON ALL TABLES IN SCHEMA dssge TO app_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA dwsge
 GRANT SELECT ON TABLES TO app_user;
 
-
+-- Permitir uso del esquema
+GRANT USAGE ON SCHEMA dssge TO app_user;
+-- Solo lectura sobre tablas existentes
+GRANT SELECT ON ALL TABLES IN SCHEMA dssge TO app_user;
+-- Permisos para tablas futuras
+ALTER DEFAULT PRIVILEGES IN SCHEMA dssge
+GRANT SELECT ON TABLES TO app_user;
 
 GRANT CONNECT ON DATABASE "Flask_Prueba" TO app_user;
 GRANT USAGE ON SCHEMA public TO app_user;

@@ -439,3 +439,14 @@ ON dwsge.dwe_consulta_externa_homologacion_2025
 WHERE cod_variable = '001'
   AND cod_actividad = '91'
   AND clasificacion IN (2,4,6);
+
+
+  CREATE INDEX idx_ce_filtro_principal
+ON dwsge.dwe_consulta_externa_horas_efectivas
+(
+    cod_centro,
+    cod_actividad,
+    cod_subactividad,
+    cod_servicio,
+    ate
+);

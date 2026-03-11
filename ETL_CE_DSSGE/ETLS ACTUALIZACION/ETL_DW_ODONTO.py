@@ -27,16 +27,6 @@ pg_port = os.getenv("PG_PORT", "5433")
 pg_db   = os.getenv("PG_DB")
 
 # ==============================
-# 2. Función para obtener rango mensual
-# ==============================
-def month_range(start_date, end_date):
-    current = start_date
-    while current <= end_date:
-        next_month = (current.replace(day=1) + timedelta(days=32)).replace(day=1)
-        yield current, min(next_month - timedelta(days=1), end_date)
-        current = next_month
-
-# ==============================
 # 3. Conexión Oracle
 # ==============================
 print(f"Conectando a Oracle en {oracle_host}:{oracle_port}/{oracle_service}...")
@@ -64,11 +54,12 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 def month_range(start_date, end_date):
     current = start_date
-    while current <= end_date:
+    limite = (end_date.replace(day=1) + relativedelta(months=1))
+    while current < limite:
         start_mes = current
-        end_mes = (current + relativedelta(months=1)) - timedelta(days=1)
+        end_mes = (current.replace(day=1) + relativedelta(months=1))
         yield start_mes, end_mes
-        current += relativedelta(months=1)
+        current = end_mes
 
 # ==============================
 # 1. Calcular rango: entre hace dos meses y el mes pasado
@@ -86,6 +77,8 @@ end_date = datetime(2026, 2, 28)
 for start_mes, end_mes in month_range(start_date, end_date):
     anio = start_mes.strftime('%Y')
     mes = start_mes.strftime('%m')
+    start_mes_str = start_mes.strftime('%d-%m-%Y')
+    end_mes_str = end_mes.strftime('%d-%m-%Y')
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
 
     query = f"""
@@ -176,8 +169,8 @@ left outer join sgss.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
                           and pr.properfec          = ct.proconfec
                           and pr.properturhorini    = ct.proconturhorini
                           and pr.properturhorfin    = ct.proconturhorfin
-    WHERE z.ATENODOATENFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-      AND z.ATENODOATENFEC <= TO_DATE('{end_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        WHERE z.ATENODOATENFEC >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
+            AND z.ATENODOATENFEC < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
     AND t.estcitcod         = '4'
     ORDER BY periodo ASC
     """

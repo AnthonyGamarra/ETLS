@@ -27,16 +27,6 @@ pg_port = os.getenv("PG_PORT", "5433")
 pg_db   = os.getenv("PG_DB")
 
 # ==============================
-# 2. Función para obtener rango mensual
-# ==============================
-def month_range(start_date, end_date):
-    current = start_date
-    while current <= end_date:
-        next_month = (current.replace(day=1) + timedelta(days=32)).replace(day=1)
-        yield current, min(next_month - timedelta(days=1), end_date)
-        current = next_month
-
-# ==============================
 # 3. Conexión Oracle
 # ==============================
 print(f"Conectando a Oracle en {oracle_host}:{oracle_port}/{oracle_service}...")
@@ -64,11 +54,12 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 def month_range(start_date, end_date):
     current = start_date
-    while current <= end_date:
+    limite = (end_date.replace(day=1) + relativedelta(months=1))
+    while current < limite:
         start_mes = current
-        end_mes = (current + relativedelta(months=1)) - timedelta(days=1)
+        end_mes = (current.replace(day=1) + relativedelta(months=1))
         yield start_mes, end_mes
-        current += relativedelta(months=1)
+        current = end_mes
 
 # ==============================
 # 1. Calcular rango: entre hace dos meses y el mes pasado
@@ -77,7 +68,7 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 2, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 2, 28)
 
 
@@ -87,6 +78,8 @@ end_date = datetime(2026, 2, 28)
 for start_mes, end_mes in month_range(start_date, end_date):
     anio = start_mes.strftime('%Y')
     mes = start_mes.strftime('%m')
+    start_mes_str = start_mes.strftime('%d-%m-%Y')
+    end_mes_str = end_mes.strftime('%d-%m-%Y')
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
 
     query = f"""
@@ -127,8 +120,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
                          and citambnum           = k.actmednum
     left outer join sgss.cmper10 d on k.actmedpacsecnum       = d.persecnum                         
     left outer join sgss.cbtpc10 n on k.actmedtipopacicod       = n.tipopacicod
-    WHERE citambproconfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-      AND citambproconfec <= TO_DATE('{end_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        WHERE citambproconfec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
+            AND citambproconfec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
     ORDER BY periodo ASC
     """
 

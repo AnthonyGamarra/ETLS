@@ -72,12 +72,16 @@ for mes in range(1,3):
                 a.FECHA_ATEN,
                 a.HORA_ATEN,
                 a.COD_TIPO_PACIENTE,
+                a.doc_paciente,
                 a.COD_PRIORIDAD,
                 a.COD_DIAGNOSTICO,
                 a.COD_EMERGENCIA,
                 a.SECUEN_ATEN,
+                a.sexo,
+                a.cod_tipdoc_paciente,
+                a.anio_edad,
                 z.cod_estandar,
-                z.cod_estado
+                z.cod_estado as cod_estado_homologacion
                 from dssge.dw_ate_emer_{anio}_{mes_str} a
                 LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
                                         ON z.cod_centro     = a.COD_CENTRO

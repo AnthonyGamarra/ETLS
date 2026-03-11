@@ -660,6 +660,17 @@ CREATE TABLE dssge.dw_ate_emer_2025 PARTITION OF dssge.dw_ate_emer
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
 
+
+-- Crear partición anual para 2024
+CREATE TABLE dssge.dw_ate_emer_2024 PARTITION OF dssge.dw_ate_emer
+FOR VALUES IN ('2024')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2023
+CREATE TABLE dssge.dw_ate_emer_2023 PARTITION OF dssge.dw_ate_emer
+FOR VALUES IN ('2023')
+PARTITION BY LIST (PERIODO);
+
 CREATE TABLE dssge.dw_ate_emer_2026_01 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202601');
 CREATE TABLE dssge.dw_ate_emer_2026_02 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202602');
 CREATE TABLE dssge.dw_ate_emer_2026_03 PARTITION OF dssge.dw_ate_emer_2026 FOR VALUES IN ('202603');
@@ -685,6 +696,34 @@ CREATE TABLE dssge.dw_ate_emer_2025_09 PARTITION OF dssge.dw_ate_emer_2025 FOR V
 CREATE TABLE dssge.dw_ate_emer_2025_10 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202510');
 CREATE TABLE dssge.dw_ate_emer_2025_11 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202511');
 CREATE TABLE dssge.dw_ate_emer_2025_12 PARTITION OF dssge.dw_ate_emer_2025 FOR VALUES IN ('202512');
+
+CREATE TABLE dssge.dw_ate_emer_2024_01 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202401');
+CREATE TABLE dssge.dw_ate_emer_2024_02 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202402');
+CREATE TABLE dssge.dw_ate_emer_2024_03 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202403');
+CREATE TABLE dssge.dw_ate_emer_2024_04 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202404');
+CREATE TABLE dssge.dw_ate_emer_2024_05 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202405');
+CREATE TABLE dssge.dw_ate_emer_2024_06 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202406');
+CREATE TABLE dssge.dw_ate_emer_2024_07 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202407');
+CREATE TABLE dssge.dw_ate_emer_2024_08 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202408');
+CREATE TABLE dssge.dw_ate_emer_2024_09 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202409');
+CREATE TABLE dssge.dw_ate_emer_2024_10 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202410');
+CREATE TABLE dssge.dw_ate_emer_2024_11 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202411');
+CREATE TABLE dssge.dw_ate_emer_2024_12 PARTITION OF dssge.dw_ate_emer_2024 FOR VALUES IN ('202412');
+
+CREATE TABLE dssge.dw_ate_emer_2023_01 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202301');
+CREATE TABLE dssge.dw_ate_emer_2023_02 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202302');
+CREATE TABLE dssge.dw_ate_emer_2023_03 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202303');
+CREATE TABLE dssge.dw_ate_emer_2023_04 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202304');
+CREATE TABLE dssge.dw_ate_emer_2023_05 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202305');
+CREATE TABLE dssge.dw_ate_emer_2023_06 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202306');
+CREATE TABLE dssge.dw_ate_emer_2023_07 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202307');
+CREATE TABLE dssge.dw_ate_emer_2023_08 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202308');
+CREATE TABLE dssge.dw_ate_emer_2023_09 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202309');
+CREATE TABLE dssge.dw_ate_emer_2023_10 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202310');
+CREATE TABLE dssge.dw_ate_emer_2023_11 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202311');
+CREATE TABLE dssge.dw_ate_emer_2023_12 PARTITION OF dssge.dw_ate_emer_2023 FOR VALUES IN ('202312');
+
+
 
 
 

@@ -405,10 +405,12 @@ COD_DIAGNOSTICO varchar(20),
 COD_EMERGENCIA varchar(20),
 SECUEN_ATEN varchar(20),
 COD_AREA varchar(20),
+COD_ESTANDAR varchar(20),
 COD_TIPDOC_PACIENTE VARCHAR(20),
 DOC_PACIENTE VARCHAR(20),
 ANIO_EDAD VARCHAR(20),
 SEXO VARCHAR(20),
+COD_ESTADO_HOMOLOGACION VARCHAR(20)
 ) PARTITION BY LIST (anio);
 
 CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2026 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion
@@ -424,6 +426,26 @@ PARTITION BY LIST (PERIODO);
 CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2024 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion
 FOR VALUES IN ('2024')
 PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2023
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion
+FOR VALUES IN ('2023')
+PARTITION BY LIST (PERIODO);
+
+
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_01 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202301');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_02 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202302');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_03 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202303');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_04 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202304');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_05 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202305');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_06 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202306');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_07 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202307');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_08 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202308');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_09 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202309');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_10 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202310');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_11 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202311');
+CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2023_12 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2023 FOR VALUES IN ('202312');
+
 
 
 CREATE TABLE dwsge.dwe_emergencia_atenciones_homologacion_2024_01 PARTITION OF dwsge.dwe_emergencia_atenciones_homologacion_2024 FOR VALUES IN ('202401');

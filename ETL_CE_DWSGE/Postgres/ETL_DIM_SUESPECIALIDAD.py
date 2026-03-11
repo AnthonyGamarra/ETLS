@@ -31,7 +31,7 @@ start_time = datetime.now()
 print(f"\n🕒 Inicio del proceso: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 try:
-    query = "SELECT DISTINCT cod_especialidad, especialidad FROM dwsge.dw_homologacion_enlaces"
+    query = "SELECT DISTINCT cod_subespecialidad, subespecialidad FROM dwsge.dw_homologacion_enlaces"
     df = pd.read_sql(query, engine_src)
 
     if df.empty:
@@ -39,7 +39,7 @@ try:
     else:
         df.columns = df.columns.str.lower()  # Normalizar columnas
         df.to_sql(
-            name="dim_especialidad",
+            name="dim_subespecialidad",
             con=engine_dst,
             schema="dwsge",
             if_exists="replace",

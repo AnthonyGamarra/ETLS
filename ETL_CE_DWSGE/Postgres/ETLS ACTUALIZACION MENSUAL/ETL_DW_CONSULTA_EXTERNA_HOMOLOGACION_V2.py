@@ -58,7 +58,7 @@ table_name = "dwsge.dwe_consulta_externa_homologacion"
 fecha_act = "dwsge.fecha_act"
 time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
-for mes in range(1,13):
+for mes in range(1,2):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:
@@ -194,7 +194,7 @@ for mes in range(1,13):
 
             try:
                 cur_dst = conn_dst.cursor()
-                partition_name = f"dwsge.dw_consulta_externa_homologacion_{anio}_{mes_str}"
+                partition_name = f"dwsge.dwe_consulta_externa_homologacion_{anio}_{mes_str}"
                 cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
                 conn_dst.commit()
                 cur_dst.close()

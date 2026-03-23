@@ -77,8 +77,8 @@ data_found = False
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 2, 1)
-end_date = datetime(2026, 2, 28)
+start_date = datetime(2026, 3, 1)
+end_date = datetime(2026, 3, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -104,6 +104,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 a.CPSCOD                                                                 as cod_cpms,              
                 p.TIPDOCIDENPERCOD                                                       AS COD_TIPDOC_MEDICO,
                 p.perasisdocidennum                                                                         as DNI_MEDICO,
+                p.CondTrabCod                                                                 AS COD_COND_TRAB,
                 to_char(a.atenambatenfec,'dd/mm/yyyy')                                                     as FECHA_ATENCION,       
                 s.perautcod                                                                                               as AUTOGENERADO,
                 k.actmedpacsecnum                                                                                         as CMAME_PACSECNUM,

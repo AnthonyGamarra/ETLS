@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 2, 28)
+start_date = datetime(2026, 3, 1)
+end_date = datetime(2026, 3, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -90,7 +90,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
             h.priatecod                                 AS COD_PRIORIDAD,
             f.diagcod                               AS COD_DIAGNOSTICO,
             j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
-            a.ateemesecnum                                   AS SECUEN_ATEN
+            a.ateemesecnum                                   AS SECUEN_ATEN,
+            s.percenasiadscod                                                                           as CAS_ADSCRIPCION
             from SGSS.mtaem10 a
             left outer join SGSS.mtade10 j on j.admemeoricenasicod = a.ateemeoricenasicod
                                     and j.admemecenasicod   = a.ateemecenasicod

@@ -551,3 +551,110 @@ atenciones emergencia dw
                 where  j.actmedestregcod = '1'
                 and a.ateemearehoscod = '02'
                 order by secuen_aten desc
+
+
+-----------------------------------------------------------
+-- ATENDIDOS TOTALES Y ADSCRITOS
+
+SELECT 
+    redasisdes,
+    doc_paciente,
+    TO_CHAR(MIN(fecha_min), 'DD/MM/YYYY') AS fecha_min
+FROM (
+    -- PRIMERA TABLA
+    SELECT
+        redasisdes,
+        a.doc_paciente,
+        MIN(a.fecha_atencion::date) AS fecha_min
+    FROM dwsge.dwe_consulta_externa_homologacion_2025 a
+    LEFT JOIN dssge.sgss_cbtpc10 t ON t.tipopacicod= a.cod_tipo_paciente
+    LEFT JOIN dwsge.sgss_cmcas10 c 
+        ON c.cenasicod = a.cod_centro 
+       AND c.oricenasicod = a.cod_oricentro
+	LEFT JOIN dwsge.sgss_cmras10 rs 
+		ON rs.redasiscod = c.redasiscod
+    WHERE a.cas_adscripcion = a.cod_centro
+    GROUP BY 
+        redasisdes,
+        a.doc_paciente
+
+    UNION ALL
+
+    -- SEGUNDA TABLA
+    SELECT 
+        redasisdes,
+        a.doc_paciente,
+        MIN(a.fecha_atencion::date) AS fecha_min
+    FROM dssge.dw_nomed_2025 a
+    LEFT JOIN dwsge.sgss_cmcas10 c 
+        ON c.cenasicod = a.cod_centro 
+       AND c.oricenasicod = a.cod_oricentro
+    LEFT JOIN dssge.sgss_cbtpc10 t ON t.tipopacicod= a.cod_tipo_paciente
+	LEFT JOIN dwsge.sgss_cmras10 rs 
+		ON rs.redasiscod = c.redasiscod
+    GROUP BY 
+        redasisdes,
+        a.doc_paciente
+    
+	UNION ALL
+
+	-- TERCERA TABLA
+    SELECT 
+        redasisdes,
+        a.doc_paciente,
+        MIN(a.fecha_atencion::date) AS fecha_min
+    FROM dssge.dw_odonto_2025 a
+    LEFT JOIN dwsge.sgss_cmcas10 c 
+        ON c.cenasicod = a.cod_centro 
+       AND c.oricenasicod = a.cod_oricentro
+    LEFT JOIN dssge.sgss_cbtpc10 t ON t.tipopacicod= a.cod_tipo_paciente
+	LEFT JOIN dwsge.sgss_cmras10 rs 
+			ON rs.redasiscod = c.redasiscod
+    GROUP BY 
+        redasisdes,
+        a.doc_paciente
+
+	UNION ALL
+
+	-- CUARTA TABLA
+            SELECT
+		        redasisdes,
+		        doc_paciente,
+		        fecha_aten::date AS fecha_atencion
+            FROM (
+                SELECT 
+                    ROW_NUMBER() OVER (
+                        PARTITION BY cod_centro, cod_estandar, acto_med, cod_emergencia
+                        ORDER BY CAST(secuen_aten AS INTEGER) ASC
+                    ) AS SECUENCIA,
+                    c.*
+                FROM (
+                    SELECT
+				        redasisdes,
+						cod_centro,
+						cod_estandar,
+						acto_med,
+						cod_emergencia,
+				        a.doc_paciente,
+						secuen_aten,
+				        fecha_aten
+                    FROM dwsge.dwe_emergencia_atenciones_homologacion_2025 a
+                    LEFT JOIN dwsge.dim_estandar es 
+                        ON es.id_estandar = a.cod_estandar
+				    LEFT JOIN dwsge.sgss_cmcas10 c 
+				        ON c.cenasicod = a.cod_centro 
+				       AND c.oricenasicod = a.cod_oricentro
+					LEFT JOIN dwsge.sgss_cmras10 rs 
+							ON rs.redasiscod = c.redasiscod
+                    WHERE 
+                        a.cod_diagnostico IS NOT NULL
+                        AND a.cod_estandar IN ('04','05','06','07','08','09','10','11','12','13','14')
+
+                ) c
+            ) d
+            WHERE
+                d.SECUENCIA = 1
+) t
+GROUP BY 
+    redasisdes,
+    doc_paciente

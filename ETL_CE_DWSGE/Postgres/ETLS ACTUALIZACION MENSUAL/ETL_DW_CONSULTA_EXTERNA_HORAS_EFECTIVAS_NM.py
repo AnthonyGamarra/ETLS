@@ -49,7 +49,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(2,3):
+for mes in range(3,4):
     mes_str = f"{mes:02d}"
 
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")
@@ -153,9 +153,9 @@ for mes in range(2,3):
 
                     WHERE
                         t.oricenasicod IN ('1','2','3','4','5','6','7')
-                        AND a.cod_servicio in ('E21', 'E11')
-                        AND a.cod_actividad in ('B1','91')
-                        AND a.cod_subactividad in ('003','004','074','262','005')
+                        AND t.servhoscod in ('E21', 'E11')
+                        AND t.actcod in ('B1','91')
+                        AND t.actespcod in ('003','004','074','262','005')
                         AND t.estprogcitcod IN ('2','4')
                 ),
 

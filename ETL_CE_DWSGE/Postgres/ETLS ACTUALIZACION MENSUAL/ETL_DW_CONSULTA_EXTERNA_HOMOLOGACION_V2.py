@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year -3
+anio = datetime.now().year 
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -58,7 +58,7 @@ table_name = "dwsge.dwe_consulta_externa_homologacion"
 fecha_act = "dwsge.fecha_act"
 time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
-for mes in range(1,2):
+for mes in range(3,4):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:
@@ -122,11 +122,13 @@ for mes in range(1,2):
                     a.cod_tipo_consulta,
                     a.cas_referencia,
                     a.cas_adscripcion,
+                    a.cod_consultorio,
                     e.cod_especialidad,
                     e.cod_subespecialidad,
                     e.cod_agrupador,
                     e.cod_variable,
                     i.diagcod AS cod_diag,
+                    a.cod_cond_trab,
                     a.total_horas
                 FROM dssge.dw_consulta_externa_{anio}_{mes_str} a
                 LEFT JOIN dssge.sgss_ctdaa10_anio_v2_{anio}_{mes_str} i 

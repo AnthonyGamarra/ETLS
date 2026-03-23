@@ -4,9 +4,9 @@ from Crypto.Util.Padding import unpad
 import binascii
 
 
-ARCHIVO_ENTRADA = r"C:\Users\gcpp.ggi.sge2\Desktop\GGI\df_traza_rebagliati_cut.xlsx"
-ARCHIVO_SALIDA = "pacientes_desencriptado_acto_med.xlsx"
-COLUMNA = "acto_med"
+ARCHIVO_ENTRADA = r"C:\Users\gcpp.ggi.sge2\Desktop\GGI\pacientes_prostata.xlsx"
+ARCHIVO_SALIDA = "pacientes_desencriptado_id_paciente_prostata.xlsx"
+COLUMNA = "id_paciente"
 CLAVE = b"gcpp_ggi_sge_ag\x00"  
 
 

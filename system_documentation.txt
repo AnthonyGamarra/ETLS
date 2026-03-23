@@ -1,0 +1,48 @@
+DOCUMENTACION DEL SISTEMA ETL DSSGE
+=================================
+
+1. TECNOLOGIAS Y COMPONENTES PRINCIPALES
+----------------------------------------
+- Lenguaje principal: Python 3.x.
+- Librerias clave: oracledb (conexion Oracle), pandas (transformaciones y CSV en memoria), psycopg2 (carga PostgreSQL), python-dotenv (manejo de credenciales), dateutil.relativedelta y datetime (manejo de rangos de fecha), io.StringIO (buffers en memoria para COPY), ademas de librerias estandar como os.
+- Motores de base de datos: Oracle (fuente SGSS) y PostgreSQL (repositorio DSSGE con tablas particionadas).
+- Configuracion: variables sensibles externas en archivo .env, conexiones construidas dinamicamente al iniciar cada ETL.
+- Entorno de ejecucion: multiples scripts independientes con ejecucion directa (sin orquestador central) y procesos abiertos en VS Code / terminales Python dedicadas.
+
+2. ESTRUCTURA GENERAL DEL PROYECTO
+----------------------------------
+- Carpeta raiz: Scripts/ con subcarpetas organizadas por dominio (ETL_CE_DSSGE, ETL_CE_DWSGE, ETL_CQX_DSSGE, ETL_EME_DSSGE, ETL_HOS_DSSGE, Varios, etc.).
+- ETL_CE_DSSGE contiene la mayor cantidad de procesos. Subcarpetas relevantes:
+  * Archivos ETL_DIM_* y ETL_DW_* orientados a dimensiones y hechos respectivamente.
+  * ETLS ACTUALIZACION: scripts para cargas mensuales de tablas operacionales (ej. ETL_DW_CTCAM10_M, ETL_DW_NOMED, ETL_DW_PROC, ETL_DW_CTPPE10) que sincronizan datos recientes.
+  * ETLS D: variantes enfocadas en datos diarios/operativos (consultas externas, homologaciones, historicos).
+  * Tablas/: artefactos de soporte como INDICES y TABLAS SES.
+- ETL_CE_DWSGE replica los procesos CE con adaptaciones por motor (divisiones Oracle/Postgres) y otras carpetas replican la estructura para CQX, EME, HOS, etc., asegurando consistencia entre lineas de negocio.
+- Muchos scripts siguen una plantilla comun: lectura de .env, conexiones Oracle/PostgreSQL, generacion de rango mensual, query parametrizada por mes, truncado de particion destino, carga via COPY.
+- Se observan particiones con nomenclatura dssge.<tabla>_<yyyy>_<mm> o sgss_<tabla>_<yyyy>_<mm>, lo que sugiere un modelo de particionado mensual en PostgreSQL.
+
+3. ANALISIS SITUACIONAL DEL SISTEMA
+-----------------------------------
+Fortalezas
+- Plantilla uniforme para los ETL permite mantenimiento predecible (misma estructura de conexion, manejo de fechas y carga).
+- Uso de COPY con buffers en memoria evita escritura a disco y acelera las cargas masivas.
+- Separacion de credenciales via .env reduce riesgo de exposicion directa en los scripts.
+- Particionado mensual en el destino facilita truncado y recargas controladas por periodo.
+
+Riesgos / Debilidades
+- Muchos scripts tienen rangos de fechas hardcodeados (p.ej. marzo 2026), lo que requiere intervencion manual para cada ejecucion y aumenta riesgo de omisiones.
+- No se observa control de errores avanzado (reintentos, alertas, logging estructurado); los scripts continúan o abortan segun excepciones impresas en consola.
+- No existe orquestacion central ni programacion declarada; depender de multiples terminales abiertas dificulta la monitorizacion y la ejecucion en serie.
+- El truncado previo a la carga sin respaldo puede generar perdida de datos si una carga falla despues del truncado.
+- Ausencia de pruebas automatizadas e indicadores de calidad de datos dentro de los ETL.
+
+Oportunidades de mejora
+- Incorporar parametrizacion dinamica de fechas (usar valores relativos al dia actual o argumentos de linea de comandos) para automatizar ciclos mensuales.
+- Centralizar la configuracion comun (funciones de conexion, utilidades de fechas) en modulos compartidos para evitar duplicacion.
+- Añadir logging estructurado (JSON o tablas de control) y alertas para monitorear exitos/fallos por periodo.
+- Evaluar un orquestador (Airflow, prefect, cron centralizado) que ejecute los ETL en orden y gestione dependencias.
+- Implementar validaciones post-carga (conteos de filas, checksums) para asegurar calidad y detectar discrepancias frente a Oracle.
+
+4. RESUMEN
+----------
+El sistema es un conjunto amplio de ETL Python que replica datos operacionales de Oracle hacia PostgreSQL siguiendo particiones mensuales. La consistencia de las plantillas y el uso de librerias maduras son puntos positivos, pero la dependencia de configuraciones manuales, la falta de control operacional y la ausencia de automatizacion representan riesgos. Documentar y orquestar los procesos, junto con mejoras de logging y parametrizacion, aumentaria la resiliencia y trazabilidad de todo el ecosistema DSSGE.

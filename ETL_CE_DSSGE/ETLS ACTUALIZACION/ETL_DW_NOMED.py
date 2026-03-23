@@ -60,7 +60,8 @@ def month_range(start_date, end_date):
         end_mes = (current.replace(day=1) + relativedelta(months=1))
         yield start_mes, end_mes
         current = end_mes
-
+start_time = datetime.now()
+print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 # ==============================
 # 1. Calcular rango: entre hace dos meses y el mes pasado
 # ==============================
@@ -68,8 +69,8 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 2, 28)
+start_date = datetime(2026, 3, 1)
+end_date = datetime(2026, 3, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes

@@ -1,0 +1,128 @@
+DOCUMENTACION DETALLADA POR CARPETA
+===================================
+
+1. ETL_CE_DSSGE
+---------------
+Carpeta orientada a la línea de negocio Consulta Externa (CE) en DSSGE. Los scripts como [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_PROC.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_PROC.py) implementan cargas mensuales hacia PostgreSQL:
+
+```python
+def month_range(start_date, end_date):
+	current = start_date
+	limite = (end_date.replace(day=1) + relativedelta(months=1))
+	while current < limite:
+		start_mes = current
+		end_mes = (current.replace(day=1) + relativedelta(months=1))
+		yield start_mes, end_mes
+
+for start_mes, end_mes in month_range(start_date, end_date):
+	start_mes_str = start_mes.strftime('%d-%m-%Y')
+	end_mes_str = end_mes.strftime('%d-%m-%Y')
+	query = f"""
+		...
+		WHERE z.atenproproperfec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
+		  AND z.atenproproperfec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
+	"""
+	df = pd.read_sql(query, conn_oracle)
+	cursor_pg.execute(f"TRUNCATE TABLE dssge.dw_proc_{anio}_{mes};")
+	cursor_pg.copy_expert(
+		sql=f"COPY dssge.dw_proc_{anio}_{mes} ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+		file=csv_buffer
+	)
+```
+
+Elementos clave:
+- `month_range()` genera intervalos [primer día del mes, primer día del siguiente mes) garantizando cortes mensuales.
+- El filtro `>=` y `<` asegura inclusividad del primer día y exclusión del siguiente, evitando duplicidad.
+- El truncado por partición seguido del `COPY` mantiene sincronizada cada partición `dw_proc_<anio>_<mes>`.
+
+2. ETL_CE_DWSGE
+----------------
+Los procesos en [ETL_CE_DWSGE/Oracle](ETL_CE_DWSGE/Oracle) replican catálogos CE desde Oracle SGSS hacia otro Oracle (DWH_SGE). Ejemplo: [ETL_CE_DWSGE/Oracle/ETL_DIM_CBTPC10.py](ETL_CE_DWSGE/Oracle/ETL_DIM_CBTPC10.py).
+
+```python
+conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn_origen)
+df = pd.read_sql("SELECT * FROM SGSS.cbtpc10", conn_oracle)
+conn_oracle.close()
+
+engine_oracle_dest = create_engine(
+	f"oracle+oracledb://{oracle_user2}:{oracle_pass2}"
+	f"@{oracle_host2}:{oracle_port2}/?service_name={oracle_service2}"
+)
+
+df.columns = df.columns.str.lower()
+df = df.astype(str)
+df.to_sql(
+	"sgss_cbtpc10",
+	engine_oracle_dest,
+	schema="DWH_SGE",
+	if_exists="replace",
+	dtype={col: VARCHAR2(500) for col in df.columns}
+)
+```
+
+Puntos relevantes:
+- Se usan dos juegos de credenciales (`ORACLE_*` y `ORACLE_*2`) para definir origen/destino.
+- `sqlalchemy` facilita escribir directamente en Oracle destino con tipado explícito `VARCHAR2`.
+- No hay transformación; el objetivo es replicar íntegramente los catálogos CE.
+
+3. ETL_EME_DSSGE
+-----------------
+La carpeta [ETL_EME_DSSGE](ETL_EME_DSSGE) atiende la línea de Emergencias. El script [ETL_EME_DSSGE/ETL_DIM_CMAHO10.py](ETL_EME_DSSGE/ETL_DIM_CMAHO10.py) sincroniza la dimensión de médicos hospitalarios de Oracle a PostgreSQL.
+
+```python
+query = "SELECT * FROM SGSS.CMAHO10"
+df = pd.read_sql(query, conn_oracle)
+
+engine_pg = create_engine(
+	f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:5433/{pg_db}"
+)
+
+with engine_pg.begin() as conn:
+	inspector = inspect(conn)
+	if table_name in inspector.get_table_names(schema=schema_name):
+		conn.execute(text(f"TRUNCATE TABLE {schema_name}.{table_name} RESTART IDENTITY;"))
+
+df = df.astype(str)
+df.columns = df.columns.str.lower()
+df.to_sql("sgss_cmaho10", engine_pg, schema="dssge", if_exists="replace", index=False)
+```
+
+Destacados:
+- Verificación previa de existencia de la tabla con `inspect` para truncar condicionalmente.
+- Carga directa con `to_sql` (sin COPY) aprovechando SQLAlchemy.
+- Normalización de tipos (todo string) para prevenir fallos por cambios en Oracle.
+
+4. ETL_EME_DWSGE
+-----------------
+Esta carpeta mantiene la misma dimensión pero entre dos bases Oracle, como se ve en [ETL_EME_DWSGE/Oracle/ETL_DIM_CMAHO10.py](ETL_EME_DWSGE/Oracle/ETL_DIM_CMAHO10.py).
+
+```python
+df = pd.read_sql("SELECT * FROM SGSS.cmaho10", conn_origen)
+
+engine_oracle_dest = create_engine(
+	f"oracle+oracledb://{oracle_user2}:{oracle_pass2}"
+	f"@{oracle_host2}:{oracle_port2}/?service_name={oracle_service2}"
+)
+
+df.columns = df.columns.str.lower()
+df = df.astype(str)
+df.to_sql(
+	"sgss_cmaho10",
+	engine_oracle_dest,
+	schema="DWH_SGE",
+	if_exists="replace",
+	dtype={col: VARCHAR2(500) for col in df.columns}
+)
+```
+
+Claves:
+- Misma estrategia de replicación que en CE_DWSGE pero aplicada a la vertical de Emergencias.
+- Los catálogos quedan disponibles en el esquema `DWH_SGE`, listos para explotaciones analíticas centralizadas.
+
+5. RESUMEN
+----------
+- **ETL_CE_DSSGE** y **ETL_EME_DSSGE** ejecutan cargas Oracle→PostgreSQL con control de particiones y truncados.
+- **ETL_CE_DWSGE** y **ETL_EME_DWSGE** replican catálogos Oracle→Oracle usando `sqlalchemy` y `to_sql`.
+- En todos los casos se cargan variables desde `.env`, se normalizan columnas a minúsculas y se privilegia la sobrescritura completa para garantizar consistencia.
+
+Este documento se limita a las carpetas solicitadas y proporciona código ilustrativo directamente extraído de cada una para facilitar el mantenimiento.

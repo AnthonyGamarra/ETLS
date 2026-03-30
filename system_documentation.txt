@@ -46,3 +46,102 @@ Oportunidades de mejora
 4. RESUMEN
 ----------
 El sistema es un conjunto amplio de ETL Python que replica datos operacionales de Oracle hacia PostgreSQL siguiendo particiones mensuales. La consistencia de las plantillas y el uso de librerias maduras son puntos positivos, pero la dependencia de configuraciones manuales, la falta de control operacional y la ausencia de automatizacion representan riesgos. Documentar y orquestar los procesos, junto con mejoras de logging y parametrizacion, aumentaria la resiliencia y trazabilidad de todo el ecosistema DSSGE.
+
+SECCION TECNICA: ETL_CE_DSSGE/ETLS ACTUALIZACION
+================================================
+
+1. ETL_DIM_HOMOLOGACION_ENLACES.py
+----------------------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DIM_HOMOLOGACION_ENLACES.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DIM_HOMOLOGACION_ENLACES.py).
+- Flujo:
+  1. `load_dotenv()` expone dos juegos de credenciales PostgreSQL (`PG_*3` origen y `PG_*` destino) y se instancian dos `create_engine` apuntando a puertos 5432 y 5433 respectivamente.
+  2. Se registra `start_time` para medir la duracion total.
+  3. Se ejecuta `SELECT * FROM public.homenlaces_historico_total` sobre el origen y se carga en un DataFrame.
+  4. Si el DataFrame esta vacio se notifica; de lo contrario se normalizan las columnas a minusculas y se realiza `to_sql(..., if_exists="replace")` contra `dssge.dw_homologacion_enlaces` en el destino.
+  5. El bloque `try/except/finally` captura errores y cierra los `engine` con `dispose()`, imprimiendo la duracion al final.
+
+2. ETL_DW_CONSULTA_EXTERNA_HISTORICO_VF2.py
+-------------------------------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_CONSULTA_EXTERNA_HISTORICO_VF2.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_CONSULTA_EXTERNA_HISTORICO_VF2.py).
+- Flujo mensual:
+  1. Se cargan credenciales Oracle/PostgreSQL y se definen `month_range(start_date, end_date)` y el intervalo fijo marzo 2026.
+  2. Por cada mes se forman `anio`, `mes` (con `zfill` via `%m`) y `tabla_destino = dssge.dw_consulta_externa_<anio>_<mes>`.
+  3. La consulta principal toma `sgss.ctaam10` (atenciones ambulatorias) y la enriquece con `cmame10`, `cmper10`, `ctcam10`, `ctppe10`, `ctref10`, etc. Los filtros `atenambatenfec >= start_mes` y `< end_mes+1` garantizan que el rango incluya el primer dia y excluya el siguiente.
+  4. Tras extraer, se normalizan las columnas, se trunca la particion destino y se usa `copy_expert` para cargar el CSV en memoria.
+  5. Los errores al truncar o copiar provocan `continue`, evitando afectar otros meses; al final se cierran ambas conexiones.
+
+3. ETL_DW_CTCAM10_M.py
+----------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_CTCAM10_M.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_CTCAM10_M.py).
+- Este ETL replica programaciones (`ctcam10`) hacia particiones `dssge.sgss_ctcam10_m_<anio>_<mes>`:
+  1. `month_range` basado en `relativedelta` emite [primer dia, primer dia siguiente) por mes.
+  2. La query selecciona campos de cita y sus dimensiones (`cmame10`, `cmper10`, `cbtpc10`) filtrando `citambproconfec` en el rango.
+  3. Se trunca la particion mensual antes de ejecutar `copy_expert` con las columnas en minusculas.
+  4. El script imprime conteos y continua si la tabla destino no existe o si no hay datos ese mes.
+
+4. ETL_DW_CTDAA10_ANIO_VF.py
+-----------------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_CTDAA10_ANIO_VF.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_CTDAA10_ANIO_VF.py).
+- Carga diagnosticos ambulatorios (`ctdaa10`):
+  1. `month_range` usa dias 1 del mes y el siguiente; el filtro aplica `>= start_mes` y `< start_next_mes` sobre `atenambatenfec`.
+  2. El SELECT une `ctdaa10` con `ctaam10` para obtener periodo (`TO_CHAR(trunc(fecha),'yyyymm')`).
+  3. Se trunca la particion `dssge.sgss_ctdaa10_anio_v2_<anio>_<mes>` y luego se copia el CSV hacia la tabla padre `dssge.sgss_ctdaa10_anio_v2`.
+  4. Cada iteracion maneja errores de truncado/copia y continua con el siguiente mes.
+
+5. ETL_DW_CTDAN10_ANIO_VF.py
+-----------------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_CTDAN10_ANIO_VF.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_CTDAN10_ANIO_VF.py).
+- Igual al anterior pero para `ctdan10` (diagnosticos no medicos). Cambia la tabla de join (`ctanm10`) y los nombres de columnas; mantiene truncado a `dssge.sgss_ctdan10_anio_v2_<anio>_<mes>` y `COPY` hacia la tabla padre.
+
+6. ETL_DW_CTDAO10_ANIO_VF.py
+-----------------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_CTDAO10_ANIO_VF.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_CTDAO10_ANIO_VF.py).
+- Replica diagnosticos odontologicos (`ctdao10`) unidos a `ctaod10`. La logica mensual es identica: filtros `ATENODOATENFEC >= start_mes` y `< start_next_mes`, truncado de `dssge.sgss_ctdao10_anio_v2_<anio>_<mes>` y carga mediante `copy_expert`.
+
+7. ETL_DW_CTPPE10.py
+--------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_CTPPE10.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_CTPPE10.py).
+- Documenta la programacion del personal (`ctppe10`):
+  1. `month_range` produce pares (inicio de mes, inicio del siguiente).
+  2. La query toma mas de 30 columnas de la tabla y filtra `properfec` en el rango.
+  3. Se trunca `dssge.sgss_ctppe10_<anio>_<mes>` y se carga via `copy_expert` hacia la tabla padre `dssge.sgss_ctppe10`.
+  4. Los mensajes de estado muestran filas extraidas y resultado del `COPY`.
+
+8. ETL_DW_NOMED.py
+------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_NOMED.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_NOMED.py).
+- Describe atenciones no medicas (`ctanm10`) y sus dimensiones:
+  1. Tras `month_range`, se forman `start_mes_str`/`end_mes_str` para parametrizar la consulta.
+  2. El SQL combina `ctanm10` con `ctcam10`, `ctppe10`, `ctref10`, `cmame10`, `cmper10`, etc., filtrando `atenomfec` en el intervalo y `atenomestregcod = '1'`.
+  3. Se trunca `dssge.dw_nomed_<anio>_<mes>` y se ejecuta `COPY` con columnas minusculas.
+  4. Si el DataFrame esta vacio se continua sin truncar/cargar.
+
+9. ETL_DW_ODONTO.py
+-------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_ODONTO.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_ODONTO.py).
+- Extrae citas odontologicas (`ctaod10` + `ctcam10`):
+  1. Usa la misma `month_range` y construye `start_mes_str`/`end_mes_str`.
+  2. El `SELECT` aplica `INNER JOIN` a `ctcam10` con `cmame10`, `cmper10`, `cmpac10`, `ctppe10` y filtra `t.estcitcod = '4'` (citas atendidas) junto al rango de fechas.
+  3. Se trunca `dssge.dw_odonto_<anio>_<mes>` y se carga el CSV.
+
+10. ETL_DW_PROC.py
+------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_PROC.py](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_PROC.py).
+- Orquesta la extraccion de procedimientos (`ctapd10`/`ctapr10`) limitados a `atenproarehoscod = '01'`:
+  1. `month_range` genera limites; la consulta incluye mas de 40 campos de pacientes, procedimientos, programaciones y citas.
+  2. Se impone `z.atenproestregcod = '1'` y el filtro de fecha `atenproproperfec >= start_mes` y `< end_mes`.
+  3. Tras truncar `dssge.dw_proc_<anio>_<mes>`, se carga via `copy_expert`.
+
+11. ETL_DW_ZDESERCION_CTCAM10
+-----------------------------
+- Ubicacion: [ETL_CE_DSSGE/ETLS ACTUALIZACION/ETL_DW_ZDESERCION_CTCAM10](ETL_CE_DSSGE/ETLS%20ACTUALIZACION/ETL_DW_ZDESERCION_CTCAM10).
+- Script destinado a analizar desercion de citas (fuente `ctcam10`):
+  1. Define dos funciones `month_range` (una generica y otra con `relativedelta`); la segunda es la utilizada en el bucle.
+  2. El rango fijo enero 2026 se procesa mes a mes construyendo la clausula `citambsolfec BETWEEN start_mes AND end_mes` (ambos inclusivos).
+  3. Tras extraer los datos enriquecidos con `cmame10`, `cmper10`, `cbtpc10`, se trunca la particion `dssge.sgss_ctcam10_desercion_<anio>_<mes>` y se carga con `copy_expert`.
+
+Notas comunes
+-------------
+- Todos los ETL mensuales emplean buffers `StringIO` para alimentar `COPY FROM STDIN`, normalizan las columnas a minusculas y ejecutan `TRUNCATE TABLE` previo a la carga.
+- Las funciones `month_range` cubren el primer dia del mes (`>=`) y excluyen el primer instante del mes siguiente (`<`), salvo el caso de desercion que utiliza `<= end_mes`.
+- Las fechas actuales estan hardcodeadas (marzo 2026 en la mayoria); para automatizar bastaria con reactivar los bloques comentados que usan `datetime.today()` y `relativedelta`.

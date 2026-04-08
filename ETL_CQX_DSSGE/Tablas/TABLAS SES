@@ -51,3 +51,70 @@ CREATE TABLE public.sgss_qtiop10_V2_2024_11 PARTITION OF public.sgss_qtiop10_V2_
 CREATE TABLE public.sgss_qtiop10_V2_2024_12 PARTITION OF public.sgss_qtiop10_V2_2024 FOR VALUES IN ('202412');
 
 -----------------------------------------------------------------------------------------------------------------
+CREATE TABLE dssge.dw_centro_quirurgico (
+
+cod_oricentro   varchar(10),
+cod_CENTRO varchar(10),
+PERIODO char(6),
+ANIO char(4),
+cod_area varchar(10),
+cod_servicio varchar(10), --de la solicitud
+COD_CPMS varchar(10),
+COD_tip_cirujano varchar(10),
+cod_tipdoc_medico varchar(10),
+dni_medico varchar(20),
+FEC_OPER varchar(20),
+AUTOGENERADO varchar(20),
+cmame_pacsecnum numeric,
+COD_TIPDOC_PACIENTE varchar(10),
+DOC_PACIENTE varchar(20),
+ANIO_EDAD char(4),
+MESES char(2),
+SEXO char(1),
+COD_TIP_SEGURO varchar(10),
+COD_TIPO_PARENTESCO varchar(10),
+COD_TIPO_PACIENTE varchar(10),
+COD_SALA varchar(10),
+HOR_INI_SALA char(5),
+HOR_FIN_SALA char(5),
+DURACION_SALA varchar(10),
+HOR_INI_ANEST char(5),
+HOR_FIN_ANEST char(5),
+DURACION_ANEST varchar(10),
+HOR_INI_OPERAC char(5),
+HOR_FIN_OPERAC char(5),
+DURACION_OPERAC varchar(10),
+acto_med numeric,
+COD_COMPLEJIDAD varchar(10),
+COD_ANEST varchar(10),
+COD_TIPO_PROGRAMACION varchar(10),
+NUM_SOLICITUD varchar(20),
+COD_QUIROF varchar(10),
+FECSOLICSALAOPERAC date,
+FECSOLICITADAOPERAC date,--07082019
+FECPROGRAM date,  --07082019
+CAS_ADSCRIPCION varchar(10),
+H_C varchar(10),
+COD_DESTEGRESO varchar(10),
+FECHCREASOLICITUD date,
+HORCREASOLIC char(5),
+FECAPTITUD date
+) PARTITION BY LIST (ANIO);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dw_centro_quirurgico_2026 PARTITION OF dssge.dw_centro_quirurgico
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dw_centro_quirurgico_2026_01 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_02 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_03 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_04 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_05 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_06 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_07 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_08 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_09 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_10 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_11 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.dw_centro_quirurgico_2026_12 PARTITION OF dssge.dw_centro_quirurgico_2026 FOR VALUES IN ('202612');

@@ -145,3 +145,4 @@ Notas comunes
 - Todos los ETL mensuales emplean buffers `StringIO` para alimentar `COPY FROM STDIN`, normalizan las columnas a minusculas y ejecutan `TRUNCATE TABLE` previo a la carga.
 - Las funciones `month_range` cubren el primer dia del mes (`>=`) y excluyen el primer instante del mes siguiente (`<`), salvo el caso de desercion que utiliza `<= end_mes`.
 - Las fechas actuales estan hardcodeadas (marzo 2026 en la mayoria); para automatizar bastaria con reactivar los bloques comentados que usan `datetime.today()` y `relativedelta`.
+

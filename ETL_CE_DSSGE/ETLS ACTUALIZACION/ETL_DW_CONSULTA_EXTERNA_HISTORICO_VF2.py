@@ -77,7 +77,7 @@ data_found = False
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 3, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 3, 31)
 
 # ==============================
@@ -148,7 +148,10 @@ for start_mes, end_mes in month_range(start_date, end_date):
                     pr.PROPERTIPOPROGPERSCOD                                           AS COD_TIP_PROGRAMACION_PERS,
                     pr.estprogcitcod                                                   AS COD_ESTADO_PROGRAMACION,   
                     pr.motsusprogcod                                                   AS COD_MOTIVO_SUSPENSION,
-                p.perasisprocolcod                                                                                            AS CMP        
+                p.perasisprocolcod                                                                                            AS CMP,
+                t.citambcrefec        AS FECHA_CREACION_CITA, 
+                t.condcitacod         AS COD_CONDICION_CITA
+
             FROM sgss.ctaam10 a
             LEFT OUTER JOIN sgss.cmcas10 ce on ce.cenasicod=a.atenambcenasicod
                                     and ce.oricenasicod = a.atenamboricenasicod

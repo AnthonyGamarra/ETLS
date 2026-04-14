@@ -48,7 +48,7 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-for mes in range(3, 4):
+for mes in range(4, 5):
     mes_str = f"{mes:02d}"
 
     print(f"\n📆 Procesando mes: {anio}-{mes_str}")

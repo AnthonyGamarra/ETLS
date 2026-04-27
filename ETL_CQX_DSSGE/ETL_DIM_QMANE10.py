@@ -31,7 +31,7 @@ conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn)
 # ==============================
 # 3. Extraer datos de Oracle
 # ==============================
-query = "SELECT * FROM SGSS.QMCQS10"
+query = "SELECT * FROM SGSS.QMANE10"
 df = pd.read_sql(query, conn_oracle)
 conn_oracle.close()
 
@@ -50,7 +50,7 @@ engine_pg = create_engine(f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:
 # ==============================
 df = df.astype(str)
 df.columns = df.columns.str.lower() 
-df.to_sql("sgss_qmcqs10", engine_pg, schema="dwsge", if_exists="replace", index=False)
+df.to_sql("sgss_qmane10", engine_pg, schema="dwsge", if_exists="append", index=False)
 
 
 

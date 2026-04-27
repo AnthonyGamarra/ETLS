@@ -80,9 +80,11 @@ for mes in range(4,5):
                 a.sexo,
                 a.cod_tipdoc_paciente,
                 a.anio_edad,
+                a.dni_medico,
                 z.cod_estandar,
                 z.cod_estado as cod_estado_homologacion,
-                a.cas_adscripcion
+                a.cas_adscripcion,
+                a.cod_tip_seguro
                 from dssge.dw_ate_emer_{anio}_{mes_str} a
                 LEFT JOIN dssge.dw_homologacion_enlaces_emergencia z
                                         ON z.cod_centro     = a.COD_CENTRO

@@ -31,7 +31,7 @@ conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn)
 # ==============================
 # 3. Extraer datos de Oracle
 # ==============================
-query = "SELECT * FROM SGSS.QMCQS10"
+query = "SELECT * FROM SGSS.QBCEP10"
 df = pd.read_sql(query, conn_oracle)
 conn_oracle.close()
 
@@ -43,14 +43,14 @@ engine_pg = create_engine(f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:
 
 # with engine_pg.begin() as conn:
 #     # Limpia solo los datos, mantiene estructura e índices
-#     conn.execute(text("TRUNCATE TABLE dwsge.sgss_qppso10 RESTART IDENTITY;"))
+#     conn.execute(text("TRUNCATE TABLE dwsge.sgss_qbcep10 RESTART IDENTITY;"))
 
 # ==============================
 # 5. Cargar datos a PostgreSQL
 # ==============================
 df = df.astype(str)
 df.columns = df.columns.str.lower() 
-df.to_sql("sgss_qmcqs10", engine_pg, schema="dwsge", if_exists="replace", index=False)
+df.to_sql("sgss_qbcep10", engine_pg, schema="dwsge", if_exists="append", index=False)
 
 
 

@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year 
+anio = datetime.now().year - 3
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_consulta_externa_odonto_homologacion"
 
 
-for mes in range(4,5):
+for mes in range(1,13):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:
@@ -72,6 +72,7 @@ for mes in range(4,5):
                     a.dni_medico,
                     a.doc_paciente,
                     a.anio,
+                    a.anio_edad,
                     a.meses,
                     a.sexo,
                     a.h_c,

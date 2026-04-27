@@ -512,6 +512,16 @@ CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025 PARTITION OF dwsge.dwe_c
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
 
+-- Crear partición anual para 2025
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024 PARTITION OF dwsge.dwe_consulta_externa_no_medicas
+FOR VALUES IN ('2024')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2023
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023 PARTITION OF dwsge.dwe_consulta_externa_no_medicas
+FOR VALUES IN ('2023')
+PARTITION BY LIST (PERIODO);
+
 CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2026_01 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2026 FOR VALUES IN ('202601');
 CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2026_02 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2026 FOR VALUES IN ('202602');
 CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2026_03 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2026 FOR VALUES IN ('202603');
@@ -537,6 +547,36 @@ CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_09 PARTITION OF dwsge.dw
 CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_10 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202510');
 CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_11 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202511');
 CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2025_12 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2025 FOR VALUES IN ('202512');
+
+
+
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_01 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202401');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_02 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202402');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_03 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202403');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_04 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202404');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_05 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202405');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_06 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202406');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_07 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202407');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_08 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202408');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_09 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202409');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_10 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202410');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_11 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202411');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2024_12 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2024 FOR VALUES IN ('202412');
+
+
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_01 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202301');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_02 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202302');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_03 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202303');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_04 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202304');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_05 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202305');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_06 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202306');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_07 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202307');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_08 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202308');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_09 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202309');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_10 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202310');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_11 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202311');
+CREATE TABLE dwsge.dwe_consulta_externa_no_medicas_2023_12 PARTITION OF dwsge.dwe_consulta_externa_no_medicas_2023 FOR VALUES IN ('202312');
+
 
 -------------------------------------------------
 
@@ -597,6 +637,14 @@ CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2025 PARTITION OF dws
 FOR VALUES IN ('2025')
 PARTITION BY LIST (PERIODO);
 
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024 PARTITION OF dwsge.dwe_consulta_externa_odonto_homologacion 
+FOR VALUES IN ('2024')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023 PARTITION OF dwsge.dwe_consulta_externa_odonto_homologacion 
+FOR VALUES IN ('2023')
+PARTITION BY LIST (PERIODO);
+
 CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2026_01 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2026 FOR VALUES IN ('202601');
 CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2026_02 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2026 FOR VALUES IN ('202602');
 CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2026_03 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2026 FOR VALUES IN ('202603');
@@ -623,6 +671,33 @@ CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2025_10 PARTITION OF 
 CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2025_11 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2025 FOR VALUES IN ('202511');
 CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2025_12 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2025 FOR VALUES IN ('202512');
 
+
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_01 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202401');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_02 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202402');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_03 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202403');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_04 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202404');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_05 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202405');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_06 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202406');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_07 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202407');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_08 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202408');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_09 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202409');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_10 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202410');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_11 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202411');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2024_12 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2024 FOR VALUES IN ('202412');
+
+
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_01 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202301');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_02 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202302');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_03 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202303');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_04 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202304');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_05 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202305');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_06 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202306');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_07 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202307');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_08 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202308');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_09 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202309');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_10 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202310');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_11 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202311');
+CREATE TABLE dwsge.dw_consulta_externa_odonto_homologacion_2023_12 PARTITION OF dwsge.dw_consulta_externa_odonto_homologacion_2023 FOR VALUES IN ('202312');
 -------------------------------------------------------
 CREATE TABLE dwsge.sgss_cmdia10_chapter
  (

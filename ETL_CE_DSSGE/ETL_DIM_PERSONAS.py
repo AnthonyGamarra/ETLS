@@ -1,6 +1,6 @@
 import os
+import csv
 import oracledb
-import pandas as pd
 import psycopg2
 from io import StringIO
 from dotenv import load_dotenv
@@ -119,6 +119,11 @@ try:
     cursor_src.execute(query)
 
     rows_processed = 0
+    colnames = [col[0].lower() for col in cursor_src.description]
+    copy_sql = f"""
+        COPY dssge.dwe_personas_essi ({', '.join(colnames)})
+        FROM STDIN WITH CSV
+    """
 
     while True:
         rows = cursor_src.fetchmany(chunksize)
@@ -127,26 +132,19 @@ try:
 
         data_found = True
 
-        colnames = [col[0].lower() for col in cursor_src.description]
-        df = pd.DataFrame(rows, columns=colnames)
-
-        print(f"📥 Batch leído: {len(df)} filas")
+        print(f"📥 Batch leído: {len(rows)} filas")
 
         buffer = StringIO()
-        df.to_csv(buffer, index=False, header=False)
+        writer = csv.writer(buffer, lineterminator='\n')
+        writer.writerows(rows)
         buffer.seek(0)
-
-        copy_sql = f"""
-            COPY dssge.dwe_personas_essi ({', '.join(colnames)})
-            FROM STDIN WITH CSV
-        """
 
         with conn_dst.cursor() as cur:
             cur.copy_expert(copy_sql, buffer)
             conn_dst.commit()
 
-        rows_processed += len(df)
-        print(f"✅ Batch insertado: {len(df)} filas")
+        rows_processed += len(rows)
+        print(f"✅ Batch insertado: {len(rows)} filas")
 
     print(f"\n🟢 Total insertado: {rows_processed} filas")
 

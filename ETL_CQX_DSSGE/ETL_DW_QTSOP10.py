@@ -139,6 +139,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
             to_char(c.solopecrefec,'hh24:mi')                                                     	AS HORCREASOLIC,
             c.SolOpeEvalPQxFec                                                              		AS FECAPTITUD,
             c.solopetipeveope                                                                		AS COD_TIPO_EVENTO
+            c.ESTSOPCOD 																				AS COD_ESTADO_PROGRAMACION,
             from sgss.qtioo10 t
             left outer join sgss.qtiop10 a on a.infopeoricenasicod = t.infopeoricenasicod
                                     and a.infopecenasicod    = t.infopecenasicod

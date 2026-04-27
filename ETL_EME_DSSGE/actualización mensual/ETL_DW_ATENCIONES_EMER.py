@@ -81,8 +81,9 @@ for start_mes, end_mes in month_range(start_date, end_date):
             i.topemecod                      AS COD_TOPICO,
             a.ateemeactmednum                AS ACTO_MED,
             s.perdocidennum                                              AS DOC_PACIENTE,
+            decode(s.persexocod, '1', 'M', '0', 'F', '')                                    as SEXO,
+            p.perasisdocidennum                                              AS DNI_MEDICO,
             (FLOOR(MONTHS_BETWEEN(a.ateemefec, s.pernacfec) / 12))                     as ANIO_EDAD,
-            decode(s.persexocod,'1','M','0','F','') AS SEXO,
             to_char(a.ateemefec , 'dd/mm/yyyy')     AS FECHA_ATEN,
             to_char(a.ateemehor, 'HH24:MI')         AS HORA_ATEN,
             e.TIPOPACICOD                           AS COD_TIPO_PACIENTE,
@@ -91,7 +92,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
             f.diagcod                               AS COD_DIAGNOSTICO,
             j.ADMEMEEMECOD                              AS COD_EMERGENCIA,
             a.ateemesecnum                                   AS SECUEN_ATEN,
-            s.percenasiadscod                                                                           as CAS_ADSCRIPCION
+            s.percenasiadscod                                                                           as CAS_ADSCRIPCION,
+            k.actmedtipsegcod                                                                          AS COD_TIP_SEGURO
             from SGSS.mtaem10 a
             left outer join SGSS.mtade10 j on j.admemeoricenasicod = a.ateemeoricenasicod
                                     and j.admemecenasicod   = a.ateemecenasicod
@@ -107,11 +109,13 @@ for start_mes, end_mes in month_range(start_date, end_date):
             left outer join SGSS.cmper10 s on k.actmedpacsecnum    = s.persecnum
             left outer join SGSS.cbtpc10 e on k.actmedtipopacicod  = e.tipopacicod
             left outer join SGSS.mbpae10 h on a.ateemepriatecod    = h.priatecod
+            left outer join SGSS.cmprs10 p on a.ATEEMEPERASISDOCIDENNUM = p.perasisdocidennum
             left outer join SGSS.mtadd10 b on a.ateemeoricenasicod = b.admemeoricenasicod
                                     and a.ateemecenasicod    = b.admemecenasicod
                                     and a.ateemeactmednum    = b.admemeactmednum
                                     and a.ateememovsecnum    = b.admemdsecnum
             left outer join SGSS.mbtoe10 i on b.admemdtopemecod    = i.topemecod
+            
 
             WHERE a.ateemefec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
                 and a.ateemefec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')

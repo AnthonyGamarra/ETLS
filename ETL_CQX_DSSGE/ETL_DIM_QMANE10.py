@@ -50,7 +50,7 @@ engine_pg = create_engine(f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:
 # ==============================
 df = df.astype(str)
 df.columns = df.columns.str.lower() 
-df.to_sql("sgss_qmane10", engine_pg, schema="dwsge", if_exists="append", index=False)
+df.to_sql("sgss_qmane10", engine_pg, schema="dwsge", if_exists="replace", index=False)
 
 
 

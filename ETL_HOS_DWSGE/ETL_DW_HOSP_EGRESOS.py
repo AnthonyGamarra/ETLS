@@ -44,7 +44,6 @@ today = datetime.today()
 current_year = today.year
 current_month = today.month
 time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
-
 # Calcular los dos meses anteriores
 if current_month == 1:
     months_to_process = [(current_year - 1, 11), (current_year - 1, 12)]
@@ -55,26 +54,30 @@ else:
 
 print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-table_name = "dwsge.dwe_consulta_externa_no_medicas"
+table_name = f"dwsge.dwe_hosp_egresos"
 
 
-for mes in range(4,5):
-    mes_str = f"{mes:02d}" 
+for mes in range(1,5):
+    mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
-    # Truncar partición del mes antes de cargar datos
-
     try:
         query = f"""
-            SELECT a.*, i.ATENMDDIAGCOD as diagcod  FROM dssge.dw_nomed_{anio}_{mes_str} a
-                LEFT JOIN dssge.sgss_ctdan10_anio_v2_{anio}_{mes_str} i 
-                    ON a.cod_oricentro = i.ATENOMORICENASICOD
-                    AND a.cod_centro = i.ATENOMCENASICOD
-                    AND a.acto_med = i.ATENOMACTMEDNUM
-                    AND i.ATENMDDIAGORD = 1
+            SELECT 
+                    a.*,
+                    i.CONDDIAGCOD as cod_cond_diag,
+                    i.diagcod AS diag_cod,
+                    i.ATENHOSTIPODIAGCOD as tipo_diag_cod
+                    FROM dssge.dw_hosp_{anio}_{mes_str} a
+                LEFT JOIN dssge.sgss_htdah_{anio}_{mes_str} i 
+                    ON a.cod_oricentro = i.ATENHOSORICENASICOD
+                    AND a.cod_centro = i.ATENHOSCENASICOD
+                    AND a.acto_med = i.ATENHOSACTMEDNUM
+                    and a.ultsecuenaten = i.ATENHOSNUMSEC
+                    AND i.ATENHOSDIAGORD = '1'
         """
         actualizacion = f"""UPDATE dwsge.fecha_act
                             SET fecha_act = {time}
-                            WHERE id=5"""
+                            WHERE id=6"""
         df = pd.read_sql_query(query, conn_src)
 
         if df.empty:
@@ -84,13 +87,14 @@ for mes in range(4,5):
 
             try:
                 cur_dst = conn_dst.cursor()
-                partition_name = f"dwsge.dwe_consulta_externa_no_medicas_{anio}_{mes_str}"
+                partition_name = f"dwsge.dwe_hosp_egresos_{anio}_{mes_str}"
                 cur_dst.execute(f"TRUNCATE TABLE {partition_name};")
                 conn_dst.commit()
                 cur_dst.close()
                 print(f"Partición truncada correctamente: {partition_name}")
             except Exception as e:
-                print(f"Error truncando partición {partition_name}: {e}")  
+                print(f"Error truncando partición {partition_name}: {e}")   
+            # Truncar partición del mes antes de cargar datos
 
             # Exportar DataFrame a CSV en memoria
             buffer = io.StringIO()

@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year -1
+anio = datetime.now().year 
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = "dwsge.dwe_consulta_externa_citados_homologacion"
 time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
-for mes in range(8, 9): 
+for mes in range(4, 5): 
     mes_str = f"{mes:02d}"
 
     print(f"\nProcesando mes: {anio}-{mes_str}")

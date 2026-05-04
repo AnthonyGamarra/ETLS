@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 5, 1)
-end_date = datetime(2026, 4, 30)
+start_date = datetime(2025, 1, 1)
+end_date = datetime(2025, 12, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -138,7 +138,9 @@ for start_mes, end_mes in month_range(start_date, end_date):
             to_char(c.solopecrefec,'dd/mm/yyyy')                                                  	AS FECHCREASOLICITUD,
             to_char(c.solopecrefec,'hh24:mi')                                                     	AS HORCREASOLIC,
             c.SolOpeEvalPQxFec                                                              		AS FECAPTITUD,
-            c.solopetipeveope                                                                		AS COD_TIPO_EVENTO
+            c.solopetipeveope                                                                		AS COD_TIPO_EVENTO,
+            a.InfOpeHallDes                                                                         AS DESC_HALLAZGO,
+            a.InfOpeProcDes                                                                         AS DESC_PROCEDIMIENTO
             from sgss.qtioo10 t
             left outer join sgss.qtiop10 a on a.infopeoricenasicod = t.infopeoricenasicod
                                     and a.infopecenasicod    = t.infopecenasicod

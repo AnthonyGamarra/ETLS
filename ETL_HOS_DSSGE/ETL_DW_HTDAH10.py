@@ -25,6 +25,8 @@ pg_host = os.getenv("PG_HOST")
 pg_port = os.getenv("PG_PORT", "5433")
 pg_db   = os.getenv("PG_DB")
 
+start_time = datetime.now()
+print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 # ==============================
 # 2. Función para obtener rango mensual
 # ==============================
@@ -62,11 +64,9 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 4, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 4, 30)
 
-start_time = datetime.now()
-print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 print(f"\n--- Iniciando extracción mes a mes entre {start_date.strftime('%Y-%m-%d')} y {end_date.strftime('%Y-%m-%d')} ---")
 
 # ==============================
@@ -79,27 +79,26 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
 
     query = f"""
             SELECT 
-                a.ATENODOORICENASICOD, 
-                a.ATENODOCENASICOD, 
-                a.ATENODONUM, 
+                a.ATENHOSORICENASICOD, 
+                a.ATENHOSCENASICOD, 
+                a.ATENHOSACTMEDNUM, 
+                a.ATENHOSNUMSEC, 
                 a.CONDDIAGCOD, 
                 a.DIAGCOD, 
-                a.ATENODODIAGORD, 
-                a.TIPODIAGCOD, 
-                a.CASODIAGCOD, 
-                a.DIAGATENODOALTAFLAG, 
-                a.DIAGATENODOPEAS,
-                TO_CHAR(TRUNC(c.ATENODOATENFEC), 'yyyymm') AS periodo,
-                TO_CHAR(TRUNC(c.ATENODOATENFEC), 'yyyy') AS anio
-            FROM sgss.ctdao10 a
-            LEFT OUTER JOIN sgss.ctaod10 c 
-                ON c.atenodooricenasicod = a.ATENODOORICENASICOD
-            AND c.atenodocenasicod    = a.ATENODOCENASICOD
-            AND c.atenodonum          = a.ATENODONUM
-            WHERE c.ATENODOESTREGCOD = '1'
-        AND ATENODOATENFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-        AND ATENODOATENFEC < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-        ORDER BY ATENODOATENFEC
+                a.ATENHOSDIAGORD, 
+                a.ATENHOSTIPODIAGCOD, 
+                TO_CHAR(TRUNC(c.AtenHosFec), 'yyyymm') AS periodo,
+                TO_CHAR(TRUNC(c.AtenHosFec), 'yyyy') AS anio
+            FROM sgss.HTDAH10 a
+            LEFT OUTER JOIN sgss.HTAHO10 c 
+                ON c.AtenHosOriCenAsiCod = a.AtenHosOriCenAsiCod
+            AND c.AtenHosCenAsiCod    = a.AtenHosCenAsiCod
+            AND c.AtenHosActMedNum          = a.AtenHosActMedNum
+            AND  C.AtenHosNumSec = a.AtenHosNumSec
+            WHERE a.ATENHOSDIAGORD = 1
+        AND AtenHosFec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        AND AtenHosFec < TO_DATE('{start_next_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+        ORDER BY AtenHosFec
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -114,7 +113,7 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
 
 
     # Truncar la tabla particionada destino en PostgreSQL antes de la carga
-    tabla_particion = f"dssge.sgss_ctdao10_anio_v2_{anio}_{mes}"
+    tabla_particion = f"dssge.sgss_htdah_{anio}_{mes}"
     try:
         print(f"Truncando tabla particionada destino: {tabla_particion}...")
         cursor_pg.execute(f"TRUNCATE TABLE {tabla_particion};")
@@ -132,7 +131,7 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
     print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
     try:
         cursor_pg.copy_expert(
-            sql=f"COPY dssge.sgss_ctdao10_anio_v2 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            sql=f"COPY {tabla_particion} ({', '.join(df.columns)}) FROM STDIN WITH CSV",
             file=csv_buffer
         )
         print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")
@@ -147,3 +146,5 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
+
+

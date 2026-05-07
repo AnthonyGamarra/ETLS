@@ -136,3 +136,150 @@ CREATE TABLE dssge.dwe_centro_quirurgico_2025_09 PARTITION OF dssge.dwe_centro_q
 CREATE TABLE dssge.dwe_centro_quirurgico_2025_10 PARTITION OF dssge.dwe_centro_quirurgico_2025 FOR VALUES IN ('202510');
 CREATE TABLE dssge.dwe_centro_quirurgico_2025_11 PARTITION OF dssge.dwe_centro_quirurgico_2025 FOR VALUES IN ('202511');
 CREATE TABLE dssge.dwe_centro_quirurgico_2025_12 PARTITION OF dssge.dwe_centro_quirurgico_2025 FOR VALUES IN ('202512');
+
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+CREATE TABLE dssge.sgss_qtsop10 (
+    anio char(4),
+    periodo char(6),
+    solopeoricenasicod VARCHAR,
+    solopecenasicod VARCHAR,
+    solopenum NUMERIC,
+    solopefec VARCHAR,
+    solopeactmednum NUMERIC,
+    solopemedtipdocidenpercod VARCHAR,
+    solopemedperasisdocidennum VARCHAR,
+    solopeinfmed TEXT,
+    solopesolfec VARCHAR,
+    solopeprofec VARCHAR,
+    solopeprohor VARCHAR,
+    estfiscod VARCHAR,
+    estsopcod VARCHAR,
+    solopeestregcod VARCHAR,
+    solopeusucrecod VARCHAR,
+    solopecrefec VARCHAR,
+    solopeusumodcod VARCHAR,
+    solopemodfec VARCHAR,
+    solopecenquicod VARCHAR,
+    solopesalopecod VARCHAR,
+    solopeesttpo VARCHAR,
+    solopearehoscod VARCHAR,
+    solopeservhoscod VARCHAR,
+    solopeordnum NUMERIC,
+    solopeemecod VARCHAR,
+    solopesolarehoscod VARCHAR,
+    solopesolservhoscod VARCHAR,
+    conopecod VARCHAR,
+    solopeactmedopenum NUMERIC,
+    priopecod VARCHAR,
+    riequicod VARCHAR,
+    solopediashosprecan NUMERIC,
+    solopediashosposcan NUMERIC,
+    solopepredetdes VARCHAR,
+    solopereqadides VARCHAR,
+    motsopcod VARCHAR,
+    solopetipanecod VARCHAR,
+    soloperesexalabflg VARCHAR,
+    soloperiequiflg VARCHAR,
+    soloperieneuflg VARCHAR,
+    solopeconinfflg VARCHAR,
+    solopeordtraflg VARCHAR,
+    solopeevalpqxinf TEXT,
+    solopeevalpqxflg VARCHAR,
+    solopeevalpqxfec VARCHAR,
+    solopeevalpqxoricenasicod VARCHAR,
+    solopeevalpqxcenasicod VARCHAR,
+    solopeevalpqxactmednum NUMERIC,
+    solopetopemecod VARCHAR,
+    solopeatesecnum NUMERIC,
+    solopebuspacsecnum NUMERIC,
+    solopesolexafec VARCHAR,
+    soloperesexalabfec VARCHAR,
+    soloperiequifec VARCHAR,
+    soloperieneufec VARCHAR,
+    solopeevalpqxmedtipdoc VARCHAR,
+    solopeevalpqxmeddocnum VARCHAR,
+    solopediashospreflg CHAR(1),
+    solopediashosposflg CHAR(1),
+    solopereqprotflg CHAR(1),
+    solopereqprotdes VARCHAR,
+    solopetieprotflg CHAR(1),
+    solopetlffamnum VARCHAR,
+    solopesolexaflg VARCHAR,
+    solopesolexaimpflg VARCHAR,
+    rieneucod VARCHAR,
+    solopesopfec VARCHAR,
+    motboqxcod VARCHAR,
+    solopeboqxfec VARCHAR,
+    soloperesexaimpflg VARCHAR,
+    soloperesexaimpfec VARCHAR,
+    solopeconinffec VARCHAR,
+    solopeordtrafec VARCHAR,
+    solopesolexaimpfec VARCHAR,
+    solopeotrsopdes VARCHAR,
+    solopemedsusptipdoc VARCHAR,
+    solopemedsuspdocnum VARCHAR,
+    solopemedbajatipdoc VARCHAR,
+    solopemedbajadocnum VARCHAR,
+    solopeobsseginf TEXT,
+    solopeopefec VARCHAR,
+    solopealtfec VARCHAR,
+    solopeotrboqxdes VARCHAR,
+    solopehospfec VARCHAR,
+    solopeprotfec VARCHAR,
+    solopeproconfflg VARCHAR,
+    solopeproconffec VARCHAR,
+    solopeproconftipdoc VARCHAR,
+    solopeproconfdocnum VARCHAR,
+    solopehospflg VARCHAR,
+    solopeordintoricenasicod VARCHAR,
+    solopeordintcenasicod VARCHAR,
+    solopeordintnum NUMERIC,
+    solopehorqxdifflg NUMERIC,
+    solopeconinfaneflg VARCHAR,
+    solopeconinfanefec VARCHAR,
+    solopeconinfsanflg VARCHAR,
+    solopeconinfsanfec VARCHAR,
+    solopeconinfdesflg VARCHAR,
+    solopeconinfdesfec VARCHAR,
+    solopetipeveope NUMERIC
+) PARTITION BY LIST (ANIO);
+
+-- Crear partición anual para 2026
+CREATE TABLE dssge.sgss_qtsop10_2026 PARTITION OF dssge.sgss_qtsop10
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.sgss_qtsop10_2025 PARTITION OF dssge.sgss_qtsop10
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+
+CREATE TABLE dssge.sgss_qtsop10_2026_01 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.sgss_qtsop10_2026_02 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.sgss_qtsop10_2026_03 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.sgss_qtsop10_2026_04 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.sgss_qtsop10_2026_05 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.sgss_qtsop10_2026_06 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.sgss_qtsop10_2026_07 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.sgss_qtsop10_2026_08 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.sgss_qtsop10_2026_09 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.sgss_qtsop10_2026_10 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.sgss_qtsop10_2026_11 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.sgss_qtsop10_2026_12 PARTITION OF dssge.sgss_qtsop10_2026 FOR VALUES IN ('202612');
+
+CREATE TABLE dssge.sgss_qtsop10_2025_01 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.sgss_qtsop10_2025_02 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.sgss_qtsop10_2025_03 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.sgss_qtsop10_2025_04 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.sgss_qtsop10_2025_05 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.sgss_qtsop10_2025_06 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.sgss_qtsop10_2025_07 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.sgss_qtsop10_2025_08 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.sgss_qtsop10_2025_09 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.sgss_qtsop10_2025_10 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.sgss_qtsop10_2025_11 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.sgss_qtsop10_2025_12 PARTITION OF dssge.sgss_qtsop10_2025 FOR VALUES IN ('202512');

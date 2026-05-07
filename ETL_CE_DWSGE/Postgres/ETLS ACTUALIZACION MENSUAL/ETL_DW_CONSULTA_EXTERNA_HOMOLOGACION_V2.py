@@ -58,7 +58,7 @@ table_name = "dwsge.dwe_consulta_externa_homologacion"
 fecha_act = "dwsge.fecha_act"
 time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
-for mes in range(4,5):
+for mes in range(1,4):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:
@@ -118,6 +118,7 @@ for mes in range(4,5):
                     a.fecha_solic,
                     a.fecha_cita,
                     a.fecha_atencion,
+                    a.hora_aten as hora_atencion,
                     a.acto_med,
                     a.cod_tipo_consulta,
                     a.cas_referencia,

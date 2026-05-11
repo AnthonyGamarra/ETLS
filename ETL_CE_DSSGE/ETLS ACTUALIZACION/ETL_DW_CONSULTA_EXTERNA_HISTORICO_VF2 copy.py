@@ -79,7 +79,7 @@ data_found = False
 # ==============================
 # Ejemplo: semana del 28 de abril al 4 de mayo
 start_date = datetime(2026, 4, 28)
-end_date   = datetime(2026, 5,  4)
+end_date   = datetime(2026, 5,  7)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes

@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 1, 1)
-end_date = datetime(2025, 12, 31)
+start_date = datetime(2026, 1, 1)
+end_date = datetime(2026, 5, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -87,6 +87,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
             to_char(trunc(t.hospaltadmfec),'yyyy')                             as ANIO,
             ho.ATENHOSSERVHOSCOD                                               AS COD_SERVICIO,                                             
             ho.ATENHOSACTCOD                                                   AS COD_ACTIVIDAD,
+            u.hosdarehosintcod                                                 AS COD_AREA_INTER,
+            u.hosdservhoscod                                                   AS COD_SERV_INTER,
             e1.estenfcod                                                       AS COD_ESTACION,
             p.perasisprocolcod                                                 AS CMP,
             ho.ATENHOSTIPDOCIDENPERCOD                                         as COD_TIPDOC_MEDICO,

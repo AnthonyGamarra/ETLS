@@ -5,6 +5,7 @@ from io import StringIO
 import psycopg2
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 # ==============================
 # 1. Cargar variables desde .env
@@ -30,10 +31,12 @@ pg_db   = os.getenv("PG_DB")
 # ==============================
 def month_range(start_date, end_date):
     current = start_date
-    while current <= end_date:
-        next_month = (current.replace(day=1) + timedelta(days=32)).replace(day=1)
-        yield current, min(next_month - timedelta(days=1), end_date)
-        current = next_month
+    limite = (end_date.replace(day=1) + relativedelta(months=1))
+    while current < limite:
+        start_mes = current
+        end_mes = (current.replace(day=1) + relativedelta(months=1))
+        yield start_mes, end_mes
+        current = end_mes
 
 # ==============================
 # 3. Conexión Oracle
@@ -61,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 5, 1)
-end_date = datetime(2026, 5, 31)
+start_date = datetime(2026, 1, 1)
+end_date = datetime(2026, 5, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -71,35 +74,54 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.sgss_mtadd10_{anio}_{mes}"
-    query = f"""
-            SELECT 
-                    ADMEMEORICENASICOD,
-                    ADMEMECENASICOD,
-                    ADMEMEACTMEDNUM,
-                    ADMEMDSECNUM,
-                    ADMEMDAREHOSCOD,
-                    ADMEMDEMECOD,
-                    ADMEMDTOPEMECOD,
-                    to_char(ADMEMDINGFEC, 'YYYY') AS anio,
-                    to_char(ADMEMDINGFEC, 'YYYYMM') AS periodo,
-                    to_char(ADMEMDINGFEC, 'YYYY-MM-DD') AS ADMEMDINGFEC,
-                    to_char(ADMEMDINGHOR, 'HH24:MI:SS') AS ADMEMDINGHOR,
-                    ESTPEECOD,
-                    ADMEMDAREHOSDESCOD,
-                    ADMEMDEMEDESCOD,
-                    ADMEMDTOPEMEDESCOD,
-                    to_char(ADMEMDEGRFEC, 'YYYY-MM-DD') AS ADMEMDEGRFEC,
-                    to_char(ADMEMDEGRHOR, 'HH24:MI:SS') AS ADMEMDEGRHOR,
-                    ADMEMDUSUCRECOD,
-                    ADMEMDCREFEC,
-                    ADMEMDUSUMODCOD,
-                    ADMEMDMODFEC,
-                    ADMEMDATEFLG
-            FROM SGSS.MTADD10 
-            WHERE ADMEMDINGFEC >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-            and ADMEMDINGFEC < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+    start_mes_str = start_mes.strftime('%d-%m-%Y')
+    end_mes_str = end_mes.strftime('%d-%m-%Y')
+    tabla_destino = f"dssge.sgss_htaho_{anio}_{mes}"
+    
 
+    query = f"""
+    SELECT
+    to_char(trunc(ATENHOSFEC),'yyyymm')                           as PERIODO,
+    to_char(trunc(ATENHOSFEC),'yyyy')                             as ANIO,
+    ATENHOSORICENASICOD,
+    ATENHOSCENASICOD,
+    ATENHOSACTMEDNUM,
+    ATENHOSNUMSEC,
+    ATENHOSFEC,
+    ATENHOSHOR,
+    ATENHOSPERORICENASICOD,
+    ATENHOSPERCENASICOD,
+    ATENHOSAREHOSCOD,
+    ATENHOSSERVHOSCOD,
+    ATENHOSACTCOD,
+    u.hosdcamcod,
+    ATENHOSTIPDOCIDENPERCOD,
+    ATENHOSPERASISDOCIDENNUM,
+    ATENHOSPERPROFLG,
+    TIPATEHOSCOD,
+    CPSCOD,
+    ATENHOSUSUCRECOD,
+    ATENHOSCREFEC,
+    ATENHOSUSUMODCOD,
+    ATENHOSMODFEC,
+    ATENHOSMOVSECNUM,
+    ATENHOSSOLINTNUM,
+    ATENHOSSIGVITSECNUM,
+    ATENHOSMOTEGRCOD,
+    RESATENINTECOD,
+    ATENHOSSOSCOVID,
+    ATENHOSRETCONDI,
+    ATENHOSRETRIESGO,
+    ATENHOSRETRESPTIPDOC,
+    ATENHOSRETRESPNUMDOC,
+    ATENHOSRETRESPNOM,
+    ATENHOSRETRELPAC,
+    ATENHOSRETFLG,
+    ATENHOSFECPROALTA
+    from sgss.HTAHO10 HO
+    LEFT JOIN sgss.HTHOD10 U ON u.hosporicenasicod =ho.ATENHOSORICENASICOD AND u.hospcenasicod = ho.ATENHOSCENASICOD AND u.hospactmednum = ho.ATENHOSACTMEDNUM AND u.hosdnumsec = ho.ATENHOSNUMSEC
+           where ATENHOSFEC >= TO_DATE('{start_mes_str}','DD-MM-YYYY')
+           and ATENHOSFEC < TO_DATE('{end_mes_str}','DD-MM-YYYY')
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -123,12 +145,10 @@ for start_mes, end_mes in month_range(start_date, end_date):
         print(f"⚠️ Error al truncar {tabla_destino}: {e}")
         continue  # Saltar este mes si no existe la partición
 
-    # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()
     df.to_csv(csv_buffer, index=False, header=False)
     csv_buffer.seek(0)
 
-    # Usamos COPY para cargar datos a PostgreSQL
     print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
     try:
         cursor_pg.copy_expert(
@@ -147,7 +167,3 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
-
-
-
-

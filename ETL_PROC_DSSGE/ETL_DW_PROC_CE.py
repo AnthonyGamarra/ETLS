@@ -72,8 +72,8 @@ print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 4, 1)
-end_date = datetime(2026, 4, 30)
+start_date = datetime(2026, 1, 1)
+end_date = datetime(2026, 5, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -178,7 +178,7 @@ left outer join SGSS.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
                           and pr.properturhorini    = ct.proconturhorini
                           and pr.properturhorfin    = ct.proconturhorfin
 where z.atenproestregcod    = '1'
-   and a.atenproarehoscod    = '01'
+   and a.atenproarehoscod    in ('01','02','03','04','05','06')
     AND z.atenproproperfec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
     AND z.atenproproperfec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
     """

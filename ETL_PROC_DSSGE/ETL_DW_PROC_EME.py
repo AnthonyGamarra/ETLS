@@ -71,8 +71,8 @@ hoy = datetime.today()
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-start_date = datetime(2026, 4, 1)
-end_date = datetime(2026, 4, 30)
+start_date = datetime(2026, 1, 1)
+end_date = datetime(2026, 5, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -86,26 +86,26 @@ for start_mes, end_mes in month_range(start_date, end_date):
 
     query = f"""
 select
-a.atenprooricenasicod                   AS COD_ORICENTRO,
-a.atenprocenasicod                   AS COD_CENTRO,
-to_char(z.atenproproperfec,'yyyy') AS ANIO,
-to_char(z.atenproproperfec,'yyyymm') AS PERIODO,
+a.ATEPROORICENASICOD                  AS COD_ORICENTRO,
+a.ATEPROCENASICOD                   AS COD_CENTRO,
+to_char(a.ATEPROPROPERFEC,'yyyy') AS ANIO,
+to_char(a.ATEPROPROPERFEC,'yyyymm') AS PERIODO,
 b.servhoscod                         AS COD_SERVICIO,
-a.atenproperasisdocidennum           AS DNI_MEDICO,
+a.ATEPROPERASISDOCIDENNUM           AS DNI_MEDICO,
 s.perdocidennum                      AS DOC_PACIENTE,
 s.pertipdocidencod 	                  AS TIP_DOC_PACIENTE,
-(FLOOR(MONTHS_BETWEEN(z.atenproproperfec,s.pernacfec) / 12))                 AS ANIO_EDAD,
+TO_CHAR(FLOOR(MONTHS_BETWEEN(a.ATEPROPROPERFEC,s.pernacfec) / 12))          AS ANIO_EDAD,
 decode(s.persexocod,'1','M','0','F','')                                      AS SEXO,
 c.pachisclinum                                                               AS H_C,
 m.tipsegcod                                                                  AS COD_TIPO_SEGURO,
 s.pertipoparecod                                     AS COD_TIPO_PARENTESCO,
 n.TIPOPACICOD                                                                 AS COD_TIPO_PACIENTE,
 to_char(t.citambsolfec, 'dd/mm/yyyy')                                        AS FECHA_SOLIC,
-to_char(z.atenproproperfec, 'dd/mm/yyyy')                                    AS FECHA_ATEN,
+to_char(a.ATEPROPROPERFEC, 'dd/mm/yyyy')                                    AS FECHA_ATEN,
 t.condcitacod                       AS COD_CONDICION_CITA,
-z.atenproactmednum                                                           AS ACTO_MED,
-a.atenprcpscod                                                               AS CODPROCED,
-a.atenprdcant                                                                AS CANTPROCED,
+a.ATEPROACTMEDNUM                                                           AS ACTO_MED,
+z.ATEPRCPSCOD                                                              AS CODPROCED,
+z.ATEPRDCANT                                                                AS CANTPROCED,
 z1.cenasioricod                                                              AS COD_PRECEDENCIA,
 s.percenasiadscod                                                            AS CAS_ADSCRIPCION,
 ct.concod                                                                    AS COD_CONSULTORIO,
@@ -117,39 +117,30 @@ to_char(pr.properturhorini, 'hh24:mi') ||'-'||
 to_char(pr.properturhorfin, 'hh24:mi')                                       AS TURNO,
 k.actmedestgrav                    AS TIPO_GRAVIDEZ,
 s.perrucempnum                                                               AS NUM_RUC,
-decode(a.atenprdtipenf,'0','PACIENTE NO COVID','1','PACIENTE COVID')         AS ESTADO_PACIENTE, 
-a.atenprdusucrecod                                                           AS USU_REG,  
-to_char(a.atenprdcrefec,'dd/mm/yyyy')                                        AS FECH_REG,
-to_char(a.atenprdcrefec,'hh24:mi')                                           AS HORA_REG,
-a.atenprdusumodcod                                                           AS USU_MODIF,
-to_char(a.atenprdmodfec,'dd/mm/yyyy')                                        AS FECH_MODIF,
-to_char(a.atenprdmodfec,'hh24:mi')                                           AS HORA_MODIF
-from SGSS.ctapd10 a
-left outer join SGSS.ctapr10 z on z.atenprooricenasicod = a.atenprooricenasicod
-                              and z.atenprocenasicod   = a.atenprocenasicod
-                              and z.atenproarehoscod   = a.atenproarehoscod
-                              and z.atenproservhoscod  = a.atenproservhoscod
-                              and z.atenproactcod      = a.atenproactcod
-                              and z.atenproactespcod   = a.atenproactespcod
-                              and z.atenprotipdocidenpercod   = a.atenprotipdocidenpercod
-                              and z.atenproperasisdocidennum  = a.atenproperasisdocidennum
-                              and z.atenproproperfec          = a.atenproproperfec
-                              and z.atenproturinihor          = a.atenproturinihor
-                              and z.atenproturfinhor          = a.atenproturfinhor
-                              and z.atenproactmednum          = a.atenproactmednum
-left outer join SGSS.cmame10 k on z.atenprooricenasicod = k.oricenasicod
-                              and z.atenprocenasicod   = k.cenasicod
-                              and z.atenproactmednum   = k.actmednum
+a.ATEPROUSUCRECOD                                                          AS USU_REG,  
+to_char(a.ATEPROCREFEC,'dd/mm/yyyy')                                        AS FECH_REG,
+to_char(a.ATEPROCREFEC,'hh24:mi')                                           AS HORA_REG,
+a.ATEPROUSUMODCOD                                                           AS USU_MODIF,
+to_char(a.ATEPROMODFEC,'dd/mm/yyyy')                                        AS FECH_MODIF,
+to_char(a.ATEPROMODFEC,'hh24:mi')                                           AS HORA_MODIF
+from SGSS.CTHPR10 a
+left outer join SGSS.ctHPD10 z on z.ATEPROORICENASICOD = a.ATEPROORICENASICOD
+                              and z.ATEPROCENASICOD   = a.ATEPROCENASICOD
+                              and z.ATEPROACTMEDNUM         = a.ATEPROACTMEDNUM
+                              AND z.ATEPRONUMSEC                       =a.ATEPRONUMSEC
+left outer join SGSS.cmame10 k on z.ATEPROORICENASICOD = k.oricenasicod
+                              and z.ATEPROCENASICOD   = k.cenasicod
+                              and z.ATEPROACTMEDNUM   = k.actmednum
 left outer join SGSS.cmtse10 m on k.actmedtipsegcod     = m.tipsegcod
 left outer join SGSS.cmper10 s on k.actmedpacsecnum     = s.persecnum
-left outer join SGSS.ctcam10 t on z.atenprooricenasicod = t.citamboricenasicod
-                              and z.atenprocenasicod   = t.citambcenasicod
-                              and z.atenproactmednum   = t.citambnum
-left outer join SGSS.cmcpp10 f on  a.atenprcpscod              = f.cpscod
-left outer join SGSS.cmsho10 b on a.atenproservhoscod          = b.servhoscod
+left outer join SGSS.ctcam10 t on z.ATEPROORICENASICOD = t.citamboricenasicod
+                              and z.ATEPROCENASICOD   = t.citambcenasicod
+                              and z.ATEPROACTMEDNUM   = t.citambnum
+left outer join SGSS.cmcpp10 f on  z.ATEPRCPSCOD              = f.cpscod
+left outer join SGSS.cmsho10 b on a.ATEPROSERVHOSCOD          = b.servhoscod
 left outer join SGSS.cbtpc10 n on k.actmedtipopacicod          = n.tipopacicod
-left outer join SGSS.cmprs10 p on a.atenprotipdocidenpercod    = p.tipdocidenpercod
-                              and a.atenproperasisdocidennum  = p.perasisdocidennum
+left outer join SGSS.cmprs10 p on a.ATEPROTIPDOCIDENPERCOD    = p.tipdocidenpercod
+                              and a.ATEPROPERASISDOCIDENNUM  = p.perasisdocidennum
 left outer join SGSS.cmpac10 c on c.oricenasicod               = k.oricenasicod
                               and c.cenasicod                 = k.cenasicod
                               and c.pacsecnum                 = k.actmedpacsecnum
@@ -176,10 +167,10 @@ left outer join SGSS.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
                           and pr.properfec          = ct.proconfec
                           and pr.properturhorini    = ct.proconturhorini
                           and pr.properturhorfin    = ct.proconturhorfin
-where z.atenproestregcod    = '1'
-   and a.atenproarehoscod    = '02'
-    AND z.atenproproperfec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
-    AND z.atenproproperfec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
+where a.ATEPROESTREGCOD    = '1'
+   and a.ATEPROAREHOSCOD    = '02'
+    AND a.ATEPROPROPERFEC >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
+    AND a.ATEPROPROPERFEC < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")

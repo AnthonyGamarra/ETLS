@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 4, 1)
-end_date = datetime(2026, 4, 30)
+start_date = datetime(2026, 5, 1)
+end_date = datetime(2026, 5, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes

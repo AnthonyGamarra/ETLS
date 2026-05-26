@@ -95,6 +95,10 @@ for start_mes, end_mes in month_range(start_date, end_date):
     ATENHOSSERVHOSCOD,
     ATENHOSACTCOD,
     u.hosdcamcod,
+    h.hospintfec,
+    h.hospinthor,
+    h.hospaltadmfec,
+    h.hospaltadmhor,
     ATENHOSTIPDOCIDENPERCOD,
     ATENHOSPERASISDOCIDENNUM,
     ATENHOSPERPROFLG,
@@ -118,10 +122,19 @@ for start_mes, end_mes in month_range(start_date, end_date):
     ATENHOSRETRELPAC,
     ATENHOSRETFLG,
     ATENHOSFECPROALTA
-    from sgss.HTAHO10 HO
-    LEFT JOIN sgss.HTHOD10 U ON u.hosporicenasicod =ho.ATENHOSORICENASICOD AND u.hospcenasicod = ho.ATENHOSCENASICOD AND u.hospactmednum = ho.ATENHOSACTMEDNUM AND u.hosdnumsec = ho.ATENHOSNUMSEC
-           where ATENHOSFEC >= TO_DATE('{start_mes_str}','DD-MM-YYYY')
-           and ATENHOSFEC < TO_DATE('{end_mes_str}','DD-MM-YYYY')
+    from SGSS.HTAHO10 HO
+    LEFT JOIN SGSS.HTHOD10 U ON 
+            u.hosporicenasicod =ho.ATENHOSORICENASICOD 
+        AND u.hospcenasicod = ho.ATENHOSCENASICOD
+        AND u.hospactmednum = ho.ATENHOSACTMEDNUM
+        AND u.hosdnumsec = ho.ATENHOSMOVSECNUM
+    LEFT JOIN SGSS.HTHOS10 H ON
+            h.hosporicenasicod =ho.ATENHOSORICENASICOD 
+        AND h.hospcenasicod = ho.ATENHOSCENASICOD
+        AND h.hospactmednum = ho.ATENHOSACTMEDNUM
+        AND h.hospnumsec = ho.ATENHOSNUMSEC
+    where ATENHOSFEC >= TO_DATE('{start_mes_str}','DD-MM-YYYY')
+    and ATENHOSFEC < TO_DATE('{end_mes_str}','DD-MM-YYYY')
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")

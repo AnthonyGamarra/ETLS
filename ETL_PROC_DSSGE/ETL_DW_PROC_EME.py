@@ -71,8 +71,8 @@ hoy = datetime.today()
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-start_date = datetime(2026, 5, 1)
-end_date = datetime(2026, 5, 31)
+start_date = datetime(2026, 6, 1)
+end_date = datetime(2026, 6, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes

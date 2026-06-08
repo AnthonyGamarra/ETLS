@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 5, 1)
-end_date = datetime(2026, 5, 31)
+start_date = datetime(2026, 6, 1)
+end_date = datetime(2026, 6, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -78,16 +78,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
     end_mes_str = end_mes.strftime('%d-%m-%Y')
     tabla_destino = f"dssge.dwe_centro_quirurgico_{anio}_{mes}"
     
-    # ==============================
-    # TRUNCAR PARTICIÓN DESTINO
-    # ==============================
-    print(f"Truncando partición destino: {tabla_destino}...")
-    try:
-        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
-        print(f"Tabla {tabla_destino} truncada correctamente.")
-    except Exception as e:
-        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
-        continue  # Saltar este mes si no existe la partición
+
     query = f"""
             SELECT
             t.INFOPEORICENASICOD									 								AS cod_oricentro,
@@ -146,16 +137,13 @@ for start_mes, end_mes in month_range(start_date, end_date):
                                     and a.infopecenasicod    = t.infopecenasicod
                                     and a.infopesolopenum    = t.infopesolopenum
                                     and a.infopesecnum       = t.infopesecnum
-
             left outer join sgss.qtioc10 k on k.infopeoricenasicod = a.infopeoricenasicod
                                     and k.infopecenasicod    = a.infopecenasicod
                                     and k.infopesolopenum    = a.infopesolopenum
                                     and k.infopesecnum       = a.infopesecnum
-
             left outer join sgss.qtsop10 c on c.solopeoricenasicod  = a.infopeoricenasicod
                                     and c.solopecenasicod     = a.infopecenasicod
                                     and c.solopenum           = a.infopesolopenum
-
             left outer JOIN sgss.qtian10 an ON an.infopeoricenasicod = c.solopeoricenasicod
                                         AND an.infopecenasicod = c.solopecenasicod
                                         AND an.infopesolopenum = c.solopenum
@@ -185,6 +173,17 @@ for start_mes, end_mes in month_range(start_date, end_date):
         continue
 
     df.columns = df.columns.str.lower()
+
+    # ==============================
+    # TRUNCAR PARTICIÓN DESTINO
+    # ==============================
+    print(f"Truncando partición destino: {tabla_destino}...")
+    try:
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
+        print(f"Tabla {tabla_destino} truncada correctamente.")
+    except Exception as e:
+        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
+        continue  # Saltar este mes si no existe la partición
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()

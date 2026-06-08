@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 1, 1)
-end_date = datetime(2025, 10, 31)
+start_date = datetime(2026, 6, 1)
+end_date = datetime(2026, 6, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -83,8 +83,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
     SELECT
             b.ORICENASICOD                                                     as COD_ORICENTRO,
             b.cenasicod                                                        AS COD_CENTRO,
-            to_char(trunc(t.hospintfec),'yyyymm')                              as PERIODO,
-            to_char(trunc(t.hospintfec),'yyyy')                                as ANIO,
+            to_char(trunc(t.hospintfec),'yyyymm')                           as PERIODO,
+            to_char(trunc(t.hospintfec),'yyyy')                             as ANIO,
             ho.ATENHOSSERVHOSCOD                                               AS COD_SERVICIO,                                             
             ho.ATENHOSACTCOD                                                   AS COD_ACTIVIDAD,
             u.hosdarehosintcod                                                 AS COD_AREA_INTER,
@@ -188,11 +188,13 @@ for start_mes, end_mes in month_range(start_date, end_date):
                                 and u.HOSDHABCOD = cam.HABCOD
                                 and u.HOSDCAMCOD = cam.CAMCOD
             inner join sgss.hbtca10 tcam on cam.TIPCAMCOD = tcam.tipcamcod
-            where t.hospegrflg = '1'
-            and t.hospintfec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
+            where 
+            --t.hospegrflg = '1'
+            --and 
+            t.hospintfec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
             and t.hospintfec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
-            AND t.motegrcod IN ('01','02','04','05','11','12','13','14')
-            AND u.estpehcod = '3'
+            AND (t.motegrcod IN ('01','02','04','05','11','12','13','14') OR t.motegrcod IS NULL)
+            --AND u.estpehcod = '3'
             AND t.hosparehoscod    = '03'
     """
 
@@ -205,6 +207,10 @@ for start_mes, end_mes in month_range(start_date, end_date):
         continue
 
     df.columns = df.columns.str.lower()
+
+    for col in ['meses', 'anio_edad', 'dias_hospit', 'acto_med', 'cmame_pacsecnum', 'ultsecuenaten']:
+        if col in df.columns:
+            df[col] = df[col].fillna(0).astype('Int64')
 
     # ==============================
     # TRUNCAR PARTICIÓN DESTINO

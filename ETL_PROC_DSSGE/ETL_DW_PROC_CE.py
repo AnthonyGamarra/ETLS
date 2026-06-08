@@ -72,8 +72,8 @@ print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 5, 1)
-end_date = datetime(2026, 5, 31)
+start_date = datetime(2026, 6, 1)
+end_date = datetime(2026, 6, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes

@@ -1,0 +1,212 @@
+import os
+import oracledb
+import pandas as pd
+from io import StringIO
+import psycopg2
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
+
+# ==============================
+# 1. Cargar variables desde .env
+# ==============================
+load_dotenv()
+
+# Oracle
+oracle_user = os.getenv("ORACLE_USER")
+oracle_pass = os.getenv("ORACLE_PASS")
+oracle_host = os.getenv("ORACLE_HOST")
+oracle_port = os.getenv("ORACLE_PORT")
+oracle_service = os.getenv("ORACLE_SERVICE")
+
+# PostgreSQL
+pg_user = os.getenv("PG_USER")
+pg_pass = os.getenv("PG_PASS")
+pg_host = os.getenv("PG_HOST")
+pg_port = os.getenv("PG_PORT", "5433")
+pg_db   = os.getenv("PG_DB")
+
+# ==============================
+# 2. Función para obtener rango mensual
+# ==============================
+def month_range(start_date, end_date):
+    current = start_date
+    while current <= end_date:
+        next_month = (current.replace(day=1) + timedelta(days=32)).replace(day=1)
+        yield current, min(next_month - timedelta(days=1), end_date)
+        current = next_month
+
+# ==============================
+# 3. Conexión Oracle
+# ==============================
+print(f"Conectando a Oracle en {oracle_host}:{oracle_port}/{oracle_service}...")
+dsn = f"{oracle_host}:{oracle_port}/{oracle_service}"
+conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn)
+print("Conexión a Oracle establecida.")
+
+# ==============================
+# 4. Conexión PostgreSQL
+# ==============================
+print(f"Conectando a PostgreSQL en {pg_host}:{pg_port}, base de datos: {pg_db}...")
+conn_pg = psycopg2.connect(
+    host=pg_host,
+    database=pg_db,
+    user=pg_user,
+    password=pg_pass,
+    port=pg_port
+)
+conn_pg.autocommit = True
+cursor_pg = conn_pg.cursor()
+print("Conexión a PostgreSQL establecida.")
+
+# ==============================
+# 5. Parámetros de fechas
+# ==============================
+start_date = datetime(2019, 1, 1)
+end_date = datetime(2025, 12, 31)
+
+# ==============================
+# 6. Ciclo para extraer y copiar mes a mes
+# ==============================
+for start_mes, end_mes in month_range(start_date, end_date):
+    print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
+    anio = start_mes.strftime('%Y')
+    mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
+    tabla_destino = f"dssge.dw_farm_{anio}_{mes}"
+    query = f"""
+            SELECT
+                TO_CHAR(t.movmatdocfec,'YYYY')    AS anio,
+                TO_CHAR(t.movmatdocfec,'YYYYMM')    AS periodo,
+                a.cenasicod                         AS cod_centro,
+                g.almcod                            AS cod_farmacia,
+                t.movmatarehoscod                   AS cod_area,
+                t.movmatservhoscod                  AS cod_servicio,
+                t.movmatactcod                      AS cod_actividad,
+                t.movmatactespcod                   AS cod_subactividad,
+                b.actmednum                         AS num_actomed,
+                h.perasisdocidennum                 AS dni_medico,
+                t.tipmovcod                         AS cod_movimiento,
+                TO_CHAR(t.movmatdocfec,'DD/MM/YYYY') AS fecha_doc_mov,
+                t.docalmcod                         AS tipodocumento,
+                b.solmatdocnum                      AS num_receta,
+                t.matcod                            AS cod_medic,
+                m.uniatecod                         AS unidad,
+                SUM(
+                    CASE t.movmattiptrncod
+                            WHEN '2' THEN t.movmatcan
+                            WHEN '1' THEN -t.movmatcan
+                            ELSE 0
+                    END
+                ) AS cantidad,
+                t.movmatusucrecod                   AS usuario_registro,
+                TO_CHAR(t.movmatcrefec,'DD/MM/YYYY') AS fecha_registro,
+                TO_CHAR(t.movmatcrefec,'HH24:MI')    AS hora_registro,
+                t.movmatprepro                      AS precio,
+                t.movmatdocrefnum                   AS numreferencia
+            FROM sgss.ftmma10 t
+            LEFT JOIN sgss.cmcas10 a
+                ON a.oricenasicod = t.oricenasicod
+                AND a.cenasicod    = t.cenasicod
+            LEFT JOIN sgss.ftsma10 b
+                ON b.oricenasicod     = t.oricenasicod
+                AND b.cenasicod        = t.cenasicod
+                AND b.solalmcod        = t.movmatsolalmcod
+                AND b.solmatdocnum     = t.movmatsolmatdocnum
+            LEFT JOIN sgss.fmalm10 g
+                ON g.oricenasicod = t.oricenasicod
+                AND g.cenasicod    = t.cenasicod
+                AND g.tipalmcod    = t.tipalmcod
+                AND g.almcod       = t.almcod
+            LEFT JOIN sgss.cmaho10 c
+                ON c.arehoscod = b.solmatarehoscodsol
+            LEFT JOIN sgss.cmsho10 d
+                ON d.servhoscod = b.solmatservhoscodsol
+            LEFT JOIN sgss.cmact10 e
+                ON e.actcod = b.solmatactcodsol
+            LEFT JOIN sgss.cmace10 f
+                ON f.actcod    = b.solmatactcodsol
+                AND f.actespcod = b.solmatactespcodsol
+            LEFT JOIN sgss.cmprs10 h
+                ON h.tipdocidenpercod  = b.solmattipdocidenpercod
+                AND h.perasisdocidennum = b.solmatperasisdocidennum
+            LEFT JOIN sgss.fmmat10 m
+                ON m.matcod = t.matcod
+            LEFT JOIN sgss.fmtmo10 k
+                ON k.tipmovcod = t.tipmovcod
+            LEFT JOIN sgss.fmtda10 z
+                ON z.docalmcod = t.docalmcod
+            WHERE t.oricenasicod = '1'
+            AND t.movmatdocfec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            AND t.movmatdocfec <  TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+            AND t.matcod LIKE '01%'
+            AND g.almcod = '02'
+            GROUP BY
+                a.cenasicod,
+                TO_CHAR(t.movmatdocfec,'YYYYMM'),
+                g.almcod,
+                t.movmatarehoscod,
+                t.movmatservhoscod,
+                t.movmatactcod,
+                t.movmatactespcod,
+                b.actmednum,
+                h.perasisdocidennum,
+                t.tipmovcod,
+                t.movmatdocfec,
+                t.docalmcod,
+                b.solmatdocnum,
+                t.matcod,
+                m.uniatecod,
+                t.movmatusucrecod,
+                t.movmatcrefec,
+                t.movmatprepro,
+                t.movmatdocrefnum
+
+    """
+
+    print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
+    df = pd.read_sql(query, conn_oracle)
+    print(f"Datos extraídos: {len(df)} filas.")
+
+    if df.empty:
+        print("No hay datos para este mes.")
+        continue
+
+    df.columns = df.columns.str.lower()
+
+    # ==============================
+    # TRUNCAR PARTICIÓN DESTINO
+    # ==============================
+    print(f"Truncando partición destino: {tabla_destino}...")
+    try:
+        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
+        print(f"Tabla {tabla_destino} truncada correctamente.")
+    except Exception as e:
+        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
+        continue  # Saltar este mes si no existe la partición
+
+    # Guardamos el DataFrame en un buffer CSV en memoria
+    csv_buffer = StringIO()
+    df.to_csv(csv_buffer, index=False, header=False)
+    csv_buffer.seek(0)
+
+    # Usamos COPY para cargar datos a PostgreSQL
+    print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
+    try:
+        cursor_pg.copy_expert(
+            sql=f"COPY {tabla_destino} ({', '.join(df.columns)}) FROM STDIN WITH CSV",
+            file=csv_buffer
+        )
+        print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")
+    except Exception as e:
+        print(f"Error al cargar mes {start_mes.strftime('%Y-%m')}: {e}")
+
+# ==============================
+# 7. Cerramos conexiones
+# ==============================
+print("\nCerrando conexiones a bases de datos...")
+cursor_pg.close()
+conn_pg.close()
+conn_oracle.close()
+print("Conexiones cerradas. Proceso finalizado.")
+
+
+

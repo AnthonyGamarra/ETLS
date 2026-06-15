@@ -72,7 +72,7 @@ print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 6, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 6, 30)
 
 # ==============================
@@ -93,6 +93,9 @@ to_char(z.atenproproperfec,'yyyy') AS ANIO,
 to_char(z.atenproproperfec,'yyyymm') AS PERIODO,
 b.servhoscod                         AS COD_SERVICIO,
 a.atenproperasisdocidennum           AS DNI_MEDICO,
+p.grupocupcod                     AS GRUPO_OCUPACIONAL,
+p.perespcod1                       AS ESPECIALIDAD_PER,
+p.perespcod2                       AS ESPECIALIDAD2_PER,
 s.perdocidennum                      AS DOC_PACIENTE,
 s.pertipdocidencod 	                  AS TIP_DOC_PACIENTE,
 (FLOOR(MONTHS_BETWEEN(z.atenproproperfec,s.pernacfec) / 12))                 AS ANIO_EDAD,
@@ -124,7 +127,8 @@ to_char(a.atenprdcrefec,'dd/mm/yyyy')                                        AS 
 to_char(a.atenprdcrefec,'hh24:mi')                                           AS HORA_REG,
 a.atenprdusumodcod                                                           AS USU_MODIF,
 to_char(a.atenprdmodfec,'dd/mm/yyyy')                                        AS FECH_MODIF,
-to_char(a.atenprdmodfec,'hh24:mi')                                           AS HORA_MODIF
+to_char(a.atenprdmodfec,'hh24:mi')                                           AS HORA_MODIF,
+a.atenproarehoscod    AS AREA_HOSP
 from SGSS.ctapd10 a
 left outer join SGSS.ctapr10 z on z.atenprooricenasicod = a.atenprooricenasicod
                               and z.atenprocenasicod   = a.atenprocenasicod
@@ -178,7 +182,7 @@ left outer join SGSS.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
                           and pr.properturhorini    = ct.proconturhorini
                           and pr.properturhorfin    = ct.proconturhorfin
 where z.atenproestregcod    = '1'
-   and a.atenproarehoscod    in ('01','02','03','04','05','06')
+    and a.atenproarehoscod    in ('01','02','03','04','05','06')
     AND z.atenproproperfec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
     AND z.atenproproperfec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
     """

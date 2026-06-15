@@ -64,7 +64,7 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 6, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 6, 30)
 
 # ==============================
@@ -138,8 +138,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
             WHERE v1.atenhosoricenasicod = ho.ATENHOSORICENASICOD
             AND v1.atenhoscenasicod    = ho.ATENHOSCENASICOD
             AND v1.atenhosactmednum    = ho.ATENHOSACTMEDNUM)                                 AS ULTSECUENATEN,
-            decode(cam.camflgfun, '0','HOSPIT','1','UCI','2','UCIN','3','UVI','4','EMERG','5',
-            'URGEN','6','SH-TRAU','7','ALOJ-CONJ','8','RECU-CQX',' ') AS UBICACION,
+            decode(cam.camflgfun, '0','HOSPITALIZACION','1','UCI','2','UCIN','3','UVI','4','EMERGENCIA','5',
+            'URGENCIA','6','SHOCK_TRAUMA','7','ALOJAMIENTO-CONJUNTO','8','RECU-CQX','9', 'CENTRO_OBSTETRICO','A','CRIP','B', 'HOSPIT_CONTRATADA') AS UBICACION,
             t.HOSPEGRORICENASIREFCOD                                        as COD_CENTRO_REF,
             t.HOSPEGRCENASIREFCOD                                           AS CENTRO_REF,
             u1.AMeAreHosCod                                                          AS AREA_ORIGEN

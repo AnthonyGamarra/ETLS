@@ -71,7 +71,7 @@ hoy = datetime.today()
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-start_date = datetime(2026, 6, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 6, 30)
 
 # ==============================
@@ -92,6 +92,9 @@ to_char(a.ATEPROPROPERFEC,'yyyy') AS ANIO,
 to_char(a.ATEPROPROPERFEC,'yyyymm') AS PERIODO,
 b.servhoscod                         AS COD_SERVICIO,
 a.ATEPROPERASISDOCIDENNUM           AS DNI_MEDICO,
+p.grupocupcod                     AS GRUPO_OCUPACIONAL,
+p.perespcod1                       AS ESPECIALIDAD_PER,
+p.perespcod2                       AS ESPECIALIDAD2_PER,
 s.perdocidennum                      AS DOC_PACIENTE,
 s.pertipdocidencod 	                  AS TIP_DOC_PACIENTE,
 TO_CHAR(FLOOR(MONTHS_BETWEEN(a.ATEPROPROPERFEC,s.pernacfec) / 12))          AS ANIO_EDAD,
@@ -122,7 +125,8 @@ to_char(a.ATEPROCREFEC,'dd/mm/yyyy')                                        AS F
 to_char(a.ATEPROCREFEC,'hh24:mi')                                           AS HORA_REG,
 a.ATEPROUSUMODCOD                                                           AS USU_MODIF,
 to_char(a.ATEPROMODFEC,'dd/mm/yyyy')                                        AS FECH_MODIF,
-to_char(a.ATEPROMODFEC,'hh24:mi')                                           AS HORA_MODIF
+to_char(a.ATEPROMODFEC,'hh24:mi')                                           AS HORA_MODIF,
+a.ATEPROAREHOSCOD    AS AREA_HOSP
 from SGSS.CTHPR10 a
 left outer join SGSS.ctHPD10 z on z.ATEPROORICENASICOD = a.ATEPROORICENASICOD
                               and z.ATEPROCENASICOD   = a.ATEPROCENASICOD

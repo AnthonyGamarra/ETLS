@@ -64,7 +64,7 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 6, 1)
+start_date = datetime(2026, 1, 1)
 end_date = datetime(2026, 6, 30)
 
 # ==============================
@@ -141,6 +141,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                                     and k.infopecenasicod    = a.infopecenasicod
                                     and k.infopesolopenum    = a.infopesolopenum
                                     and k.infopesecnum       = a.infopesecnum
+                                    AND k.INFOPEPERORDNUM = '1'
             left outer join sgss.qtsop10 c on c.solopeoricenasicod  = a.infopeoricenasicod
                                     and c.solopecenasicod     = a.infopecenasicod
                                     and c.solopenum           = a.infopesolopenum
@@ -160,7 +161,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
             where
             a.infopefec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
             and a.infopefec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
-            AND k.INFOPEPERORDNUM = '1'
+            
 
     """
 

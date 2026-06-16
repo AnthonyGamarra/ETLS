@@ -2,28 +2,44 @@
 ----------------------------------------------------------------------------------------------------
 
 CREATE TABLE dssge.dw_farm (
-	   anio varchar(6),
-	   periodo varchar(6),
-       cod_centro varchar(10),
-       cod_farmacia varchar(10),
-       cod_area varchar(10),
-       cod_servicio varchar(10),
-       cod_actividad varchar(10),
-       cod_subactividad varchar(10),
-       num_actomed numeric,
-       dni_medico varchar(15),
-       cod_movimiento varchar(10),
-       fecha_doc_mov varchar(10),
-       tipodocumento varchar(10),
-       num_receta numeric,
-       cod_medic varchar(10),
-       unidad varchar(10),
-       cantidad varchar(10),
-       usuario_registro varchar(10),
-       fecha_registro varchar(10),
-       hora_registro varchar(10),
-       precio numeric,
-       numreferencia varchar(20)
+    ANIO                    VARCHAR(4),
+    PERIODO                 VARCHAR(6),
+    COD_CENTRO              VARCHAR(10),
+    COD_AREA                VARCHAR(10),
+    COD_TOPICO              VARCHAR(20),
+    COD_SERVICIO            VARCHAR(20),
+    COD_ACTIVIDAD           VARCHAR(20),
+    COD_SUBACTIVIDAD        VARCHAR(20),
+    NUM_ACTOMED             NUMBER,
+    DNI_PROFESIONAL         VARCHAR(20),
+    CMP                     VARCHAR(20),
+    FECHA_SOLICITUD         VARCHAR(10),
+    NUM_RECETA              VARCHAR(30),
+    COD_MEDICAMENTO         VARCHAR(30),
+    CANT_SOLICITUD          NUMERIC,
+    CANT_ATENDIDA           NUMERIC,
+    UNIDAD                  VARCHAR(20),
+    DURACION_MED            NUMBER,
+    COD_DX                  VARCHAR(20),
+    AUTOGENERADO            VARCHAR(30),
+    DNI                     VARCHAR(20),
+    SEXO                    CHAR(1),
+    EDAD_ANIO               NUMBER,
+    MESES                   NUMBER,
+    DIAS                    NUMBER,
+    COD_FARMACIA            VARCHAR(20),
+    CODUSU_DESPACHO         VARCHAR(30),
+    COD_GRPOCUPACIONAL_DESP VARCHAR(20),
+    FECHA_DESPACHO          VARCHAR(20),
+    HORA_DESPACHO           VARCHAR(20),
+    NUMRECETMANUAL          VARCHAR(30),
+    COD_ESTACION            VARCHAR(20),
+    PRECIO                  NUMERIC,
+    COD_TIPO_SEGURO         VARCHAR(10),
+    COD_TIPO_PARENTESCO     VARCHAR(10),
+    COD_TIPO_PACIENTE       VARCHAR(10),
+    COD_PRIORIDAD           VARCHAR(10),
+    TIPO_MOVIMIENTO         VARCHAR(50)
 ) PARTITION BY LIST (ANIO);
 
 -- Crear partición anual para 2026
@@ -52,7 +68,7 @@ FOR VALUES IN ('2022')
 PARTITION BY LIST (PERIODO);
 
 -- Crear partición anual para 2021
-CREATE TABLE dssge.dw_hosp_v2_2021 PARTITION OF dssge.dw_hosp_v2
+CREATE TABLE dssge.dw_farm_2021 PARTITION OF dssge.dw_farm
 FOR VALUES IN ('2021')
 PARTITION BY LIST (PERIODO);
 

@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 3, 31)
+start_date = datetime(2025, 1, 1)
+end_date = datetime(2025, 1, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes en bloques semanales
@@ -91,6 +91,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 SELECT
                 TO_CHAR(t.movmatdocfec,'YYYY')    AS anio,
                 TO_CHAR(t.movmatdocfec,'YYYYMM')    AS periodo,
+                t.oricenasicod                                                AS  COD_ORICENTRO,
                 t.cenasicod                                                AS  COD_CENTRO,
                 T.MOVMATAREHOSCOD                                                             AS COD_AREA,
                 T.MOVMATSERVHOSCOD                                                            AS COD_SERVICIO,

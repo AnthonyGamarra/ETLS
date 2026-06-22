@@ -53,8 +53,6 @@ elif current_month == 2:
 else:
     months_to_process = [(current_year, current_month - 2), (current_year, current_month - 1)]
 
-print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-
 table_name = "dwsge.dwe_consulta_externa_no_medicas"
 
 

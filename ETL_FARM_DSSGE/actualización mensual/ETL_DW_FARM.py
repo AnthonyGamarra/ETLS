@@ -61,8 +61,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2025, 1, 1)
-end_date = datetime(2025, 1, 31)
+start_date = datetime(2019, 1, 1)
+end_date = datetime(2024, 12, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes en bloques semanales
@@ -89,44 +89,44 @@ for start_mes, end_mes in month_range(start_date, end_date):
 
         query = f"""
                 SELECT
-                TO_CHAR(t.movmatdocfec,'YYYY')    AS anio,
-                TO_CHAR(t.movmatdocfec,'YYYYMM')    AS periodo,
-                t.oricenasicod                                                AS  COD_ORICENTRO,
-                t.cenasicod                                                AS  COD_CENTRO,
-                T.MOVMATAREHOSCOD                                                             AS COD_AREA,
-                T.MOVMATSERVHOSCOD                                                            AS COD_SERVICIO,
-                T.MOVMATACTCOD                                                                AS COD_ACTIVIDAD,
-                T.MOVMATACTESPCOD                                                             AS COD_SUBACTIVIDAD,
-                fc.actmednum                                           AS NUM_ACTOMED,
-                H.perasisdocidennum                                    AS DNI_PROFESIONAL,
-                H.perasisprocolcod                                     AS CMP,
-                to_char(fc.solmatdocfec,'dd/mm/yyyy')                  AS FECHA_SOLICITUD,
-                fc.solmatdocnum                                        AS NUM_RECETA,
-                t.matcod                                               AS COD_MEDICAMENTO,
-                fd.solmadcan                                           AS CANT_SOLICITUD,
-                --fd.solmadate                                           AS CANT_ATENDIDA,
+                TO_CHAR(t.movmatdocfec,'YYYY')                               AS anio,
+                TO_CHAR(t.movmatdocfec,'YYYYMM')                             AS periodo,
+                t.oricenasicod                                               AS  COD_ORICENTRO,
+                t.cenasicod                                                  AS  COD_CENTRO,
+                T.MOVMATAREHOSCOD                                            AS COD_AREA,
+                T.MOVMATSERVHOSCOD                                           AS COD_SERVICIO,
+                T.MOVMATACTCOD                                               AS COD_ACTIVIDAD,
+                T.MOVMATACTESPCOD                                            AS COD_SUBACTIVIDAD,
+                fc.actmednum                                                 AS NUM_ACTOMED,
+                H.perasisdocidennum                                          AS DNI_PROFESIONAL,
+                H.perasisprocolcod                                           AS CMP,
+                to_char(fc.solmatdocfec,'dd/mm/yyyy')                        AS FECHA_SOLICITUD,
+                fc.solmatdocnum                                              AS NUM_RECETA,
+                t.matcod                                                     AS COD_MEDICAMENTO,
+                fd.solmadcan                                                 AS CANT_SOLICITUD,
+                --fd.solmadate                                               AS CANT_ATENDIDA,
                 decode(t.movmattiptrncod,
                     '2', (t.movmatcan),
-                    '1', ((t.movmatcan) * -1))                      as CANT_ATENDIDA,
-                k.uniatecod                                            AS UNIDAD,
-                fd.solmaddiascan                                       AS DURACION_MED,
-                fd.solmaddiagcod                                       AS COD_DX,
-                c.perautcod                                            AS AUTOGENERADO,
-                c.perdocidennum                                        AS DNI,
+                    '1', ((t.movmatcan) * -1))                               AS CANT_ATENDIDA,
+                k.uniatecod                                                  AS UNIDAD,
+                fd.solmaddiascan                                             AS DURACION_MED,
+                fd.solmaddiagcod                                             AS COD_DX,
+                c.perautcod                                                  AS AUTOGENERADO,
+                c.perdocidennum                                              AS DNI,
                 decode(c.persexocod,'1','M','0','F','')                      AS SEXO,
                 (FLOOR(MONTHS_BETWEEN(t.movmatdocfec,c.pernacfec) / 12))     AS EDAD_ANIO,
                 (FLOOR(MOD(MONTHS_BETWEEN(t.movmatdocfec,c.pernacfec), 12))) AS MESES,
                 g.almcod                                                     AS COD_FARMACIA,
                 t.movmatusucrecod                                            AS CODUSU_DESPACHO,
-                pe.grupocupcod                                            AS COD_GRPOCUPACIONAL_DESP,
+                pe.grupocupcod                                               AS COD_GRPOCUPACIONAL_DESP,
                 to_char(t.movmatcrefec,'dd/mm/yyyy')                         AS FECHA_DESPACHO,
                 to_char(t.movmatcrefec,'hh24:mi')                            AS HORA_DESPACHO,
                 fc.solmatsicrecenum                                          AS NUMRECETMANUAL,
-                j.almmatprepro                                 AS PRECIO,
-                c.pertipsegcod           AS COD_TIPO_SEGURO,
-                c.pertipoparecod     AS COD_TIPO_PARENTESCO,
-                am.actmedtipopacicod   AS COD_TIPO_PACIENTE,
-                k1.TIPMOVCOD                                   AS TIPO_MOVIMIENTO
+                j.almmatprepro                                               AS PRECIO,
+                c.pertipsegcod                                               AS COD_TIPO_SEGURO,
+                c.pertipoparecod                                             AS COD_TIPO_PARENTESCO,
+                am.actmedtipopacicod                                         AS COD_TIPO_PACIENTE,
+                k1.TIPMOVCOD                                                 AS TIPO_MOVIMIENTO
                 from sgss.ftmma10 t
                 left outer join sgss.ftsmd10 fd  on fd.oricenasicod = t.oricenasicod
                                         and fd.cenasicod    = t.cenasicod
@@ -163,7 +163,6 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 AND t.oricenasicod  = '1'
                 AND t.movmatdocfec >= TO_DATE('{week_start.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
                 AND t.movmatdocfec <  TO_DATE('{(week_end + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-
         """
 
         print(f"Ejecutando query para semana {week_num} del mes {start_mes.strftime('%Y-%m')} en Oracle...")

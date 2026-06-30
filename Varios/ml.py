@@ -1,6 +1,4 @@
-# =========================================
 # 1. LIBRERÍAS
-# =========================================
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
@@ -14,15 +12,13 @@ from sklearn.metrics import classification_report, confusion_matrix, roc_auc_sco
 import joblib
 
 
-# =========================================
+
 # 2. CONEXIÓN A POSTGRESQL
-# =========================================
 engine = create_engine("postgresql://postgres:4dm1n@10.0.29.117:5433/DW_ESTADISTICA")
 
 
-# =========================================
+
 # 3. CARGA DE DATOS (CONTROLADA)
-# =========================================
 query = """
 (
 SELECT *
@@ -44,9 +40,8 @@ df = pd.read_sql(query, engine)
 print("Filas cargadas:", df.shape)
 
 
-# =========================================
+
 # 4. LIMPIEZA BÁSICA
-# =========================================
 df = df.dropna()
 
 df['anio_edad'] = pd.to_numeric(df['anio_edad'], errors='coerce')
@@ -55,9 +50,8 @@ df['anio_edad'] = pd.to_numeric(df['anio_edad'], errors='coerce')
 df = df[(df['anio_edad'] > 0) & (df['anio_edad'] < 110)]
 
 
-# =========================================
+
 # 5. DEFINIR FEATURES Y TARGET
-# =========================================
 target = 'desercion'
 
 features = [
@@ -74,9 +68,8 @@ X = df[features]
 y = df[target]
 
 
-# =========================================
+
 # 6. TRAIN / TEST SPLIT
-# =========================================
 X_train, X_test, y_train, y_test = train_test_split(
     X, y,
     test_size=0.2,
@@ -85,9 +78,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-# =========================================
 # 7. PREPROCESAMIENTO
-# =========================================
 categorical = ['sexo', 'cod_subactividad', 'cod_servicio']
 numerical = [
     'anio_edad',
@@ -104,9 +95,7 @@ preprocess = ColumnTransformer(
 )
 
 
-# =========================================
 # 8. MODELO 1: LOGISTIC REGRESSION
-# =========================================
 model_lr = Pipeline(steps=[
     ('preprocess', preprocess),
     ('classifier', LogisticRegression(max_iter=1000))
@@ -123,9 +112,7 @@ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_lr))
 print("ROC AUC:", roc_auc_score(y_test, y_prob_lr))
 
 
-# =========================================
 # 9. MODELO 2: RANDOM FOREST
-# =========================================
 model_rf = Pipeline(steps=[
     ('preprocess', preprocess),
     ('classifier', RandomForestClassifier(
@@ -146,9 +133,7 @@ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_rf))
 print("ROC AUC:", roc_auc_score(y_test, y_prob_rf))
 
 
-# =========================================
 # 10. AJUSTE DE UMBRAL (NEGOCIO)
-# =========================================
 threshold = 0.3  # captura más desertores
 
 y_pred_custom = (y_prob_rf > threshold).astype(int)
@@ -157,9 +142,7 @@ print("\n===== Random Forest (Threshold 0.3) =====")
 print(classification_report(y_test, y_pred_custom))
 
 
-# =========================================
 # 11. GUARDAR RESULTADOS
-# =========================================
 df_result = X_test.copy()
 df_result['real'] = y_test.values
 df_result['prob_desercion'] = y_prob_rf
@@ -169,9 +152,7 @@ df_result['prediccion'] = y_pred_custom
 df_result.to_csv("predicciones_desercion.csv", index=False)
 
 
-# =========================================
 # 12. EJEMPLO DE PREDICCIÓN NUEVA
-# =========================================
 nuevo = pd.DataFrame({
     'anio_edad': [25],
     'sexo': ['M'],

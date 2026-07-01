@@ -52,6 +52,22 @@ CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023 PARTITION OF dwsge.dwe
 FOR VALUES IN ('2023')
 PARTITION BY LIST (PERIODO);
 
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022 PARTITION OF dwsge.dwe_consulta_externa_homologacion 
+FOR VALUES IN ('2022')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021 PARTITION OF dwsge.dwe_consulta_externa_homologacion 
+FOR VALUES IN ('2021')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020 PARTITION OF dwsge.dwe_consulta_externa_homologacion 
+FOR VALUES IN ('2020')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019 PARTITION OF dwsge.dwe_consulta_externa_homologacion 
+FOR VALUES IN ('2019')
+PARTITION BY LIST (PERIODO);
+
 CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2026_01 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2026 FOR VALUES IN ('202601');
 CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2026_02 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2026 FOR VALUES IN ('202602');
 CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2026_03 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2026 FOR VALUES IN ('202603');
@@ -91,18 +107,70 @@ CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2024_10 PARTITION OF dwsge.
 CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2024_11 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2024 FOR VALUES IN ('202411');
 CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2024_12 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2024 FOR VALUES IN ('202412');
 
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_01 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202401');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_02 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202402');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_03 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202403');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_04 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202404');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_05 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202405');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_06 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202406');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_07 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202407');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_08 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202408');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_09 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202409');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_10 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202410');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_11 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202411');
-CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_12 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202412');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_01 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202301');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_02 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202302');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_03 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202303');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_04 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202304');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_05 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202305');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_06 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202306');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_07 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202307');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_08 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202308');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_09 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202309');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_10 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202310');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_11 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202311');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2023_12 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2023 FOR VALUES IN ('202312');
+
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_01 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202201');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_02 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202202');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_03 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202203');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_04 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202204');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_05 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202205');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_06 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202206');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_07 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202207');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_08 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202208');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_09 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202209');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_10 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202210');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_11 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202211');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2022_12 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2022 FOR VALUES IN ('202212');
+
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_01 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202101');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_02 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202102');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_03 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202103');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_04 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202104');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_05 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202105');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_06 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202106');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_07 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202107');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_08 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202108');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_09 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202109');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_10 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202110');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_11 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202111');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2021_12 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2021 FOR VALUES IN ('202112');
+
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_01 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202001');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_02 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202002');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_03 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202003');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_04 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202004');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_05 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202005');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_06 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202006');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_07 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202007');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_08 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202008');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_09 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202009');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_10 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202010');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_11 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202011');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2020_12 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2020 FOR VALUES IN ('202012');
+
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_01 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201901');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_02 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201902');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_03 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201903');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_04 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201904');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_05 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201905');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_06 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201906');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_07 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201907');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_08 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201908');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_09 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201909');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_10 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201910');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_11 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201911');
+CREATE TABLE dwsge.dwe_consulta_externa_homologacion_2019_12 PARTITION OF dwsge.dwe_consulta_externa_homologacion_2019 FOR VALUES IN ('201912');
 ------------------------------------------------------------------------------------------------
 
 CREATE TABLE dwsge.dwe_cl10 

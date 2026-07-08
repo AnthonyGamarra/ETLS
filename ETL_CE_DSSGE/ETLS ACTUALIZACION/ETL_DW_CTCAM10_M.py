@@ -68,8 +68,8 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 6, 1)
-end_date = datetime(2026, 6, 30)
+start_date = datetime(2026, 7, 1)
+end_date = datetime(2026, 7, 31)
 
 
 # ==============================

@@ -57,7 +57,7 @@ print(f"\nInicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 table_name = f"dwsge.dwe_hosp_egresos"
 
 
-for mes in range(6,7):
+for mes in range(7,8):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:

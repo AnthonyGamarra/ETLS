@@ -77,8 +77,8 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 7, 31)
+start_date = datetime(2026, 5, 1)
+end_date = datetime(2026, 5, 31)
 
 
 # ==============================
@@ -90,47 +90,68 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
 
     query = f"""
-    SELECT to_char(citambcrefec, 'yyyy') as anio,
-           to_char(citambcrefec, 'yyyymm') as periodo,
-           citambproconoricenasicod as cod_oricentro,
-           citambproconcenasicod  as cod_centro,
-           citambnum as acto_med,
-           citambpacsecnum as pac_sec,
-           tipocitacod as cod_tipo_cita,
-           EstCitOtoCod AS cod_cita_otorgar,
-           motelicitcod as cod_mot_eli,
-           citambsolfec as fecha_solicitud,
-           citambcrefec as fecha_creacion,
-           citambarehoscod as cod_area,
-           citambservhoscod as cod_servicio,
-           citambactcod as cod_actividad,
-           citambactespcod as cod_subactividad,
-           citambtipdocidenpercod as cod_tipdoc_medico,
-           citambperasisdocidennum as cod_doc_medico,
-           citambcrefec as fecha_analisis,
-           citambproconfec as fecha_cita,
-           citambmodfec as fecha_modificacion,
-           case
-               when citambrep = '1' then citambmodfec
-               else citambproconfec end as fecha_ultima_modificacion,
-           citambproconturhorini as horaini,
-           citambproconturhorfin as horafin,
-           estcitcod as cod_estado_cita,
-           CondCitaCod as cod_condicion_cita,
-           n.tipopacicod as cod_tipo_paciente,
-            d.perdocidennum                     as doc_paciente,
-            d.PERTIPDOCIDENCOD                 as cod_tipdoc_paciente,
-            k.actmededadaten                    as anio_edad,
-            decode(d.persexocod, '1', 'M', '0', 'F', '')       AS sexo
-
-    FROM SGSS.ctcam10
-    left outer join sgss.cmame10 k on citamboricenasicod  = k.oricenasicod
-                         and citambcenasicod     = k.cenasicod
-                         and citambnum           = k.actmednum
-    left outer join sgss.cmper10 d on k.actmedpacsecnum       = d.persecnum
-    left outer join sgss.cbtpc10 n on k.actmedtipopacicod       = n.tipopacicod
-    WHERE citambcrefec >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
-      AND citambcrefec < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+    WITH datos_base AS (
+        SELECT citambproconoricenasicod as cod_oricentro,
+               citambproconcenasicod  as cod_centro,
+               citambnum as acto_med,
+               citambpacsecnum as pac_sec,
+               tipocitacod as cod_tipo_cita,
+               EstCitOtoCod AS cod_cita_otorgar,
+               motelicitcod as cod_mot_eli,
+               citambsolfec as fecha_solicitud,
+               citambcrefec as fecha_creacion,
+               citambarehoscod as cod_area,
+               citambservhoscod as cod_servicio,
+               citambactcod as cod_actividad,
+               citambactespcod as cod_subactividad,
+               citambtipdocidenpercod as cod_tipdoc_medico,
+               citambperasisdocidennum as cod_doc_medico,
+               citambproconfec as fecha_cita,
+               citambmodfec as fecha_modificacion,
+               case
+                   when citambrep = '1' then citambmodfec
+                   else citambproconfec end as fecha_ultima_modificacion,
+               citambproconturhorini as horaini,
+               citambproconturhorfin as horafin,
+               estcitcod as cod_estado_cita,
+               tipocitacod as cod_tipo_cita,
+               n.tipopacicod as cod_tipo_paciente,
+                d.perdocidennum                     as doc_paciente,
+                d.PERTIPDOCIDENCOD                 as cod_tipdoc_paciente,
+                k.actmededadaten                    as anio_edad,
+                decode(d.persexocod, '1', 'M', '0', 'F', '')       AS sexo,
+                -- Fecha dinámica que define tanto el filtro del mes como el periodo/partición destino:
+                --   * si citambsolfec = '0001-01-01' (fecha nula/centinela) -> usar citambcrefec
+                --   * si citambsolfec < citambcrefec                       -> usar citambcrefec
+                --   * en cualquier otro caso                               -> usar citambsolfec
+                case
+                    when citambsolfec = TO_DATE('0001-01-01', 'YYYY-MM-DD') then citambcrefec
+                    when citambsolfec < citambcrefec then citambcrefec
+                    else citambsolfec
+                end as fecha_filtro
+        FROM SGSS.ctcam10
+        left outer join sgss.cmame10 k on citamboricenasicod  = k.oricenasicod
+                             and citambcenasicod     = k.cenasicod
+                             and citambnum           = k.actmednum
+        left outer join sgss.cmper10 d on k.actmedpacsecnum       = d.persecnum
+        left outer join sgss.cbtpc10 n on k.actmedtipopacicod       = n.tipopacicod
+    ),
+    base AS (
+        SELECT to_char(fecha_filtro, 'yyyy') as anio,
+               to_char(fecha_filtro, 'yyyymm') as periodo,
+               datos_base.*
+        FROM datos_base
+    )
+    SELECT anio, periodo, cod_oricentro, cod_centro, acto_med, pac_sec,
+           cod_tipo_cita, cod_cita_otorgar, cod_mot_eli, fecha_solicitud,
+           fecha_creacion, cod_area, cod_servicio, cod_actividad, cod_subactividad,
+           cod_tipdoc_medico, cod_doc_medico, fecha_cita, fecha_modificacion,
+           fecha_ultima_modificacion, horaini, horafin, cod_estado_cita,
+           cod_tipo_paciente, doc_paciente, cod_tipdoc_paciente, anio_edad, sexo,
+           fecha_filtro as fecha_analisis
+    FROM base
+    WHERE fecha_filtro >= TO_DATE('{start_mes.strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
+      AND fecha_filtro < TO_DATE('{(end_mes + timedelta(days=1)).strftime('%d-%m-%Y')}', 'DD-MM-YYYY')
     ORDER BY periodo ASC
     """
 

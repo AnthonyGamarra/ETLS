@@ -129,7 +129,6 @@ for mes in range(7, 8):
             cur_dst.execute(actualizacion)
             conn_dst.commit()
             cur_dst.close()
-
             print(f"Carga con COPY completada mes {mes_str}: filas totales cargadas {len(df)}")
 
     except Exception as e:

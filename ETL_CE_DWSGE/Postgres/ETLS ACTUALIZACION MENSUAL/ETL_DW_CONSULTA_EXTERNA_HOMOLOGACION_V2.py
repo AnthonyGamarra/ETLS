@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year
+anio = datetime.now().year - 4
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year

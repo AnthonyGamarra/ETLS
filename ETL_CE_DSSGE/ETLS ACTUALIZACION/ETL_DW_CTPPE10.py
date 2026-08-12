@@ -1,6 +1,6 @@
 import os
 import oracledb
-import pandas as pd
+import polars as pl
 from io import StringIO
 import psycopg2
 from dotenv import load_dotenv
@@ -62,8 +62,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 7, 1)
-end_date = datetime(2026, 7, 31)
+start_date = datetime(2026, 8, 1)
+end_date = datetime(2026, 8, 30)
 
 print(f"\n--- Iniciando extracción mes a mes entre {start_date.strftime('%Y-%m-%d')} y {end_date.strftime('%Y-%m-%d')} ---")
 start_time = datetime.now()
@@ -73,9 +73,11 @@ print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 # 6. Procesar mes a mes sin paginación
 # ==============================
 for start_mes, start_next_mes in month_range(start_date, end_date):
+    mes_start_time = datetime.now()
     anio = start_mes.strftime('%Y')
     mes = start_mes.strftime('%m')
     print(f"\nProcesando mes: {start_mes.strftime('%Y-%m')}")
+    print(f"🕒 Inicio del mes: {mes_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     query = f"""
     SELECT 
@@ -125,14 +127,16 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
-    df = pd.read_sql(query, conn_oracle)
-    print(f"Datos extraídos: {len(df)} filas.")
+    extraccion_start = datetime.now()
+    df = pl.read_database(query=query, connection=conn_oracle, infer_schema_length=None)
+    extraccion_time = datetime.now() - extraccion_start
+    print(f"Datos extraídos: {len(df)} filas. (tiempo de extracción: {extraccion_time})")
 
-    if df.empty:
+    if df.is_empty():
         print(f"No hay datos para el mes {start_mes.strftime('%Y-%m')}.")
         continue
 
-    df.columns = df.columns.str.lower()
+    df.columns = [c.lower() for c in df.columns]
 
         # Truncar la tabla particionada destino en PostgreSQL antes de la carga
     tabla_particion = f"dssge.sgss_ctppe10_{anio}_{mes}"
@@ -147,18 +151,28 @@ for start_mes, start_next_mes in month_range(start_date, end_date):
 
     # Guardamos el DataFrame en un buffer CSV en memoria
     csv_buffer = StringIO()
-    df.to_csv(csv_buffer, index=False, header=False)
+    df.write_csv(
+        csv_buffer,
+        include_header=False,
+        datetime_format="%Y-%m-%d %H:%M:%S",
+        date_format="%Y-%m-%d",
+    )
     csv_buffer.seek(0)
 
     print(f"Cargando datos a PostgreSQL para mes {start_mes.strftime('%Y-%m')}...")
+    carga_start = datetime.now()
     try:
         cursor_pg.copy_expert(
             sql=f"COPY dssge.sgss_ctppe10 ({', '.join(df.columns)}) FROM STDIN WITH CSV",
             file=csv_buffer
         )
-        print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente.")
+        carga_time = datetime.now() - carga_start
+        print(f"Mes {start_mes.strftime('%Y-%m')} cargado correctamente. (tiempo de carga: {carga_time})")
     except Exception as e:
         print(f"Error al cargar mes {start_mes.strftime('%Y-%m')}: {e}")
+
+    mes_end_time = datetime.now()
+    print(f"⏱️ Mes {start_mes.strftime('%Y-%m')} procesado en {mes_end_time - mes_start_time}")
 
 # ==============================
 # 7. Cerramos conexiones
@@ -168,3 +182,7 @@ cursor_pg.close()
 conn_pg.close()
 conn_oracle.close()
 print("Conexiones cerradas. Proceso finalizado.")
+
+end_time = datetime.now()
+print(f"\n🕒 Fin del ETL: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"⏱️ Tiempo total de procesamiento: {end_time - start_time}")

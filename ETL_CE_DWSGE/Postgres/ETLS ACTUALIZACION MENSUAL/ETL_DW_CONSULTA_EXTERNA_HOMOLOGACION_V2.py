@@ -38,7 +38,7 @@ conn_dst = psycopg2.connect(
     port=5433
 )
 
-anio = datetime.now().year - 4
+anio = datetime.now().year 
 start_time = datetime.now()
 today = datetime.today()
 current_year = today.year
@@ -58,7 +58,7 @@ table_name = "dwsge.dwe_consulta_externa_homologacion"
 fecha_act = "dwsge.fecha_act"
 time= datetime.now().strftime("'%Y-%m-%d %H:%M:%S'")
 
-for mes in range(7, 8):
+for mes in range(8, 9):
     mes_str = f"{mes:02d}"
     print(f"\nProcesando mes: {anio}-{mes_str}")
     try:

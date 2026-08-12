@@ -68,9 +68,6 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_time = datetime.now()
-print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-
 start_date = datetime(2026, 8, 1)
 end_date = datetime(2026, 8, 30)
 
@@ -86,70 +83,71 @@ for start_mes, end_mes in month_range(start_date, end_date):
 
     query = f"""
 select
-a.ATEPROORICENASICOD                  AS COD_ORICENTRO,
-a.ATEPROCENASICOD                   AS COD_CENTRO,
-to_char(a.ATEPROPROPERFEC,'yyyy') AS ANIO,
-to_char(a.ATEPROPROPERFEC,'yyyymm') AS PERIODO,
-b.servhoscod                         AS COD_SERVICIO,
-a.ATEPROPERASISDOCIDENNUM           AS DNI_MEDICO,
-p.grupocupcod                     AS GRUPO_OCUPACIONAL,
-p.perespcod1                       AS ESPECIALIDAD_PER,
-p.perespcod2                       AS ESPECIALIDAD2_PER,
-s.perdocidennum                      AS DOC_PACIENTE,
-s.pertipdocidencod 	                  AS TIP_DOC_PACIENTE,
-TO_CHAR(FLOOR(MONTHS_BETWEEN(a.ATEPROPROPERFEC,s.pernacfec) / 12))          AS ANIO_EDAD,
-decode(s.persexocod,'1','M','0','F','')                                      AS SEXO,
-c.pachisclinum                                                               AS H_C,
-m.tipsegcod                                                                  AS COD_TIPO_SEGURO,
-s.pertipoparecod                                     AS COD_TIPO_PARENTESCO,
-n.TIPOPACICOD                                                                 AS COD_TIPO_PACIENTE,
-to_char(t.citambsolfec, 'dd/mm/yyyy')                                        AS FECHA_SOLIC,
-to_char(a.ATEPROPROPERFEC, 'dd/mm/yyyy')                                    AS FECHA_ATEN,
-t.condcitacod                       AS COD_CONDICION_CITA,
-a.ATEPROACTMEDNUM                                                           AS ACTO_MED,
-z.ATEPRCPSCOD                                                              AS CODPROCED,
-z.ATEPRDCANT                                                                AS CANTPROCED,
-z1.cenasioricod                                                              AS COD_PRECEDENCIA,
-s.percenasiadscod                                                            AS CAS_ADSCRIPCION,
-ct.concod                                                                    AS COD_CONSULTORIO,
-t.citambactcod                                                               AS COD_ACTIVIDAD,
-t.citambactespcod                                                            AS COD_SUBACTIVIDAD,
-to_char(pr.properturhorini, 'hh24:mi')                                       AS horaini,
-to_char(pr.properturhorfin, 'hh24:mi')                                       AS horafin,
+t.citamboricenasicod                                           AS COD_ORICENTRO,
+t.citambcenasicod                                              AS COD_CENTRO,
+to_char(z.ATENODOATENFEC,'YYYYMM')                             AS PERIODO,
+to_char(z.ATENODOATENFEC,'YYYY')                               AS ANIO,
+to_char(z.ATENODOATENFEC,'hh24:mi')                            AS HORA_ATEN,
+t.CITAMBAREHOSCOD                                              as COD_AREA,
+t.citambservhoscod                                             AS COD_SERVICIO,       
+t.citambactcod                                                 AS COD_ACTIVIDAD,       
+t.citambactespcod                                              AS COD_SUBACTIVIDAD, 
+z.ATENODOCSECOD                                                AS COD_CARTERA, 
+z.CPSCOD                                                       AS COD_CPMS,
+t.CITAMBTIPDOCIDENPERCOD                                       AS COD_TIPDOC_MEDICO,
+t.citambperasisdocidennum                                      AS DNI_MEDICO,
+to_char(z.ATENODOATENFEC,'dd/mm/yyyy')                          AS FECHA_ATENCION,
+s.perautcod                                                    AS AUTOGENERADO,
+k.actmedpacsecnum                                              AS CMAME_PACSECNUM,
+s.pertipdocidencod                                             AS COD_TIPDOC_PACIENTE,
+s.perdocidennum                                                AS DOC_PACIENTE,
+(FLOOR(MONTHS_BETWEEN(t.citambproconfec,s.pernacfec)/12))      AS ANIO_EDAD,
+(FLOOR(MOD(MONTHS_BETWEEN(t.citambproconfec,s.pernacfec),12))) AS MESES,
+decode(s.persexocod,'1','M','0','F','')                        AS SEXO,
+c.pachisclinum                                                 AS H_C,
+ k.actmedtipsegcod                                             AS COD_TIP_SEGURO, 
+s.pertipoparecod                                               as COD_TIPO_PARENTESCO,
+k.actmedtipopacicod                                            AS COD_TIPO_PACIENTE,
+to_char(t.citambsolfec, 'dd/mm/yyyy')                          AS FECHA_SOLIC,
+to_char(t.citambproconfec, 'dd/mm/yyyy')                       AS FECHA_CITA,
+to_char(z.ATENODOCREFEC, 'dd/mm/yyyy')                         AS FECHA_REG,
+to_char(z.ATENODOCREFEC,'hh24:mi')                             AS HORA_REG,
+to_char(z.ATENODOMODFEC,'dd/mm/yyyy')                          AS FECHA_MODIF,
+t.citambnum                                                    AS ACTO_MED,
+z.ATENODOTIPCONCOD                                             AS COD_TIPO_CONSULTA,
+t.condcitacod                                                  AS COD_CONDICION_CITA,
+z.RESATENODOCOD                                                AS COD_RESULT_ATENCION,
+k.actmedestgrav                                                AS COD_TIPO_GRAVIDEZ,
+decode(k.actmedestpersercod, '1', 'N', '2', 'C', '3', 'R', '') AS NRC_SER,
+decode(k.actmedestperestcod, '1', 'N', '2', 'C', '3', 'R', '') AS NRC_EST,
+z.CENASIREFCOD                                                 AS CAS_REFERENCIA,
+s.percenasiadscod                                              AS CAS_ADSCRIPCION,
+ct.concod                                                      AS COD_CONSULTORIO,
+pr.properprohortot                                             AS TOTAL_HORAS,
+pr.tipohorprogcod                                              AS COD_TIP_PROGRAMACION,
+pr.propertipohordet                                            AS COD_TIPHORA,
+to_char(pr.properturhorini, 'hh24:mi')                         AS HORAINI,
+to_char(pr.properturhorfin, 'hh24:mi')                         AS HORAFIN,
 to_char(pr.properturhorini, 'hh24:mi') ||'-'||
-to_char(pr.properturhorfin, 'hh24:mi')                                       AS TURNO,
-k.actmedestgrav                    AS TIPO_GRAVIDEZ,
-s.perrucempnum                                                               AS NUM_RUC,
-a.ATEPROUSUCRECOD                                                          AS USU_REG,  
-to_char(a.ATEPROCREFEC,'dd/mm/yyyy')                                        AS FECH_REG,
-to_char(a.ATEPROCREFEC,'hh24:mi')                                           AS HORA_REG,
-a.ATEPROUSUMODCOD                                                           AS USU_MODIF,
-to_char(a.ATEPROMODFEC,'dd/mm/yyyy')                                        AS FECH_MODIF,
-to_char(a.ATEPROMODFEC,'hh24:mi')                                           AS HORA_MODIF,
-a.ATEPROAREHOSCOD    AS AREA_HOSP
-from SGSS.CTHPR10 a
-left outer join SGSS.ctHPD10 z on z.ATEPROORICENASICOD = a.ATEPROORICENASICOD
-                              and z.ATEPROCENASICOD   = a.ATEPROCENASICOD
-                              and z.ATEPROACTMEDNUM         = a.ATEPROACTMEDNUM
-                              AND z.ATEPRONUMSEC                       =a.ATEPRONUMSEC
-left outer join SGSS.cmame10 k on z.ATEPROORICENASICOD = k.oricenasicod
-                              and z.ATEPROCENASICOD   = k.cenasicod
-                              and z.ATEPROACTMEDNUM   = k.actmednum
-left outer join SGSS.cmtse10 m on k.actmedtipsegcod     = m.tipsegcod
-left outer join SGSS.cmper10 s on k.actmedpacsecnum     = s.persecnum
-left outer join SGSS.ctcam10 t on z.ATEPROORICENASICOD = t.citamboricenasicod
-                              and z.ATEPROCENASICOD   = t.citambcenasicod
-                              and z.ATEPROACTMEDNUM   = t.citambnum
-left outer join SGSS.cmcpp10 f on  z.ATEPRCPSCOD              = f.cpscod
-left outer join SGSS.cmsho10 b on a.ATEPROSERVHOSCOD          = b.servhoscod
-left outer join SGSS.cbtpc10 n on k.actmedtipopacicod          = n.tipopacicod
-left outer join SGSS.cmprs10 p on a.ATEPROTIPDOCIDENPERCOD    = p.tipdocidenpercod
-                              and a.ATEPROPERASISDOCIDENNUM  = p.perasisdocidennum
-left outer join SGSS.cmpac10 c on c.oricenasicod               = k.oricenasicod
-                              and c.cenasicod                 = k.cenasicod
-                              and c.pacsecnum                 = k.actmedpacsecnum
-LEFT OUTER JOIN SGSS.ctref10 z1 ON k.actmedorirefnum                = z1.refnum
-left outer join SGSS.ctpco10 ct on ct.proconoricenasicod = t.citambproconoricenasicod
+to_char(pr.properturhorfin, 'hh24:mi')                         AS TURNO,
+pr.PROPERTIPOPROGPERSCOD                                       AS COD_TIP_PROGRAMACION_PERS,
+pr.estprogcitcod                                               AS COD_ESTADO_PROGRAMACION,   
+pr.motsusprogcod                                               AS COD_MOTIVO_SUSPENSION
+from sgss.CTCAM10 t
+INNER JOIN     sgss.cmame10 k on t.citamboricenasicod = k.oricenasicod
+                        and t.citambcenasicod    = k.cenasicod
+                        and t.citambnum          = k.actmednum
+                        and K.ACTMEDATE          = '1' 
+INNER JOIN sgss.ctaod10 z on t.citamboricenasicod = z.atenodooricenasicod
+                         and t.citambcenasicod    = z.atenodocenasicod
+                         and t.citambnum          = z.atenodonum
+left outer join sgss.cmper10 s on k.actmedpacsecnum    = s.persecnum
+left outer join sgss.cmprs10 p on t.citambtipdocidenpercod  = p.tipdocidenpercod
+                         and t.citambperasisdocidennum = p.perasisdocidennum
+left outer join sgss.cmpac10 c on c.oricenasicod = k.oricenasicod
+                         and c.cenasicod    = k.cenasicod
+                         and c.pacsecnum    = k.actmedpacsecnum
+left outer join sgss.ctpco10 ct on ct.proconoricenasicod = t.citambproconoricenasicod
                           and ct.proconcenasicod   = t.citambcenasicod
                           and ct.proconarehoscod   = t.citambarehoscod
                           and ct.proconservhoscod  = t.citambservhoscod
@@ -160,7 +158,7 @@ left outer join SGSS.ctpco10 ct on ct.proconoricenasicod = t.citambproconoricena
                           and ct.proconfec               = t.citambproconfec
                           and ct.proconturhorini         = t.citambproconturhorini
                           and ct.proconturhorfin         = t.citambproconturhorfin
-left outer join SGSS.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
+left outer join sgss.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
                           and pr.cenasicod          = ct.proconcenasicod
                           and pr.arehoscod          = ct.proconarehoscod
                           and pr.servhoscod         = ct.proconservhoscod
@@ -171,10 +169,10 @@ left outer join SGSS.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
                           and pr.properfec          = ct.proconfec
                           and pr.properturhorini    = ct.proconturhorini
                           and pr.properturhorfin    = ct.proconturhorfin
-where a.ATEPROESTREGCOD    = '1'
-   and a.ATEPROAREHOSCOD    = '03'
-    AND a.ATEPROPROPERFEC >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
-    AND a.ATEPROPROPERFEC < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
+        WHERE z.ATENODOATENFEC >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
+            AND z.ATENODOATENFEC < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
+    AND t.estcitcod         = '4'
+    ORDER BY periodo ASC
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -188,7 +186,7 @@ where a.ATEPROESTREGCOD    = '1'
     df.columns = df.columns.str.lower()
 
     # Truncar la tabla particionada destino en PostgreSQL antes de la carga
-    tabla_particion = f"dssge.dw_proc_hos_{anio}_{mes}"
+    tabla_particion = f"dssge.dw_odonto_{anio}_{mes}"
     try:
         print(f"Truncando tabla particionada destino: {tabla_particion}...")
         cursor_pg.execute(f"TRUNCATE TABLE {tabla_particion};")

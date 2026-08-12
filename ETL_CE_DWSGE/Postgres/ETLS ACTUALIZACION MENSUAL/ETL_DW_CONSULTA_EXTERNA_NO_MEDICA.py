@@ -56,7 +56,7 @@ else:
 table_name = "dwsge.dwe_consulta_externa_no_medicas"
 
 
-for mes in range(7, 8):
+for mes in range(8, 9):
     mes_str = f"{mes:02d}" 
     print(f"\nProcesando mes: {anio}-{mes_str}")
     # Truncar partición del mes antes de cargar datos

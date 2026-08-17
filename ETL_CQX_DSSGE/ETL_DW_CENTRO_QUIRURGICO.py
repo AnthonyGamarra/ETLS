@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 8, 1)
-end_date = datetime(2026, 8, 30)
+start_date = datetime(2020, 1, 1)
+end_date = datetime(2024, 12, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -96,8 +96,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
             d.actmedpacsecnum 										 								AS cmame_pacsecnum,
             e.PERTIPDOCIDENCOD										 								AS COD_TIPDOC_PACIENTE,
             e.perdocidennum                                          								AS DOC_PACIENTE,
-            (FLOOR(MONTHS_BETWEEN(a.infopefec, e.pernacfec) / 12))                     				as ANIO_EDAD,
-            (FLOOR(MOD(MONTHS_BETWEEN(a.infopefec, e.pernacfec), 12)))                 				as MESES,       
+            (FLOOR(MONTHS_BETWEEN(a.infopefec, e.pernacfec) / 12))                     				as ANIO_EDAD,       
             decode(e.persexocod, '1', 'M', '0', 'F', '')                               				as SEXO, 
             d.actmedtipsegcod                                        								AS COD_TIP_SEGURO,
             e.pertipoparecod                                         								as COD_TIPO_PARENTESCO,
@@ -132,6 +131,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
             c.solopetipeveope                                                                		AS COD_TIPO_EVENTO,
             a.InfOpeHallDes                                                                         AS DESC_HALLAZGO,
             a.InfOpeProcDes                                                                         AS DESC_PROCEDIMIENTO
+            c.estopecod 																				AS COD_ESTADO_SOLICITUD, ----- suspendida = 3
             from sgss.qtioo10 t
             left outer join sgss.qtiop10 a on a.infopeoricenasicod = t.infopeoricenasicod
                                     and a.infopecenasicod    = t.infopecenasicod

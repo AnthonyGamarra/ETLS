@@ -65,7 +65,7 @@ print("Conexión a PostgreSQL establecida.")
 # 5. Parámetros de fechas
 # ==============================
 start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 7, 31)
+end_date = datetime(2026, 8, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -76,117 +76,54 @@ for start_mes, end_mes in month_range(start_date, end_date):
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
     start_mes_str = start_mes.strftime('%d-%m-%Y')
     end_mes_str = end_mes.strftime('%d-%m-%Y')
-    tabla_destino = f"dssge.sgss_qtsop10_{anio}_{mes}"
+    tabla_destino = f"dssge.dw_cq_sus_{anio}_{mes}"
     
+
     query = f"""
-    select 
-    to_char(solopeprofec, 'yyyymm')                    		 								as PERIODO,
-    to_char(solopeprofec, 'yyyy')                             								as ANIO,
-    solopeoricenasicod,
-    solopecenasicod,
-    solopenum,
-    solopefec,
-    solopeactmednum,
-    solopemedtipdocidenpercod,
-    solopemedperasisdocidennum,
-    solopeinfmed,
-    solopesolfec,
-    solopeprofec,
-    solopeprohor,
-    estfiscod,
-    estsopcod,
-    solopeestregcod,
-    solopeusucrecod,
-    solopecrefec,
-    solopeusumodcod,
-    solopemodfec,
-    solopecenquicod,
-    solopesalopecod,
-    solopeesttpo,
-    solopearehoscod,
-    solopeservhoscod,
-    solopeordnum,
-    solopeemecod,
-    solopesolarehoscod,
-    solopesolservhoscod,
-    conopecod,
-    solopeactmedopenum,
-    priopecod,
-    riequicod,
-    solopediashosprecan,
-    solopediashosposcan,
-    solopepredetdes,
-    solopereqadides,
-    motsopcod,
-    solopetipanecod,
-    soloperesexalabflg,
-    soloperiequiflg,
-    soloperieneuflg,
-    solopeconinfflg,
-    solopeordtraflg,
-    solopeevalpqxinf,
-    solopeevalpqxflg,
-    solopeevalpqxfec,
-    solopeevalpqxoricenasicod,
-    solopeevalpqxcenasicod,
-    solopeevalpqxactmednum,
-    solopetopemecod,
-    solopeatesecnum,
-    solopebuspacsecnum,
-    solopesolexafec,
-    soloperesexalabfec,
-    soloperiequifec,
-    soloperieneufec,
-    solopeevalpqxmedtipdoc,
-    solopeevalpqxmeddocnum,
-    solopediashospreflg,
-    solopediashosposflg,
-    solopereqprotflg,
-    solopereqprotdes,
-    solopetieprotflg,
-    solopetlffamnum,
-    solopesolexaflg,
-    solopesolexaimgflg,
-    rieneucod,
-    solopesopfec,
-    motboqxcod,
-    solopeboqxfec,
-    soloperesexaimgflg,
-    soloperesexaimgfec,
-    solopeconinffec,
-    solopeordtrafec,
-    solopesolexaimgfec,
-    solopeotrsopdes,
-    solopemedsusptipdoc,
-    solopemedsuspdocnum,
-    solopemedbajatipdoc,
-    solopemedbajadocnum,
-    solopeobsseginf,
-    solopeopefec,
-    solopealtfec,
-    solopeotrboqxdes,
-    solopehospfec,
-    solopeprotfec,
-    solopeproconfflg,
-    solopeproconffec,
-    solopeproconftipdoc,
-    solopeproconfdocnum,
-    solopehospflg,
-    solopeordintoricenasicod,
-    solopeordintcenasicod,
-    solopeordintnum,
-    solopehorqxdifflg,
-    solopeconinfaneflg,
-    solopeconinfanefec,
-    solopeconinfsanflg,
-    solopeconinfsanfec,
-    solopeconinfdesflg,
-    solopeconinfdesfec,
-    solopetipeveope
-       from sgss.qtsop10
-    where
-            solopeprofec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
-            and solopeprofec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
+            SELECT
+            to_char(T.Solopeprofec, 'yyyymm')                    		 								as PERIODO,
+            to_char(T.Solopeprofec, 'yyyy')                             								as ANIO,
+            T.SOLOPECENASICOD                         AS COD_CENTRO,
+            T.SOLOPESERVHOSCOD                        AS COD_SERV_PROCED,
+            E.PERAUTCOD                               AS AUTOGENERADO,
+            E.PERDOCIDENNUM                           AS DOC_PACIENTE,
+            D.ACTMEDEDADATEN                          AS EDAD,
+            M.TIPSEGCOD                               AS COD_TIPO_SEGURO,
+            N.TIPOPACICOD                             AS COD_TIPO_PACIENTE,
+            T.SOLOPENUM                               AS NUM_SOLICITUD,
+            TO_CHAR(T.SOLOPEFEC, 'dd/mm/yyyy')        AS FECHA_SOLICITUD,
+            TO_CHAR(T.SOLOPESOLFEC, 'dd/mm/yyyy')     AS FECHA_PROGRAMACION,
+            O.SOLOPEDIAGCOD                           AS COD_DIAG,
+            G.GRDCMCCOD                               AS COD_COMPLEJIDAD,
+            T.MOTSOPCOD                                                AS COD_MOT_SUSPENSION,
+            T.SOLOPEUSUCRECOD                                          AS USUREG,
+            TO_CHAR(T.SOLOPECREFEC, 'dd/mm/yyyy')                      AS FECREG,
+            T.SOLOPEUSUMODCOD                                          AS USUMODIF,
+            TO_CHAR(T.SOLOPEMODFEC, 'dd/mm/yyyy')                      AS FECMODIF,
+            T.SOLOPECENQUICOD                                          AS COD_QUIROF,
+            T.SOLOPESOLSERVHOSCOD                                      AS COD_SERV_SOLICITADA,
+            C.SOLOPECPSCOD                                             AS COD_CPS
+            FROM SGSS.QTSOP10 T
+            LEFT OUTER JOIN SGSS.QTSOD10 O ON T.SOLOPEORICENASICOD = O.SOLOPEORICENASICOD
+                                    AND T.SOLOPECENASICOD = O.SOLOPECENASICOD
+                                    AND T.SOLOPENUM = O.SOLOPENUM
+            LEFT OUTER JOIN SGSS.QTSOO10 C ON T.SOLOPEORICENASICOD = C.SOLOPEORICENASICOD
+                                    AND T.SOLOPECENASICOD = C.SOLOPECENASICOD
+                                    AND T.SOLOPENUM = C.SOLOPENUM
+            LEFT OUTER JOIN SGSS.CMAME10 D ON T.SOLOPEORICENASICOD = D.ORICENASICOD
+                                    AND T.SOLOPECENASICOD = D.CENASICOD
+                                    AND T.SOLOPEACTMEDNUM = D.ACTMEDNUM
+            LEFT OUTER JOIN SGSS.CMPER10 E ON D.ACTMEDPACSECNUM = E.PERSECNUM
+            LEFT OUTER JOIN SGSS.CBTPC10 N ON D.ACTMEDTIPOPACICOD = N.TIPOPACICOD
+            LEFT OUTER JOIN SGSS.CMTSE10 M ON D.ACTMEDTIPSEGCOD = M.TIPSEGCOD
+            LEFT OUTER JOIN SGSS.CMCPP10 F ON C.SOLOPECPSCOD = F.CPSCOD
+            LEFT OUTER JOIN SGSS.QBGCC10 G ON F.GRDCMCCOD = G.GRDCMCCOD
+            WHERE  
+            T.Solopeprofec >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
+            AND T.Solopeprofec < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
+            AND T.ESTSOPCOD = '3'
+            
+
     """
 
     print(f"Ejecutando query para mes {start_mes.strftime('%Y-%m')} en Oracle...")

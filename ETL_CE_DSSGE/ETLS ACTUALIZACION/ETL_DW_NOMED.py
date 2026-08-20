@@ -69,8 +69,8 @@ hoy = datetime.today()
 #start_date = (hoy.replace(day=1) - relativedelta(months=2))  # Primer día del mes hace dos meses
 #end_date = (hoy.replace(day=1) - relativedelta(months=1)) + relativedelta(day=31)  # Último día del mes pasado
 
-start_date = datetime(2020, 1, 1)
-end_date = datetime(2022, 12, 31)
+start_date = datetime(2026, 8, 1)
+end_date = datetime(2026, 8, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes

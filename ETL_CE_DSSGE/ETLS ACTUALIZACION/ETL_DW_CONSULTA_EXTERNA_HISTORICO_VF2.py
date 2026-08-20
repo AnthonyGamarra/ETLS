@@ -77,8 +77,8 @@ data_found = False
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 7, 1)
-end_date = datetime(2026, 7, 31)
+start_date = datetime(2026, 8, 1)
+end_date = datetime(2026, 8, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes

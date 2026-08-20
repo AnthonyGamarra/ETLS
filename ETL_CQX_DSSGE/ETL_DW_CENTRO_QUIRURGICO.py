@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2020, 1, 1)
-end_date = datetime(2024, 12, 31)
+start_date = datetime(2026, 8, 1)
+end_date = datetime(2026, 8, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -131,7 +131,6 @@ for start_mes, end_mes in month_range(start_date, end_date):
             c.solopetipeveope                                                                		AS COD_TIPO_EVENTO,
             a.InfOpeHallDes                                                                         AS DESC_HALLAZGO,
             a.InfOpeProcDes                                                                         AS DESC_PROCEDIMIENTO
-            c.estopecod 																				AS COD_ESTADO_SOLICITUD, ----- suspendida = 3
             from sgss.qtioo10 t
             left outer join sgss.qtiop10 a on a.infopeoricenasicod = t.infopeoricenasicod
                                     and a.infopecenasicod    = t.infopecenasicod

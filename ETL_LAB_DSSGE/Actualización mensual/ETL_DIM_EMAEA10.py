@@ -65,6 +65,3 @@ df.columns = df.columns.str.lower()
 # Eliminar caracteres NUL (\x00) que PostgreSQL no acepta
 df = df.apply(lambda col: col.str.replace('\x00', '', regex=False) if col.dtype == object else col)
 df.to_sql("sgss_emaea10", engine_pg, schema="dwsge", if_exists="replace", index=False)
-
-
-

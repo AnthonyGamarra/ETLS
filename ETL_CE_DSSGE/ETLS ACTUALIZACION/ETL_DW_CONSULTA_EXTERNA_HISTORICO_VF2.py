@@ -132,7 +132,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 a.atenambtipconcod                                                                         as COD_TIPO_CONSULTA,
                 --(select h.tipcondes from cmtco10 h where a.atenambtipconcod = h.tipconcod)                 as TIPO_CONSULTA,       
                 --a.CPSCOD                                                                                   AS COD_CPMS,
-                a.resatenambucod                                                                           AS COD_RESULT_ATENCION,
+                a.resatenambucod                                                                           AS COD_RESULT_ATENCION, 
                 --(select g.resatenambunom from cbraa10 g where a.resatenambucod = g.resatenambucod)         as DESC_RESULT_ATENCION,       
                 k.actmedestgrav                                                                            as COD_TIPO_GRAVIDEZ,
                 decode(k.actmedestpersercod, '1', 'N', '2', 'C', '3', 'R', '')                             as NRC_SER,

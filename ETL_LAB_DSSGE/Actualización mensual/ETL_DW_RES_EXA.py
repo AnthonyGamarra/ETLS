@@ -84,22 +84,32 @@ for start_mes, end_mes in month_range(start_date, end_date):
             to_char(x.resexafec, 'yyyy')                               AS ANIO,
             to_char(x.resexafec, 'yyyymm')                               AS PERIODO,
             x.RESEXAORICENASICOD                                           AS COD_ORICENTRO,
-            x.resexacenasicod                                            AS cod_CENTRO,
-            n1.AREAEXACOD                                                AS cod_AREALAB,
-            f.AREHOSCOD                                                  AS cod_AREA,
+            x.resexacenasicod                                            AS COD_CENTRO,
+            n1.AREAEXACOD                                                AS COD_AREALAB,
+            f.AREHOSCOD                                                  AS COD_AREA,
             h.servhoscod                                               AS COD_SERVICIO,
             i.actcod                                                     AS COD_ACTIVIDAD,
             j.actespcod                                                  AS COD_SUBACTIVIDAD,
-            p.perdocidennum                                              AS COD_PACIENTE,
+            p.perapepatdes||' '||p.perapematdes|| ' ' ||
+            p.perprinomdes || ' ' ||p.persegnomdes                       AS PACIENTE,
+            p.perdocidennum                                              AS DOC_PACIENTE,
             decode(p.persexocod, '1', 'M', '0', 'F', '')                 AS SEXO,
             (FLOOR(MONTHS_BETWEEN(x.resexafec, p.pernacfec) / 12))       AS ANIO_EDAD,
+            (FLOOR(MOD(MONTHS_BETWEEN(x.resexafec, p.pernacfec), 12)))   AS MESES,
+            (TO_DATE(x.resexafec, 'DD/MM/YYYY') - ADD_MONTHS(p.pernacfec,
+            FLOOR(MONTHS_BETWEEN(TO_DATE(x.resexafec,'DD/MM/YYYY'),
+            p.pernacfec))))                                              as DIAS,
             p.percenasiadscod                                            AS CAS_ADSCRIPCION,
             x.resexacpscod                                               AS EXAMEN,
+            replace(replace(trim( to_char(
+            substr(x.resexainf,0,100))),CHR(10), ''), CHR(13), '')      AS INFORME_RESULTADO,
             v.resexvplldetord                                           AS ORDEN_PLANTILLA,
+            v.resexdexades                                              AS VALOR_RESULTADO,
             v.resexdexaund                                              AS UNIDADVALOR,
             v.resexdexanorval                                           AS VALORESMASCULINO,
             v.resexdfemexanorval                                        AS VALORESFEMENINO,                                       
-            v.resexdexaotrnorval                                        AS VALORES_OTROS
+            v.resexdexaotrnorval                                        AS VALORES_OTROS,
+            v.resexdexaobs                                              AS OBS_RESULTADO
             from SGSS.etrea10 x
             left outer join SGSS.etsea10 b ON b.solexaoricenasicod = x.resexaoricenasicod
                                     AND b.solexacenasicod = x.resexacenasicod

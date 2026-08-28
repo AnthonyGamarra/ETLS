@@ -72,7 +72,7 @@ start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 start_date = datetime(2026, 8, 1)
-end_date = datetime(2026, 8, 30)
+end_date = datetime(2026, 8, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -172,7 +172,7 @@ left outer join SGSS.ctppe10 pr on pr.oricenasicod       = ct.proconoricenasicod
                           and pr.properturhorini    = ct.proconturhorini
                           and pr.properturhorfin    = ct.proconturhorfin
 where a.ATEPROESTREGCOD    = '1'
-   and a.ATEPROAREHOSCOD    = '02'
+   and a.ATEPROAREHOSCOD    = '03'
     AND a.ATEPROPROPERFEC >= TO_DATE('{start_mes_str}', 'DD-MM-YYYY')
     AND a.ATEPROPROPERFEC < TO_DATE('{end_mes_str}', 'DD-MM-YYYY')
     """
@@ -188,7 +188,7 @@ where a.ATEPROESTREGCOD    = '1'
     df.columns = df.columns.str.lower()
 
     # Truncar la tabla particionada destino en PostgreSQL antes de la carga
-    tabla_particion = f"dssge.dw_proc_eme_{anio}_{mes}"
+    tabla_particion = f"dssge.dw_proc_hos_{anio}_{mes}"
     try:
         print(f"Truncando tabla particionada destino: {tabla_particion}...")
         cursor_pg.execute(f"TRUNCATE TABLE {tabla_particion};")

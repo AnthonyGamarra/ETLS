@@ -1,0 +1,61 @@
+CREATE TABLE dssge.dwe_centro_obstetrico
+ (
+        COD_ORICENTRO  varchar(10),
+        COD_CENTRO varchar(10),
+        ANIO varchar(4),
+        PERIODO varchar(6),	
+        FECHATENCION date,
+        HORATENCION time,
+        ACTO_MED numeric,
+        COD_TIPDOC_PACIENTE varchar(10),
+        DOC_PACIENTE varchar(20),
+        COD_SERVICIO varchar(10),
+        COD_EST_ENFER varchar(10),
+        ANNOS varchar(10),
+        SEXO varchar(1),
+        H_C numeric,
+        COD_TIP_SEGURO varchar(10),
+        COD_TIPO_PARENTESCO varchar(10),
+        COD_TIPO_PACIENTE varchar(10),
+        COD_GRUPO_CUPACIONAL varchar(10),
+        CPMS varchar(10),
+        DOC_MEDICOL varchar(20),
+        COD_DIAG varchar(10),
+        COD_COND_TRAB varchar(10)
+    ) PARTITION BY LIST (anio);
+
+-- Crear partición anual para 2025
+CREATE TABLE dssge.dwe_centro_obstetrico_2026 PARTITION OF dssge.dwe_centro_obstetrico 
+FOR VALUES IN ('2026')
+PARTITION BY LIST (PERIODO);
+
+CREATE TABLE dssge.dwe_centro_obstetrico_2025 PARTITION OF dssge.dwe_centro_obstetrico
+FOR VALUES IN ('2025')
+PARTITION BY LIST (PERIODO);
+
+
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_01 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202601');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_02 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202602');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_03 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202603');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_04 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202604');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_05 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202605');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_06 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202606');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_07 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202607');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_08 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202608');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_09 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202609');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_10 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202610');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_11 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202611');
+CREATE TABLE dssge.dwe_centro_obstetrico_2026_12 PARTITION OF dssge.dwe_centro_obstetrico_2026 FOR VALUES IN ('202612');
+
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_01 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202501');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_02 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202502');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_03 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202503');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_04 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202504');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_05 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202505');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_06 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202506');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_07 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202507');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_08 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202508');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_09 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202509');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_10 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202510');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_11 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202511');
+CREATE TABLE dssge.dwe_centro_obstetrico_2025_12 PARTITION OF dssge.dwe_centro_obstetrico_2025 FOR VALUES IN ('202512');

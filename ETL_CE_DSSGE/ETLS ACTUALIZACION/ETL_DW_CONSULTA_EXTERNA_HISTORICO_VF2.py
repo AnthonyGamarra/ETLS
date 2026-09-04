@@ -59,7 +59,6 @@ cursor_pg = conn_pg.cursor()
 print("Conexión a PostgreSQL establecida.")
 
 start_time = datetime.now()
-print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 today = datetime.today()
 current_year = today.year

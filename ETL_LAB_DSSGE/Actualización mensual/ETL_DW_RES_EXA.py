@@ -180,7 +180,6 @@ for start_mes, end_mes in month_range(start_date, end_date):
 
         week_start = week_end + timedelta(days=1)
         week_num += 1
-
 # ==============================
 # 7. Cerramos conexiones
 # ==============================

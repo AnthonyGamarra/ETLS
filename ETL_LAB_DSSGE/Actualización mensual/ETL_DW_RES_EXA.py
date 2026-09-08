@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 3, 1)
-end_date = datetime(2026, 3, 31)
+start_date = datetime(2026, 4, 1)
+end_date = datetime(2026, 4, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes en bloques semanales
@@ -93,28 +93,28 @@ for start_mes, end_mes in month_range(start_date, end_date):
 
         query = f"""
                 SELECT distinct
-                to_char(x.resexafec, 'yyyy')                               AS ANIO,
-                to_char(x.resexafec, 'yyyymm')                               AS PERIODO,
-                x.RESEXAORICENASICOD                                           AS COD_ORICENTRO,
-                x.resexacenasicod                                            AS COD_CENTRO,
-                n1.AREAEXACOD                                                AS COD_AREALAB,
-                f.AREHOSCOD                                                  AS COD_AREA,
-                h.servhoscod                                               AS COD_SERVICIO,
-                i.actcod                                                     AS COD_ACTIVIDAD,
-                j.actespcod                                                  AS COD_SUBACTIVIDAD,
+                to_char(x.resexafec, 'yyyy')                                AS ANIO,
+                to_char(x.resexafec, 'yyyymm')                              AS PERIODO,
+                x.RESEXAORICENASICOD                                        AS COD_ORICENTRO,
+                x.resexacenasicod                                           AS COD_CENTRO,
+                n1.AREAEXACOD                                               AS COD_AREALAB,
+                f.AREHOSCOD                                                 AS COD_AREA,
+                h.servhoscod                                                AS COD_SERVICIO,
+                i.actcod                                                    AS COD_ACTIVIDAD,
+                j.actespcod                                                 AS COD_SUBACTIVIDAD,
                 p.perapepatdes||' '||p.perapematdes|| ' ' ||
-                p.perprinomdes || ' ' ||p.persegnomdes                       AS PACIENTE,
-                p.pertipdocidencod                                           AS TIPO_DOC_PACIENTE,
-                b.SOLEXAACTMEDORINUM                                           AS ACTO_MED,
-                t.actmedtipopacicod                                           AS COD_TIPO_PACIENTE,
-                p.perdocidennum                                              AS DOC_PACIENTE,
-                decode(p.persexocod, '1', 'M', '0', 'F', '')                 AS SEXO,
-                (FLOOR(MONTHS_BETWEEN(x.resexafec, p.pernacfec) / 12))       AS ANIO_EDAD,
-                (FLOOR(MOD(MONTHS_BETWEEN(x.resexafec, p.pernacfec), 12)))   AS MESES,
-                p.percenasiadscod                                            AS CAS_ADSCRIPCION,
-                x.resexafec                                                     AS FECHA_EXAMEN,
-                y.tipexacod                                                   AS COD_TIPOEXAMEN,
-                x.resexacpscod                                               AS COD_CPMS,
+                p.perprinomdes || ' ' ||p.persegnomdes                      AS PACIENTE,
+                p.pertipdocidencod                                          AS TIPO_DOC_PACIENTE,
+                b.SOLEXAACTMEDORINUM                                        AS ACTO_MED,
+                t.actmedtipopacicod                                         AS COD_TIPO_PACIENTE,
+                p.perdocidennum                                             AS DOC_PACIENTE,
+                decode(p.persexocod, '1', 'M', '0', 'F', '')                AS SEXO,
+                (FLOOR(MONTHS_BETWEEN(x.resexafec, p.pernacfec) / 12))      AS ANIO_EDAD,
+                (FLOOR(MOD(MONTHS_BETWEEN(x.resexafec, p.pernacfec), 12)))  AS MESES,
+                p.percenasiadscod                                           AS CAS_ADSCRIPCION,
+                x.resexafec                                                 AS FECHA_EXAMEN,
+                y.tipexacod                                                 AS COD_TIPOEXAMEN,
+                x.resexacpscod                                              AS COD_CPMS,
                 replace(replace(trim( to_char(
                 substr(x.resexainf,0,100))),CHR(10), ''), CHR(13), '')      AS INFORME_RESULTADO,
                 v.resexvplldetord                                           AS ORDEN_PLANTILLA,
@@ -148,7 +148,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                                         AND t.cenasicod    =  b.solexacenasioricod
                                         AND t.actmednum    = b.solexaactmedorinum
                 LEFT OUTER join SGSS.cmper10 p ON p.persecnum = t.actmedpacsecnum
-                WHERE x.resexafec        >= TO_DATE('{week_start.strftime('%d-%m-%Y')}','DD-MM-YYYY')
+                WHERE  x.resexafec        >= TO_DATE('{week_start.strftime('%d-%m-%Y')}','DD-MM-YYYY')
                 AND x.resexafec        <  TO_DATE('{(week_end + timedelta(days=1)).strftime('%d-%m-%Y')}','DD-MM-YYYY')
         """
 

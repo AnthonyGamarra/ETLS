@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 4, 1)
-end_date = datetime(2026, 4, 30)
+start_date = datetime(2026, 2, 1)
+end_date = datetime(2026, 8, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes en bloques semanales
@@ -76,14 +76,6 @@ for start_mes, end_mes in month_range(start_date, end_date):
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
     tabla_destino = f"dssge.dw_lab_{anio}_{mes}"
     fin_mes_incl = end_mes - timedelta(days=1)  # end_mes es exclusivo (1er dia del mes siguiente)
-
-    print(f"Truncando partición destino: {tabla_destino}...")
-    try:
-        cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
-        print(f"Tabla {tabla_destino} truncada correctamente.")
-    except Exception as e:
-        print(f"⚠️ Error al truncar {tabla_destino}: {e}")
-        continue  # Saltar este mes si no existe la partición
 
     week_start = start_mes
     week_num = 1
@@ -150,6 +142,8 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 LEFT OUTER join SGSS.cmper10 p ON p.persecnum = t.actmedpacsecnum
                 WHERE  x.resexafec        >= TO_DATE('{week_start.strftime('%d-%m-%Y')}','DD-MM-YYYY')
                 AND x.resexafec        <  TO_DATE('{(week_end + timedelta(days=1)).strftime('%d-%m-%Y')}','DD-MM-YYYY')
+                and y.tipexacod = 3
+                ORDER BY x.resexacenasicod
         """
 
         print(f"Ejecutando query para semana {week_num} del mes {start_mes.strftime('%Y-%m')} en Oracle...")
@@ -163,6 +157,14 @@ for start_mes, end_mes in month_range(start_date, end_date):
             continue
 
         df.columns = df.columns.str.lower()
+
+        print(f"Truncando partición destino: {tabla_destino}...")
+        try:
+            cursor_pg.execute(f"TRUNCATE TABLE {tabla_destino};")
+            print(f"Tabla {tabla_destino} truncada correctamente.")
+        except Exception as e:
+            print(f"⚠️ Error al truncar {tabla_destino}: {e}")
+            continue  # Saltar este mes si no existe la partición
 
         csv_buffer = StringIO()
         df.to_csv(csv_buffer, index=False, header=False)

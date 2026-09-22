@@ -18,11 +18,11 @@ pg_port_src = os.getenv("PG_PORT", '5433')
 pg_db_src   = os.getenv("PG_DB")
 
 # Destino PostgreSQL
-pg_user_dst = os.getenv("PG_USER2")
-pg_pass_dst = os.getenv("PG_PASS2")
-pg_host_dst = os.getenv("PG_HOST2")
-pg_port_dst = os.getenv("PG_PORT2", '5433')
-pg_db_dst   = os.getenv("PG_DB2")
+pg_user_dst = os.getenv("PG_USER")
+pg_pass_dst = os.getenv("PG_PASS")
+pg_host_dst = os.getenv("PG_HOST")
+pg_port_dst = os.getenv("PG_PORT", '5433')
+pg_db_dst   = os.getenv("PG_DB")
 
 print(f"Origen POSTGRES:    {pg_db_src}")
 print(f"Destino POSTGRES:   {pg_db_dst}")
@@ -49,8 +49,46 @@ conn_dst = psycopg2.connect(
     port=pg_port_dst
 )
 
+def get_pg_type(dtype):
+    if pd.api.types.is_integer_dtype(dtype):
+        return "BIGINT"
+    elif pd.api.types.is_float_dtype(dtype):
+        return "DOUBLE PRECISION"
+    elif pd.api.types.is_bool_dtype(dtype):
+        return "BOOLEAN"
+    elif pd.api.types.is_datetime64_any_dtype(dtype):
+        return "TIMESTAMP"
+    else:
+        return "TEXT"
+
+
+def crear_tabla_si_no_existe(conn, schema, table, df):
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT EXISTS (
+                SELECT 1 FROM information_schema.tables
+                WHERE table_schema = %s AND table_name = %s
+            )
+        """, (schema, table))
+        existe = cur.fetchone()[0]
+
+        if not existe:
+            columnas_ddl = ",\n                ".join(
+                f'"{col}" {get_pg_type(df[col].dtype)}' for col in df.columns
+            )
+            create_sql = f"""
+                CREATE TABLE {schema}.{table} (
+                    {columnas_ddl}
+                )
+            """
+            print(f"🛠️ La tabla {schema}.{table} no existe. Creándola...")
+            cur.execute(create_sql)
+    conn.commit()
+
+
 chunksize = 300000
 data_found = False
+tabla_dst_verificada = False
 
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time:%Y-%m-%d %H:%M:%S}")
@@ -101,12 +139,16 @@ try:
                 .str.decode('utf-8')
             )
 
+        if not tabla_dst_verificada:
+            crear_tabla_si_no_existe(conn_dst, "dssge", "dwe_personas_essi_2", df)
+            tabla_dst_verificada = True
+
         csv_buffer = StringIO()
         df.to_csv(csv_buffer, index=False, header=False)
         csv_buffer.seek(0)
 
         copy_sql = f"""
-            COPY public.personas_essi_4 ({', '.join(colnames)})
+            COPY dssge.dwe_personas_essi_2 ({', '.join(colnames)})
             FROM STDIN WITH CSV
         """
 

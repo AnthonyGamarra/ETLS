@@ -40,17 +40,18 @@ conn_oracle.close()
 # ==============================
 engine_pg = create_engine(f"postgresql+psycopg2://{pg_user}:{pg_pass}@{pg_host}:5433/{pg_db}")
 
-
-# with engine_pg.begin() as conn:
-#     # Limpia solo los datos, mantiene estructura e índices
-#     conn.execute(text("TRUNCATE TABLE dwsge.sgss_qppso10 RESTART IDENTITY;"))
-
 # ==============================
 # 5. Cargar datos a PostgreSQL
 # ==============================
 df = df.astype(str)
-df.columns = df.columns.str.lower() 
-df.to_sql("sgss_qbpso10", engine_pg, schema="dwsge", if_exists="replace", index=False)
+df.columns = df.columns.str.lower()
+
+# No se usa if_exists="replace" porque hace DROP TABLE y hay vistas
+# materializadas que dependen de esta tabla.
+with engine_pg.begin() as conn:
+    # Limpia solo los datos, mantiene estructura e índices
+    conn.execute(text("TRUNCATE TABLE dwsge.sgss_qbpso10 RESTART IDENTITY;"))
+    df.to_sql("sgss_qbpso10", conn, schema="dwsge", if_exists="append", index=False)
 
 
 

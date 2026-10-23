@@ -1,0 +1,24 @@
+CREATE TABLE dwsge.DATA_SES (
+
+familias varchar(100),
+codpre varchar(50),
+unidad_medida varchar(50),
+codred_ses numeric,
+red_ses varchar(100),
+codcentro_ses numeric,
+desccentro_ses varchar(100),
+cod_nivel varchar(100),
+mes varchar(100),
+año varchar(100),
+cod_grupo varchar(100),
+desc_grupo varchar(200),
+cod_acti_ses varchar(100),
+desc_act_ses varchar(200),
+cod_actividad numeric,
+descripcion_actividad varchar(200),
+asegurado numeric,
+no_asegurados numeric,
+Nivel_atencion varchar(100)
+
+
+)

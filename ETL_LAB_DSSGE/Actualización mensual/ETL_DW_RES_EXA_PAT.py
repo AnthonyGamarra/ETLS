@@ -65,7 +65,7 @@ print("Conexión a PostgreSQL establecida.")
 # 5. Parámetros de fechas
 # ==============================
 start_date = datetime(2026, 1, 1)
-end_date = datetime(2026, 1, 31)
+end_date = datetime(2026, 10, 31)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes en bloques semanales
@@ -74,7 +74,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
     print(f"\n--- Procesando mes: {start_mes.strftime('%Y-%m')} ---")
     anio = start_mes.strftime('%Y')
     mes  = start_mes.strftime('%m')  # <-- Asegura formato 01,02,03...
-    tabla_destino = f"dssge.dw_lab_{anio}_{mes}"
+    tabla_destino = f"dssge.dw_lab_pat_{anio}_{mes}"
     fin_mes_incl = end_mes - timedelta(days=1)  # end_mes es exclusivo (1er dia del mes siguiente)
 
     print(f"Truncando partición destino: {tabla_destino}...")

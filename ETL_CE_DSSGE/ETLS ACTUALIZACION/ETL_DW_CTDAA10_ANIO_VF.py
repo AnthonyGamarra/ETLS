@@ -64,8 +64,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 10, 1)
-end_date = datetime(2026, 10, 31)
+start_date = datetime(2026, 11, 1)
+end_date = datetime(2026, 11, 30)
 
 print(f"\n--- Iniciando extracción mes a mes entre {start_date.strftime('%Y-%m-%d')} y {end_date.strftime('%Y-%m-%d')} ---")
 

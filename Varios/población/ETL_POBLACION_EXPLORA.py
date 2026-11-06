@@ -1,7 +1,9 @@
 """
 ETL Población GCSPE -> dssge.poblacion_gcspe_sge
 
-Lee todos los Excel de la carpeta poblacion_explora y los carga a PostgreSQL.
+Lee los Excel POBLACION_ACUMULADA_YYYYMM.xlsx de la carpeta poblacion_explora
+y los carga a PostgreSQL. Solo se cargan los periodos que aún no están en la
+tabla destino (actualización mensual: basta con dejar el nuevo archivo en la carpeta).
 
 Por cada archivo:
   1. Valida que las columnas del Excel coincidan con las de la tabla destino
@@ -10,10 +12,14 @@ Por cada archivo:
      (longitudes VARCHAR, cantidad numérica, periodo informado).
   3. Reemplaza en la tabla destino los periodos (poblacion_acumulada) que trae
      el archivo: DELETE de esos periodos + INSERT. Recargar un archivo no duplica.
+     El periodo de los datos debe coincidir con el YYYYMM del nombre del archivo.
   Cada archivo va en su propia transacción: si falla, se revierte solo ese archivo.
+  Al final refresca la vista materializada dwsge.poblacion_asegurada_gcpp, que
+  muestra solo el último periodo cargado.
 
 Uso:
-  python ETL_POBLACION_EXPLORA.py              -> valida y carga
+  python ETL_POBLACION_EXPLORA.py              -> carga los periodos nuevos
+  python ETL_POBLACION_EXPLORA.py --recargar   -> vuelve a cargar todos los archivos
   python ETL_POBLACION_EXPLORA.py --validar    -> solo valida columnas, no carga
 """
 import os
@@ -44,9 +50,12 @@ SCHEMA = "dssge"
 TABLA = "poblacion_gcspe_sge"
 TABLA_DESTINO = f"{SCHEMA}.{TABLA}"
 COLUMNA_PERIODO = "poblacion_acumulada"
+VISTA = "dwsge.poblacion_asegurada_gcpp"
+PATRON_ARCHIVO = re.compile(r"^POBLACION_ACUMULADA_(\d{6})\.xlsx$", re.IGNORECASE)
 CHUNK_SIZE = 50000
 
 SOLO_VALIDAR = "--validar" in sys.argv
+RECARGAR = "--recargar" in sys.argv
 
 
 # ==============================
@@ -154,7 +163,7 @@ def leer_cabecera(ruta):
 # ==============================
 # 3. Proceso por archivo
 # ==============================
-def procesar_archivo(cursor, conn, ruta, estructura):
+def procesar_archivo(cursor, conn, ruta, periodo_archivo, estructura):
     nombre = os.path.basename(ruta)
     columnas_tabla = list(estructura.keys())
     print(f"\n=== {nombre} ===")
@@ -219,6 +228,10 @@ def procesar_archivo(cursor, conn, ruta, estructura):
         cursor.execute(f"SELECT DISTINCT {COLUMNA_PERIODO} FROM tmp_poblacion ORDER BY 1;")
         periodos = [r[0] for r in cursor.fetchall()]
         print(f"  Periodos en el archivo: {periodos}")
+        if periodos != [periodo_archivo]:
+            print(f"  [ERROR] El nombre del archivo indica {periodo_archivo} pero los datos traen {periodos}.")
+            conn.rollback()
+            return "rechazado"
 
         cursor.execute(
             f"DELETE FROM {TABLA_DESTINO} WHERE {COLUMNA_PERIODO} IN (SELECT DISTINCT {COLUMNA_PERIODO} FROM tmp_poblacion);"
@@ -243,13 +256,25 @@ def procesar_archivo(cursor, conn, ruta, estructura):
 # ==============================
 # 4. Main
 # ==============================
+def listar_archivos():
+    """Devuelve [(periodo, ruta)] ordenado por periodo; ignora nombres fuera del patrón."""
+    archivos = []
+    for ruta in glob.glob(os.path.join(CARPETA_EXCEL, "*.xls*")):
+        nombre = os.path.basename(ruta)
+        if nombre.startswith("~$"):
+            continue
+        m = PATRON_ARCHIVO.match(nombre)
+        if not m:
+            print(f"[AVISO] Se ignora '{nombre}': no cumple POBLACION_ACUMULADA_YYYYMM.xlsx")
+            continue
+        archivos.append((m.group(1), ruta))
+    return sorted(archivos)
+
+
 def main():
-    archivos = sorted(
-        f for f in glob.glob(os.path.join(CARPETA_EXCEL, "*.xls*"))
-        if not os.path.basename(f).startswith("~$")
-    )
+    archivos = listar_archivos()
     if not archivos:
-        print(f"No hay archivos Excel en {CARPETA_EXCEL}")
+        print(f"No hay archivos POBLACION_ACUMULADA_YYYYMM.xlsx en {CARPETA_EXCEL}")
         return
 
     print(f"Conectando a PostgreSQL en {pg_host}:{pg_port}, base de datos: {pg_db}...")
@@ -258,19 +283,34 @@ def main():
     cursor = conn.cursor()
 
     start_time = datetime.now()
-    print(f"Inicio del ETL: {start_time:%Y-%m-%d %H:%M:%S}  (modo: {'SOLO VALIDAR' if SOLO_VALIDAR else 'CARGA'})")
+    modo = "SOLO VALIDAR" if SOLO_VALIDAR else ("RECARGA TOTAL" if RECARGAR else "CARGA")
+    print(f"Inicio del ETL: {start_time:%Y-%m-%d %H:%M:%S}  (modo: {modo})")
     print(f"Archivos encontrados: {len(archivos)}")
 
     resultados = {}
     try:
         estructura = obtener_estructura_tabla(cursor)
+        cursor.execute(f"SELECT DISTINCT {COLUMNA_PERIODO} FROM {TABLA_DESTINO};")
+        cargados = {r[0] for r in cursor.fetchall()}
         conn.commit()
-        for ruta in archivos:
+        for periodo, ruta in archivos:
+            nombre = os.path.basename(ruta)
+            if periodo in cargados and not RECARGAR and not SOLO_VALIDAR:
+                print(f"\n=== {nombre} === periodo {periodo} ya cargado, se omite (usar --recargar para forzar).")
+                resultados[nombre] = "omitido"
+                continue
             try:
-                resultados[os.path.basename(ruta)] = procesar_archivo(cursor, conn, ruta, estructura)
+                resultados[nombre] = procesar_archivo(cursor, conn, ruta, periodo, estructura)
             except Exception as e:
                 print(f"  [ERROR] Falló el archivo, se revirtieron sus cambios: {e}")
-                resultados[os.path.basename(ruta)] = "error"
+                resultados[nombre] = "error"
+
+        if "cargado" in resultados.values():
+            print(f"\nRefrescando vista materializada {VISTA} (último periodo cargado)...")
+            cursor.execute(f"REFRESH MATERIALIZED VIEW {VISTA};")
+            cursor.execute(f"SELECT DISTINCT {COLUMNA_PERIODO} FROM {VISTA};")
+            conn.commit()
+            print(f"  [OK] La vista muestra el periodo: {[r[0] for r in cursor.fetchall()]}")
     finally:
         cursor.close()
         conn.close()

@@ -62,8 +62,8 @@ print("Conexión a PostgreSQL establecida.")
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 10, 1)
-end_date = datetime(2026, 10, 31)
+start_date = datetime(2026, 11, 1)
+end_date = datetime(2026, 11, 30)
 
 start_time = datetime.now()
 print(f"\n🕒 Inicio del ETL: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")

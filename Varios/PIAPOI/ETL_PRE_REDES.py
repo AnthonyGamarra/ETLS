@@ -1,7 +1,7 @@
 import glob
 import os
 import pandas as pd
-from carga_utils import RUTA_PRESUPUESTO, leer_excel, cargar_tabla
+from Varios.PIAPOI.carga_utils import RUTA_PRESUPUESTO, leer_excel, cargar_tabla
 
 # ==============================
 # Maestro de centros gestores SAP (CENTROS GESTORES*.xls, hoja Hoja1) -> dwsge.pre_redes

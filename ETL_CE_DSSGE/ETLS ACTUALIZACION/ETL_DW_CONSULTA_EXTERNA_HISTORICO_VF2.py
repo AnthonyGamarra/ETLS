@@ -76,8 +76,8 @@ data_found = False
 # ==============================
 # 5. Parámetros de fechas
 # ==============================
-start_date = datetime(2026, 10, 1)
-end_date = datetime(2026, 10, 31)
+start_date = datetime(2026, 11, 1)
+end_date = datetime(2026, 11, 30)
 
 # ==============================
 # 6. Ciclo para extraer y copiar mes a mes
@@ -261,7 +261,3 @@ print("Conexiones cerradas. Proceso finalizado.")
 end_time = datetime.now()
 print(f"\n🕒 Fin del ETL: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
 print(f"⏱️ Tiempo total de procesamiento: {end_time - start_time}")
-
-
-
-

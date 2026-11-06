@@ -182,6 +182,13 @@ def main():
         print("  periodos en la tabla: " + ", ".join("%s (%d)" % r for r in cur.fetchall()))
         if total != len(df):
             raise SystemExit("La cantidad cargada no coincide con el Excel; se revierte la carga.")
+
+        # la vista materializada del organigrama solo muestra el último periodo; se refresca para que tome esta carga
+        cur.execute("SELECT 1 FROM pg_matviews WHERE schemaname = 'dwsge' AND matviewname = 'vw_organigrama_jerarquia_personal'")
+        if cur.fetchone():
+            cur.execute("REFRESH MATERIALIZED VIEW dwsge.vw_organigrama_jerarquia_personal")
+            cur.execute("SELECT periodo, count(*) FROM dwsge.vw_organigrama_jerarquia_personal GROUP BY periodo")
+            print("  vw_organigrama_jerarquia_personal refrescada: " + ", ".join("%s (%d personas)" % r for r in cur.fetchall()))
     conn.close()
     print("\nResultado: CARGA CORRECTA")
 

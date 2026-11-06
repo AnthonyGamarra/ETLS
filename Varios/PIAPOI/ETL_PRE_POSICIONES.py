@@ -1,4 +1,4 @@
-from carga_utils import leer_excel, cargar_tabla
+from Varios.PIAPOI.carga_utils import leer_excel, cargar_tabla
 
 # ==============================
 # Maestro de posiciones presupuestarias (POSC.PRESPT.XLSX) -> dwsge.pre_posiciones

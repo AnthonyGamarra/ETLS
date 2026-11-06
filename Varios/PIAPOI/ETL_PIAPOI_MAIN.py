@@ -1,7 +1,7 @@
 import os
 import runpy
 from datetime import datetime
-from carga_utils import conectar_pg
+from Varios.PIAPOI.carga_utils import conectar_pg
 
 # ==============================
 # Orquestador PIA / POI:

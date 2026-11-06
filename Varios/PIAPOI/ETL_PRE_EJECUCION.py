@@ -1,4 +1,4 @@
-from carga_utils import leer_excel, cargar_tabla
+from Varios.PIAPOI.carga_utils import leer_excel, cargar_tabla
 
 # ==============================
 # Ejecución presupuestal SAP (ejecucion.xls) -> dwsge.pre_ejecucion

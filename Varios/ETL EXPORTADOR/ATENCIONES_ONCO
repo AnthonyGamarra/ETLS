@@ -1,0 +1,58 @@
+SELECT     
+	ce.anio,
+	ce.periodo,
+    r.redasisdes AS red,
+    ce.cod_centro,
+    c.cenasides AS centro,
+    c.nivcentasiscod AS nivel_centro,
+    d.edxcapdes AS capitulo_cie,
+	ce.cod_diag AS cod_diag,
+    d.diagdes AS diagnostico,
+    ce.cod_servicio,
+    s.servhosdes AS servicio,
+    ce.cod_actividad,
+    a.actdes AS actividad,
+    ce.cod_subactividad,
+    ae.actespnom AS subactividad,
+	especialidad,
+	variable,
+    ce.sexo,
+    ce.doc_paciente,
+    tipsegdes AS tipo_seguro,
+    tipdocidenpercod as tipo_documento,
+    ce.fecha_atencion,
+    CASE
+        WHEN ce.anio_edad::integer BETWEEN 1 AND 4 THEN 'Niño pequeño (1-4)'
+        WHEN ce.anio_edad::integer BETWEEN 5 AND 11 THEN 'Niños (5-11)'
+        WHEN ce.anio_edad::integer BETWEEN 12 AND 17 THEN 'Adolescentes (12-17)'
+        WHEN ce.anio_edad::integer BETWEEN 18 AND 29 THEN 'Adultos jóvenes (18-29)'
+        WHEN ce.anio_edad::integer BETWEEN 30 AND 59 THEN 'Adultos (30-59)'
+        WHEN ce.anio_edad::integer BETWEEN 60 AND 79 THEN 'Adultos Mayores (60-79)'
+        WHEN ce.anio_edad::integer >= 80 THEN 'Adultos Mayores Avanzados (>80)'
+        WHEN ce.anio_edad::integer <= 0 THEN 'Neonato/Lactante (0)'
+        ELSE 'Sin clasificar'
+    END AS grupo_edad
+	FROM dwsge.dwe_consulta_externa_homologacion ce
+LEFT JOIN dwsge.sgss_cmdia10_chapter d
+    ON ce.cod_diag = d.diagcod
+LEFT JOIN dwsge.sgss_cmcas10 c
+    ON c.cenasicod = ce.cod_centro
+LEFT JOIN dwsge.sgss_cmras10 r
+    ON r.redasiscod = c.redasiscod
+LEFT JOIN dwsge.sgss_cmsho10 s
+    ON s.servhoscod = ce.cod_servicio
+LEFT JOIN dwsge.sgss_cmact10 a
+    ON a.actcod = ce.cod_actividad
+LEFT JOIN dwsge.sgss_cmace10 ae
+    ON ae.actcod = ce.cod_actividad
+   AND ae.actespcod = ce.cod_subactividad
+LEFT JOIN dwsge.dim_variable v
+    ON v.cod_variable = ce.cod_variable	
+LEFT JOIN dwsge.dim_especialidad e
+	ON e.cod_especialidad = ce.cod_especialidad
+LEFT JOIN dwsge.sgss_cbtdi10 td
+    ON td.tipdocidenpercod = ce.cod_tipdoc_paciente
+LEFT JOIN dwsge.sgss_cmtse10 t
+    ON t.tipsegcod = ce.cod_tip_seguro
+WHERE ANIO IN ('2019')
+AND ce.cod_especialidad = '039'

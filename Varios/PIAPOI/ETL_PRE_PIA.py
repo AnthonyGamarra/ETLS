@@ -1,4 +1,4 @@
-from carga_utils import leer_excel, cargar_tabla
+from Varios.PIAPOI.carga_utils import leer_excel, cargar_tabla
 
 # ==============================
 # PIA institucional (PIA 2026 INSTITUCIONAL.xlsx) -> dwsge.pre_pia

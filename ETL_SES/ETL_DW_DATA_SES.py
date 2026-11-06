@@ -41,7 +41,7 @@ PERIODO_FIN = 202609
 
 # Procedimientos almacenados a unir (agregar aquí otros SP con la misma estructura)
 PROCEDIMIENTOS = [
-    "dbo.USP_FAMILIAS_GCOP_V2","dbo.USP_FAMILIAS_GCOP_V3"
+    "dbo.USP_FONAFE_GCOP_V3"
 ]
 
 tabla_destino = "dwsge.data_ses"
@@ -175,7 +175,19 @@ for periodo in month_range(periodo_ini, periodo_fin):
         print(f"Error al cargar periodo {periodo}: {e}")
 
 # ==============================
-# 8. Cerramos conexiones
+# 8. Refrescar vista materializada
+# ==============================
+print("\nRefrescando vista materializada dwsge.mv_data_ses...")
+try:
+    cursor_pg.execute("REFRESH MATERIALIZED VIEW dwsge.mv_data_ses;")
+    conn_pg.commit()
+    print("Vista refrescada.")
+except Exception as e:
+    conn_pg.rollback()
+    print(f"Error al refrescar la vista: {e}")
+
+# ==============================
+# 9. Cerramos conexiones
 # ==============================
 print("\nCerrando conexiones a bases de datos...")
 cursor_pg.close()

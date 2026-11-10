@@ -97,6 +97,7 @@ for start_mes, end_mes in month_range(start_date, end_date):
                 to_char(x.resexafec, 'yyyymm')                              AS PERIODO,
                 x.RESEXAORICENASICOD                                        AS COD_ORICENTRO,
                 x.resexacenasicod                                           AS COD_CENTRO,
+                b.SolExaSedExaCod                                           AS COD_SEDE,
                 n1.AREAEXACOD                                               AS COD_AREALAB,
                 f.AREHOSCOD                                                 AS COD_AREA,
                 h.servhoscod                                                AS COD_SERVICIO,

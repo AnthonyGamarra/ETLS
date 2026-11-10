@@ -31,7 +31,13 @@ pg_db   = os.getenv("PG_DB")
 # ==============================
 print(f"Conectando a Oracle en {oracle_host}:{oracle_port}/{oracle_service}...")
 dsn = f"{oracle_host}:{oracle_port}/{oracle_service}"
-conn_oracle = oracledb.connect(user=oracle_user, password=oracle_pass, dsn=dsn)
+conn_oracle = oracledb.connect(
+    user=oracle_user,
+    password=oracle_pass,
+    dsn=dsn,
+    expire_time=2  # keepalive cada 2 min: evita que el firewall corte la conexión durante queries largas
+)
+conn_oracle.call_timeout = 90 * 60 * 1000  # 90 min máx. por llamada: falla en vez de quedarse colgado
 print("Conexión a Oracle establecida.")
 
 # ==============================
